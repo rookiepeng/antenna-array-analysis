@@ -26,13 +26,13 @@ class MyApp(QtWidgets.QMainWindow):
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('array_analysis.ui', self)
 
-        self.pgcanvas = pg.GraphicsLayoutWidget()
-        self.figureLayout.addWidget(self.pgcanvas)
-        self.plotView = self.pgcanvas.addPlot()
-        self.pattern = pg.PlotCurveItem()
+        self.pgCanvas = pg.GraphicsLayoutWidget()
+        self.figureLayout.addWidget(self.pgCanvas)
+        self.plotView = self.pgCanvas.addPlot()
+        self.pgFigure = pg.PlotCurveItem()
         self.pen = pg.mkPen({'color': '2196F3', 'width': 4})
 
-        self.plotView.addItem(self.pattern)
+        self.plotView.addItem(self.pgFigure)
         self.plotView.setLabel(
             axis='bottom', text='<a style="font-size:16px">Angle (°)</a>')
         self.plotView.setLabel(
@@ -68,7 +68,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.angle = array.getPattern()['angle']
         self.pattern = array.getPattern()['pattern']
 
-        self.pattern.setData(self.angle, self.pattern, pen=self.pen)
+        self.pgFigure.setData(self.angle, self.pattern, pen=self.pen)
 
 
 if __name__ == '__main__':
