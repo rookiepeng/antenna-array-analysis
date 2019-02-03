@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>Array Config</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -47,58 +47,54 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit"/>
-       </item>
-       <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QLineEdit" name="lineEdit_ArraySize">
+         <property name="maxLength">
+          <number>32769</number>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Normal</enum>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Spacing:</string>
+          <string>Spacing (λ):</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_2"/>
-       </item>
-       <item>
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="lineEdit_Spacing"/>
        </item>
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Main beam angle:</string>
+          <string>Main beam angle (°):</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_3"/>
-       </item>
-       <item>
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="lineEdit_MainBeamAngle"/>
        </item>
        <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Window:</string>
+          <string>Window type:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_4"/>
+        <widget class="QComboBox" name="comboBox_Window"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_SLL">
+         <property name="text">
+          <string>Side lobe level (dB):</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_SLL"/>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -114,9 +110,9 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="plotButton">
          <property name="text">
-          <string>PushButton</string>
+          <string>Plot</string>
          </property>
         </widget>
        </item>
@@ -138,7 +134,7 @@
        </size>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>Pattern</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
