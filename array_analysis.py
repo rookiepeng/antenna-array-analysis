@@ -45,7 +45,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.plotView.getAxis('left').tickFont = font
         self.plotView.getAxis('left').setStyle(tickTextOffset=8)
-        self.plotView.setXRange(-90, 90)
 
         self.ui.plotButton.clicked.connect(self.updatePattern)
 
