@@ -27,7 +27,7 @@ from linear_array import Linear_Array
 import pyqtgraph as pg
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
-#pg.setConfigOption('antialias', True)
+pg.setConfigOption('antialias', True)
 
 font = QtGui.QFont()
 font.setPixelSize(16)
@@ -42,7 +42,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.figureLayout.addWidget(self.pgCanvas)
         self.plotView = self.pgCanvas.addPlot()
         self.pgFigure = pg.PlotCurveItem()
-        self.pen = pg.mkPen({'color': '2196F3', 'width': 4})
+        self.pen = pg.mkPen({'color': '1565C0', 'width': 3})
 
         self.plotView.addItem(self.pgFigure)
         self.plotView.setLabel(
@@ -58,54 +58,65 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView.getAxis('left').tickFont = font
         self.plotView.getAxis('left').setStyle(tickTextOffset=8)
 
-        self.ui.plotButton.clicked.connect(self.updatePattern)
-
         self.initUI()
 
-        self.ui.lineEdit_ArraySize.editingFinished.connect(self.updatePattern)
-        self.ui.lineEdit_Spacing.editingFinished.connect(self.updatePattern)
+        #self.ui.lineEdit_ArraySize.textEdited.connect(self.arraySizeTextChanged)
+        self.ui.spinBox_ArraySize.valueChanged.connect(
+            self.arraySizeValueChanged)
 
-        #        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updatePattern)
-        #        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.steeringAngleTextChanged)
-        #        self.ui.lineEdit_SteeringAngle.textEdited.connect(self.updatePattern)
-        self.ui.lineEdit_SteeringAngle.textEdited.connect(
-            self.steeringAngleTextChanged)
+        self.ui.doubleSpinBox_Spacing.valueChanged.connect(
+            self.spacingValueChanged)
 
+        self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
+            self.steeringAngleValueChanged)
         self.ui.horizontalSlider_SteeringAngle.sliderMoved.connect(
             self.steeringAngleSliderMoved)
+
+        self.ui.doubleSpinBox_Step.valueChanged.connect(
+            self.plotStepValueChanged)
+        self.ui.horizontalSlider_Step.sliderMoved.connect(
+            self.plotStepSliderMoved)
 
         self.ui.show()
 
     def initUI(self):
-        self.ui.lineEdit_SLL.setVisible(False)
+        self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
 
         self.ui.comboBox_Window.addItems(['Square', 'Chebyshev'])
-        self.ui.lineEdit_ArraySize.setText('128')
-        self.ui.lineEdit_Spacing.setText('0.5')
-        self.ui.lineEdit_SteeringAngle.setText('10')
 
-    def steeringAngleTextChanged(self):
-        try:
-            self.ui.horizontalSlider_SteeringAngle.setValue(
-                np.round(
-                    np.array(
-                        self.ui.lineEdit_SteeringAngle.text(), dtype=float) *
-                    10).astype(int))
-            self.updatePattern()
-        except:
-            print('Wrong value')
+    def arraySizeValueChanged(self, value):
+        self.updatePattern()
+
+    def spacingValueChanged(self, value):
+        self.updatePattern()
+
+    def steeringAngleValueChanged(self, value):
+        self.ui.horizontalSlider_SteeringAngle.setValue(
+            np.round(
+                self.ui.doubleSpinBox_SteeringAngle.value() * 10).astype(int))
+        self.updatePattern()
 
     def steeringAngleSliderMoved(self, value):
-        self.ui.lineEdit_SteeringAngle.setText(str(value / 10))
+        self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
+        self.updatePattern()
+
+    def plotStepValueChanged(self):
+        self.ui.horizontalSlider_Step.setValue(
+            np.round(self.ui.doubleSpinBox_Step.value() * 100).astype(int))
+        self.updatePattern()
+
+    def plotStepSliderMoved(self, value):
+        self.ui.doubleSpinBox_Step.setValue(value / 100)
         self.updatePattern()
 
     def updatePattern(self):
-        array_size = np.array(self.ui.lineEdit_ArraySize.text(), dtype=int)
-        spacing = np.array(self.ui.lineEdit_Spacing.text(), dtype=float)
-        beam_loc = np.array(self.ui.lineEdit_SteeringAngle.text(), dtype=float)
+        array_size = self.ui.spinBox_ArraySize.value()
+        spacing = self.ui.doubleSpinBox_Spacing.value()
+        beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
+        plot_step = self.ui.doubleSpinBox_Step.value()
 
-        array = Linear_Array(array_size, spacing, beam_loc)
+        array = Linear_Array(array_size, spacing, beam_loc, plot_step)
         self.angle = array.getPattern()['angle']
         self.pattern = array.getPattern()['pattern']
 

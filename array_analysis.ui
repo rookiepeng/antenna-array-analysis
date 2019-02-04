@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>977</width>
-    <height>753</height>
+    <width>1067</width>
+    <height>767</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,18 +80,30 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_ArraySize">
-           <property name="maxLength">
-            <number>32769</number>
+          <widget class="QSpinBox" name="spinBox_ArraySize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="frame">
-            <bool>false</bool>
-           </property>
-           <property name="echoMode">
-            <enum>QLineEdit::Normal</enum>
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>1048576</number>
+           </property>
+           <property name="value">
+            <number>64</number>
            </property>
           </widget>
          </item>
@@ -127,12 +139,21 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_Spacing">
-           <property name="frame">
-            <bool>false</bool>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_Spacing">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="minimum">
+            <double>0.500000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -168,12 +189,30 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_SteeringAngle">
-           <property name="frame">
-            <bool>false</bool>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_SteeringAngle">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>-90.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>90.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -231,12 +270,27 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_Step">
-           <property name="frame">
-            <bool>false</bool>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_Step">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="minimum">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -248,7 +302,13 @@
           <number>1</number>
          </property>
          <property name="maximum">
-          <number>100</number>
+          <number>10</number>
+         </property>
+         <property name="pageStep">
+          <number>1</number>
+         </property>
+         <property name="sliderPosition">
+          <number>10</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -266,27 +326,92 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Window type:</string>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Window:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_Window"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_SLL">
+           <property name="text">
+            <string>Side lobe (dB):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_SLL">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="sizeIncrement">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>60</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QSlider" name="horizontalSlider_SLL">
+         <property name="minimum">
+          <number>10</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_Window"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_SLL">
-         <property name="text">
-          <string>Side lobe level (dB):</string>
+         <property name="maximum">
+          <number>100</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit_SLL"/>
-       </item>
-       <item>
-        <widget class="QSlider" name="horizontalSlider_4">
+         <property name="sliderPosition">
+          <number>60</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -307,13 +432,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="plotButton">
-         <property name="text">
-          <string>Plot</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -349,8 +467,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>977</width>
-     <height>38</height>
+     <width>1067</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

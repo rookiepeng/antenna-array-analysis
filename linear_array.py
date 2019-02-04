@@ -22,13 +22,14 @@ from scipy import signal
 
 
 class Linear_Array:
-    def __init__(self, array_size, spacing, beam_loc):
+    def __init__(self, array_size, spacing, beam_loc, plot_step):
         self.array_size = array_size
         self.spacing = spacing
         self.beam_loc = beam_loc
+        self.plot_step = plot_step
 
     def getPattern(self):
-        theta = np.arange(-90, 90, 0.1)
+        theta = np.arange(-90, 90, self.plot_step)
 
         array_geometry = np.arange(0, self.spacing * self.array_size,
                                    self.spacing)
