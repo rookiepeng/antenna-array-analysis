@@ -76,12 +76,15 @@ class MyApp(QtWidgets.QMainWindow):
             self.plotStepValueChanged)
         self.ui.horizontalSlider_Step.sliderMoved.connect(
             self.plotStepSliderMoved)
+        
+        self.ui.comboBox_Window.currentIndexChanged.connect(self.windowComboBoxChanged)
 
         self.ui.show()
 
     def initUI(self):
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
+        self.ui.horizontalSlider_SLL.setVisible(False)
 
         self.ui.comboBox_Window.addItems(['Square', 'Chebyshev'])
 
@@ -109,6 +112,17 @@ class MyApp(QtWidgets.QMainWindow):
     def plotStepSliderMoved(self, value):
         self.ui.doubleSpinBox_Step.setValue(value / 100)
         self.updatePattern()
+        
+    def windowComboBoxChanged(self, value):
+        if value==0:
+            self.ui.spinBox_SLL.setVisible(False)
+            self.ui.label_SLL.setVisible(False)
+            self.ui.horizontalSlider_SLL.setVisible(False)
+        elif value==1:
+            self.ui.spinBox_SLL.setVisible(True)
+            self.ui.label_SLL.setVisible(True)
+            self.ui.horizontalSlider_SLL.setVisible(True)
+            
 
     def updatePattern(self):
         array_size = self.ui.spinBox_ArraySize.value()
