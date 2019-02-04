@@ -16,7 +16,7 @@ class Linear_Array:
         self.beam_loc = beam_loc
 
     def getPattern(self):
-        theta = np.arange(-90, 90, 0.02)
+        theta = np.arange(-90, 90, 0.1)
 
         array_geometry = np.arange(0, self.spacing * self.array_size,
                                    self.spacing)

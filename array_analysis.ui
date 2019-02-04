@@ -168,7 +168,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_MainBeamAngle">
+          <widget class="QLineEdit" name="lineEdit_SteeringAngle">
            <property name="frame">
             <bool>false</bool>
            </property>
@@ -180,18 +180,24 @@
         </layout>
        </item>
        <item>
-        <widget class="QSlider" name="horizontalSlider_2">
+        <widget class="QSlider" name="horizontalSlider_SteeringAngle">
          <property name="minimum">
-          <number>-90</number>
+          <number>-900</number>
          </property>
          <property name="maximum">
-          <number>90</number>
+          <number>900</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="tickPosition">
           <enum>QSlider::TicksAbove</enum>
+         </property>
+         <property name="tickInterval">
+          <number>100</number>
          </property>
         </widget>
        </item>
@@ -225,7 +231,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="lineEdit_Step">
            <property name="frame">
             <bool>false</bool>
            </property>
@@ -237,7 +243,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QSlider" name="horizontalSlider">
+        <widget class="QSlider" name="horizontalSlider_Step">
          <property name="minimum">
           <number>1</number>
          </property>

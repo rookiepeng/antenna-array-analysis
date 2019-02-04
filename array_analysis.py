@@ -49,6 +49,14 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.plotButton.clicked.connect(self.updatePattern)
 
         self.initUI()
+        
+        self.ui.lineEdit_ArraySize.editingFinished.connect(self.updatePattern)
+        self.ui.lineEdit_Spacing.editingFinished.connect(self.updatePattern)
+        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updatePattern)
+        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updateSteeringAngleSlider)
+        
+        #self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(self.updatePattern)
+        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(self.updateSteeringAngleValue)
 
         self.ui.show()
 
@@ -57,11 +65,22 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_SLL.setVisible(False)
 
         self.ui.comboBox_Window.addItems(['Square', 'Chebyshev'])
+        self.ui.lineEdit_ArraySize.setText('128')
+        self.ui.lineEdit_Spacing.setText('0.5')
+        self.ui.lineEdit_SteeringAngle.setText('10')
+        
+    def updateSteeringAngleSlider(self):
+        self.ui.horizontalSlider_SteeringAngle.setValue(np.round(np.array(self.ui.lineEdit_SteeringAngle.text(), dtype=float)*10).astype(int))
+        
+    def updateSteeringAngleValue(self):
+        self.ui.lineEdit_SteeringAngle.setText(str(self.ui.horizontalSlider_SteeringAngle.value()/10))
+        self.updatePattern()
 
     def updatePattern(self):
+        print('plot')
         array_size = np.array(self.ui.lineEdit_ArraySize.text(), dtype=int)
         spacing = np.array(self.ui.lineEdit_Spacing.text(), dtype=float)
-        beam_loc = np.array(self.ui.lineEdit_MainBeamAngle.text(), dtype=float)
+        beam_loc = np.array(self.ui.lineEdit_SteeringAngle.text(), dtype=float)
 
         array = Linear_Array(array_size, spacing, beam_loc)
         self.angle = array.getPattern()['angle']
