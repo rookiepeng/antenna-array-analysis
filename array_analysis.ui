@@ -238,8 +238,11 @@
        </item>
        <item>
         <widget class="QSlider" name="horizontalSlider">
+         <property name="minimum">
+          <number>1</number>
+         </property>
          <property name="maximum">
-          <number>10</number>
+          <number>100</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
