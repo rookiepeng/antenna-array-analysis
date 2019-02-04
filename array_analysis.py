@@ -61,14 +61,18 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.plotButton.clicked.connect(self.updatePattern)
 
         self.initUI()
-        
+
         self.ui.lineEdit_ArraySize.editingFinished.connect(self.updatePattern)
         self.ui.lineEdit_Spacing.editingFinished.connect(self.updatePattern)
-        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updatePattern)
-        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updateSteeringAngleSlider)
-        
-        #self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(self.updatePattern)
-        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(self.updateSteeringAngleValue)
+
+        #        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.updatePattern)
+        #        self.ui.lineEdit_SteeringAngle.editingFinished.connect(self.steeringAngleTextChanged)
+        #        self.ui.lineEdit_SteeringAngle.textEdited.connect(self.updatePattern)
+        self.ui.lineEdit_SteeringAngle.textEdited.connect(
+            self.steeringAngleTextChanged)
+
+        self.ui.horizontalSlider_SteeringAngle.sliderMoved.connect(
+            self.steeringAngleSliderMoved)
 
         self.ui.show()
 
@@ -80,16 +84,23 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.lineEdit_ArraySize.setText('128')
         self.ui.lineEdit_Spacing.setText('0.5')
         self.ui.lineEdit_SteeringAngle.setText('10')
-        
-    def updateSteeringAngleSlider(self):
-        self.ui.horizontalSlider_SteeringAngle.setValue(np.round(np.array(self.ui.lineEdit_SteeringAngle.text(), dtype=float)*10).astype(int))
-        
-    def updateSteeringAngleValue(self):
-        self.ui.lineEdit_SteeringAngle.setText(str(self.ui.horizontalSlider_SteeringAngle.value()/10))
+
+    def steeringAngleTextChanged(self):
+        try:
+            self.ui.horizontalSlider_SteeringAngle.setValue(
+                np.round(
+                    np.array(
+                        self.ui.lineEdit_SteeringAngle.text(), dtype=float) *
+                    10).astype(int))
+            self.updatePattern()
+        except:
+            print('Wrong value')
+
+    def steeringAngleSliderMoved(self, value):
+        self.ui.lineEdit_SteeringAngle.setText(str(value / 10))
         self.updatePattern()
 
     def updatePattern(self):
-        print('plot')
         array_size = np.array(self.ui.lineEdit_ArraySize.text(), dtype=int)
         spacing = np.array(self.ui.lineEdit_Spacing.text(), dtype=float)
         beam_loc = np.array(self.ui.lineEdit_SteeringAngle.text(), dtype=float)
