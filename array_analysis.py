@@ -19,6 +19,7 @@
 
 import sys
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5.QtCore import QThread
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 import numpy as np
@@ -65,17 +66,27 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
             self.spacingValueChanged)
-        
+
         self.ui.doubleSpinBox_Step.valueChanged.connect(
             self.plotStepValueChanged)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steeringAngleValueChanged)
-        self.ui.horizontalSlider_SteeringAngle.sliderMoved.connect(
+        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(
             self.steeringAngleSliderMoved)
 
-        self.ui.comboBox_Window.currentIndexChanged.connect(self.windowComboBoxChanged)
+        self.ui.comboBox_Window.currentIndexChanged.connect(
+            self.windowComboBoxChanged)
 
+        self.linear_array = Linear_Array()
+        self.linear_array_thread = QThread()
+        self.linear_array.patternReady.connect(self.updatePattern)
+        self.linear_array_thread.started.connect(
+            self.linear_array.calculatePattern)
+        self.linear_array.moveToThread(self.linear_array_thread)
+        self.linear_array_thread.start()
+
+        self.updateLinearArrayParameter()
         self.ui.show()
 
     def initUI(self):
@@ -86,47 +97,43 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.comboBox_Window.addItems(['Square', 'Chebyshev'])
 
     def arraySizeValueChanged(self, value):
-        self.updatePattern()
+        self.updateLinearArrayParameter()
 
     def spacingValueChanged(self, value):
-        self.updatePattern()
-        
+        self.updateLinearArrayParameter()
+
     def plotStepValueChanged(self):
-        self.updatePattern()
+        self.updateLinearArrayParameter()
 
     def steeringAngleValueChanged(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(
-                self.ui.doubleSpinBox_SteeringAngle.value() * 10)
-        self.updatePattern()
+            self.ui.doubleSpinBox_SteeringAngle.value() * 10)
+        self.updateLinearArrayParameter()
 
     def steeringAngleSliderMoved(self, value):
         self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
-        self.updatePattern()
+        self.updateLinearArrayParameter()
 
-
-        
     def windowComboBoxChanged(self, value):
-        if value==0:
+        if value == 0:
             self.ui.spinBox_SLL.setVisible(False)
             self.ui.label_SLL.setVisible(False)
             self.ui.horizontalSlider_SLL.setVisible(False)
-        elif value==1:
+        elif value == 1:
             self.ui.spinBox_SLL.setVisible(True)
             self.ui.label_SLL.setVisible(True)
             self.ui.horizontalSlider_SLL.setVisible(True)
-            
 
-    def updatePattern(self):
-        array_size = self.ui.spinBox_ArraySize.value()
-        spacing = self.ui.doubleSpinBox_Spacing.value()
-        beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
-        plot_step = self.ui.doubleSpinBox_Step.value()
+    def updateLinearArrayParameter(self):
+        self.array_size = self.ui.spinBox_ArraySize.value()
+        self.spacing = self.ui.doubleSpinBox_Spacing.value()
+        self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
+        self.plot_step = self.ui.doubleSpinBox_Step.value()
+        self.linear_array.updateData(self.array_size, self.spacing,
+                                     self.beam_loc, self.plot_step)
 
-        array = Linear_Array(array_size, spacing, beam_loc, plot_step)
-        self.angle = array.getPattern()['angle']
-        self.pattern = array.getPattern()['pattern']
-
-        self.pgFigure.setData(self.angle, self.pattern, pen=self.pen)
+    def updatePattern(self, angle, pattern):
+        self.pgFigure.setData(angle, pattern, pen=self.pen)
 
 
 if __name__ == '__main__':
