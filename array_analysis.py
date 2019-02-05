@@ -22,7 +22,6 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
-import numpy as np
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
