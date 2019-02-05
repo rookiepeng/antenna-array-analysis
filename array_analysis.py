@@ -43,6 +43,8 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView = self.pgCanvas.addPlot()
         self.pgFigure = pg.PlotDataItem()
         self.pgFigure.setDownsampling(auto=True, method='peak')
+        self.plotView.setXRange(-90, 90)
+        self.plotView.setYRange(-80, 0)
         #self.pen = pg.mkPen('b')
         #self.pgFigure.setPen(self.pen)
 
