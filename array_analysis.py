@@ -60,23 +60,20 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.initUI()
 
-        #self.ui.lineEdit_ArraySize.textEdited.connect(self.arraySizeTextChanged)
         self.ui.spinBox_ArraySize.valueChanged.connect(
             self.arraySizeValueChanged)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
             self.spacingValueChanged)
+        
+        self.ui.doubleSpinBox_Step.valueChanged.connect(
+            self.plotStepValueChanged)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steeringAngleValueChanged)
         self.ui.horizontalSlider_SteeringAngle.sliderMoved.connect(
             self.steeringAngleSliderMoved)
 
-        self.ui.doubleSpinBox_Step.valueChanged.connect(
-            self.plotStepValueChanged)
-        self.ui.horizontalSlider_Step.sliderMoved.connect(
-            self.plotStepSliderMoved)
-        
         self.ui.comboBox_Window.currentIndexChanged.connect(self.windowComboBoxChanged)
 
         self.ui.show()
@@ -93,25 +90,20 @@ class MyApp(QtWidgets.QMainWindow):
 
     def spacingValueChanged(self, value):
         self.updatePattern()
+        
+    def plotStepValueChanged(self):
+        self.updatePattern()
 
     def steeringAngleValueChanged(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(
-            np.round(
-                self.ui.doubleSpinBox_SteeringAngle.value() * 10).astype(int))
+                self.ui.doubleSpinBox_SteeringAngle.value() * 10)
         self.updatePattern()
 
     def steeringAngleSliderMoved(self, value):
         self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
         self.updatePattern()
 
-    def plotStepValueChanged(self):
-        self.ui.horizontalSlider_Step.setValue(
-            np.round(self.ui.doubleSpinBox_Step.value() * 100).astype(int))
-        self.updatePattern()
 
-    def plotStepSliderMoved(self, value):
-        self.ui.doubleSpinBox_Step.setValue(value / 100)
-        self.updatePattern()
         
     def windowComboBoxChanged(self, value):
         if value==0:
