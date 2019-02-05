@@ -25,9 +25,9 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k')
-pg.setConfigOption('antialias', True)
+#pg.setConfigOption('background', 'w')
+#pg.setConfigOption('foreground', 'k')
+#pg.setConfigOption('antialias', True)
 
 font = QtGui.QFont()
 font.setPixelSize(16)
@@ -41,15 +41,17 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
         self.plotView = self.pgCanvas.addPlot()
-        self.pgFigure = pg.PlotCurveItem()
-        self.pen = pg.mkPen({'color': '1565C0', 'width': 3})
+        self.pgFigure = pg.PlotDataItem()
+        self.pgFigure.setDownsampling(auto=True, method='peak')
+        #self.pen = pg.mkPen('b')
+        #self.pgFigure.setPen(self.pen)
 
         self.plotView.addItem(self.pgFigure)
         self.plotView.setLabel(
             axis='bottom', text='<a style="font-size:16px">Angle (°)</a>')
         self.plotView.setLabel(
             axis='left',
-            text='<a style="font-size:16px">Normalized amplitude (dB)</a>')
+            text='<a style="font-size:16px">Normalized amblitude (dB)</a>')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
 
         self.plotView.getAxis('bottom').tickFont = font
@@ -148,7 +150,7 @@ class MyApp(QtWidgets.QMainWindow):
                                      self.window_type, self.window_sll)
 
     def updatePattern(self, angle, pattern):
-        self.pgFigure.setData(angle, pattern, pen=self.pen)
+        self.pgFigure.setData(angle, pattern)
 
 
 if __name__ == '__main__':
