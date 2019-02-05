@@ -100,7 +100,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
 
-        self.ui.comboBox_Window.addItems(['Square', 'Chebyshev'])
+        self.ui.comboBox_Window.addItems(['Square', 'Chebyshev','Taylor','Hamming','Hann'])
 
     def arraySizeValueChanged(self, value):
         self.updateLinearArrayParameter()
