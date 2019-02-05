@@ -25,8 +25,8 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
-#pg.setConfigOption('background', 'w')
-#pg.setConfigOption('foreground', 'k')
+pg.setConfigOption('background', 'w')
+pg.setConfigOption('foreground', 'k')
 #pg.setConfigOption('antialias', True)
 
 font = QtGui.QFont()
@@ -45,8 +45,8 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgFigure.setDownsampling(auto=True, method='peak')
         self.plotView.setXRange(-90, 90)
         self.plotView.setYRange(-80, 0)
-        #self.pen = pg.mkPen('b')
-        #self.pgFigure.setPen(self.pen)
+        self.pen = pg.mkPen('b', width=3)
+        self.pgFigure.setPen(self.pen)
 
         self.plotView.addItem(self.pgFigure)
         self.plotView.setLabel(
