@@ -27,11 +27,14 @@ class Linear_Array(QObject):
     patternReady = pyqtSignal(np.ndarray, np.ndarray)
     new_data = False
 
-    def updateData(self, array_size, spacing, beam_loc, plot_step):
+    def updateData(self, array_size, spacing, beam_loc, plot_step, window_type,
+                   window_sll):
         self.array_size = array_size
         self.spacing = spacing
         self.beam_loc = beam_loc
         self.plot_step = plot_step
+        self.window_type = window_type
+        self.window_sll = window_sll
         self.new_data = True
 
     @pyqtSlot()
@@ -44,8 +47,14 @@ class Linear_Array(QObject):
 
                 array_geometry = np.arange(0, self.spacing * self.array_size,
                                            self.spacing)
-                weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                    self.beam_loc / 180 * np.pi))
+
+                if self.window_type == 0:
+                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                        self.beam_loc / 180 * np.pi))
+                elif self.window_type == 1:
+                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                        self.beam_loc / 180 * np.pi)) * signal.chebwin(
+                            self.array_size, at=self.window_sll)
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     theta, array_geometry)

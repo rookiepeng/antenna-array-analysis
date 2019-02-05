@@ -78,6 +78,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.comboBox_Window.currentIndexChanged.connect(
             self.windowComboBoxChanged)
 
+        self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
+        self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
+
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
         self.linear_array.patternReady.connect(self.updatePattern)
@@ -123,14 +126,27 @@ class MyApp(QtWidgets.QMainWindow):
             self.ui.spinBox_SLL.setVisible(True)
             self.ui.label_SLL.setVisible(True)
             self.ui.horizontalSlider_SLL.setVisible(True)
+        self.updateLinearArrayParameter()
+
+    def sllValueChange(self, value):
+        self.ui.horizontalSlider_SLL.setValue(self.ui.spinBox_SLL.value())
+        self.updateLinearArrayParameter()
+
+    def sllSliderMoved(self, value):
+        self.ui.spinBox_SLL.setValue(value)
+        self.updateLinearArrayParameter()
 
     def updateLinearArrayParameter(self):
         self.array_size = self.ui.spinBox_ArraySize.value()
         self.spacing = self.ui.doubleSpinBox_Spacing.value()
         self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
         self.plot_step = self.ui.doubleSpinBox_Step.value()
+        self.window_type = self.ui.comboBox_Window.currentIndex()
+        self.window_sll = self.ui.spinBox_SLL.value()
+
         self.linear_array.updateData(self.array_size, self.spacing,
-                                     self.beam_loc, self.plot_step)
+                                     self.beam_loc, self.plot_step,
+                                     self.window_type, self.window_sll)
 
     def updatePattern(self, angle, pattern):
         self.pgFigure.setData(angle, pattern, pen=self.pen)
