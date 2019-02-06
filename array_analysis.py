@@ -72,6 +72,9 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
         self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
+        
+        self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
+        self.ui.horizontalSlider_nbar.valueChanged.connect(self.nbarSliderMoved)
 
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
@@ -88,6 +91,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
+        self.ui.spinBox_nbar.setVisible(False)
+        self.ui.label_nbar.setVisible(False)
+        self.ui.horizontalSlider_nbar.setVisible(False)
 
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
@@ -115,22 +121,37 @@ class MyApp(QtWidgets.QMainWindow):
             self.ui.spinBox_SLL.setVisible(False)
             self.ui.label_SLL.setVisible(False)
             self.ui.horizontalSlider_SLL.setVisible(False)
+            self.ui.spinBox_nbar.setVisible(False)
+            self.ui.label_nbar.setVisible(False)
+            self.ui.horizontalSlider_nbar.setVisible(False)
         elif value == 1:
             self.ui.spinBox_SLL.setVisible(True)
             self.ui.label_SLL.setVisible(True)
             self.ui.horizontalSlider_SLL.setVisible(True)
+            self.ui.spinBox_nbar.setVisible(False)
+            self.ui.label_nbar.setVisible(False)
+            self.ui.horizontalSlider_nbar.setVisible(False)
         elif value == 2:
             self.ui.spinBox_SLL.setVisible(True)
             self.ui.label_SLL.setVisible(True)
             self.ui.horizontalSlider_SLL.setVisible(True)
+            self.ui.spinBox_nbar.setVisible(True)
+            self.ui.label_nbar.setVisible(True)
+            self.ui.horizontalSlider_nbar.setVisible(True)
         elif value == 3:
             self.ui.spinBox_SLL.setVisible(False)
             self.ui.label_SLL.setVisible(False)
             self.ui.horizontalSlider_SLL.setVisible(False)
+            self.ui.spinBox_nbar.setVisible(False)
+            self.ui.label_nbar.setVisible(False)
+            self.ui.horizontalSlider_nbar.setVisible(False)
         elif value == 4:
             self.ui.spinBox_SLL.setVisible(False)
             self.ui.label_SLL.setVisible(False)
             self.ui.horizontalSlider_SLL.setVisible(False)
+            self.ui.spinBox_nbar.setVisible(False)
+            self.ui.label_nbar.setVisible(False)
+            self.ui.horizontalSlider_nbar.setVisible(False)
         self.updateLinearArrayParameter()
 
     def sllValueChange(self, value):
@@ -140,6 +161,15 @@ class MyApp(QtWidgets.QMainWindow):
     def sllSliderMoved(self, value):
         self.ui.spinBox_SLL.setValue(value)
         self.updateLinearArrayParameter()
+        
+    def nbarValueChange(self, value):
+        self.ui.horizontalSlider_nbar.setValue(self.ui.spinBox_nbar.value())
+        self.updateLinearArrayParameter()
+
+    def nbarSliderMoved(self, value):
+        self.ui.spinBox_nbar.setValue(value)
+        self.updateLinearArrayParameter()
+
 
     def updateLinearArrayParameter(self):
         self.array_size = self.ui.spinBox_ArraySize.value()
@@ -148,10 +178,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.plot_step = self.ui.doubleSpinBox_Step.value()
         self.window_type = self.ui.comboBox_Window.currentIndex()
         self.window_sll = self.ui.spinBox_SLL.value()
+        self.window_nbar = self.ui.spinBox_nbar.value()
 
         self.linear_array.updateData(self.array_size, self.spacing,
                                      self.beam_loc, self.plot_step,
-                                     self.window_type, self.window_sll)
+                                     self.window_type, self.window_sll, self.window_nbar)
 
     def updatePattern(self, angle, pattern):
         self.pgFigure.setData(angle, pattern)

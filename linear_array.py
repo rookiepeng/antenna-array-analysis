@@ -29,13 +29,14 @@ class Linear_Array(QObject):
     new_data = False
 
     def updateData(self, array_size, spacing, beam_loc, plot_step, window_type,
-                   window_sll):
+                   window_sll, window_nbar):
         self.array_size = array_size
         self.spacing = spacing
         self.beam_loc = beam_loc
         self.plot_step = plot_step
         self.window_type = window_type
         self.window_sll = window_sll
+        self.window_nbar = window_nbar
         self.new_data = True
 
     @pyqtSlot()
@@ -59,7 +60,7 @@ class Linear_Array(QObject):
                 elif self.window_type == 2:
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                         self.beam_loc / 180 * np.pi)) * taylor(
-                            self.array_size, 4, -self.window_sll)
+                            self.array_size, self.window_nbar, -self.window_sll)
                 elif self.window_type == 3:
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                         self.beam_loc / 180 * np.pi)) * signal.hamming(self.array_size)
