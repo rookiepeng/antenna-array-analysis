@@ -18,19 +18,16 @@
 """
 
 import sys
-from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtCore import QThread
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k')
+#pg.setConfigOption('background', 'w')
+#pg.setConfigOption('foreground', 'k')
 #pg.setConfigOption('antialias', True)
-
-font = QtGui.QFont()
-font.setPixelSize(16)
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 
 class MyApp(QtWidgets.QMainWindow):
@@ -45,22 +42,14 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgFigure.setDownsampling(auto=True, method='peak')
         self.plotView.setXRange(-90, 90)
         self.plotView.setYRange(-80, 0)
-        self.pen = pg.mkPen(color=(21, 101, 192), width=3)
-        self.pgFigure.setPen(self.pen)
 
         self.plotView.addItem(self.pgFigure)
         self.plotView.setLabel(
-            axis='bottom', text='<a style="font-size:16px">Angle (°)</a>')
+            axis='bottom', text='Angle', units='°')
         self.plotView.setLabel(
             axis='left',
-            text='<a style="font-size:16px">Normalized amblitude (dB)</a>')
+            text='Normalized amblitude', units='dB')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
-
-        self.plotView.getAxis('bottom').tickFont = font
-        self.plotView.getAxis('bottom').setStyle(tickTextOffset=8)
-
-        self.plotView.getAxis('left').tickFont = font
-        self.plotView.getAxis('left').setStyle(tickTextOffset=8)
 
         self.initUI()
 
