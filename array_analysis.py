@@ -130,6 +130,18 @@ class MyApp(QtWidgets.QMainWindow):
             self.ui.spinBox_SLL.setVisible(True)
             self.ui.label_SLL.setVisible(True)
             self.ui.horizontalSlider_SLL.setVisible(True)
+        elif value == 2:
+            self.ui.spinBox_SLL.setVisible(True)
+            self.ui.label_SLL.setVisible(True)
+            self.ui.horizontalSlider_SLL.setVisible(True)
+        elif value == 3:
+            self.ui.spinBox_SLL.setVisible(False)
+            self.ui.label_SLL.setVisible(False)
+            self.ui.horizontalSlider_SLL.setVisible(False)
+        elif value == 4:
+            self.ui.spinBox_SLL.setVisible(False)
+            self.ui.label_SLL.setVisible(False)
+            self.ui.horizontalSlider_SLL.setVisible(False)
         self.updateLinearArrayParameter()
 
     def sllValueChange(self, value):

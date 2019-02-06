@@ -21,6 +21,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 import numpy as np
 from scipy import signal
 import time
+from taylor_win import taylor
 
 
 class Linear_Array(QObject):
@@ -55,6 +56,17 @@ class Linear_Array(QObject):
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                         self.beam_loc / 180 * np.pi)) * signal.chebwin(
                             self.array_size, at=self.window_sll)
+                elif self.window_type == 2:
+                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                        self.beam_loc / 180 * np.pi)) * taylor(
+                            self.array_size, 4, -self.window_sll)
+                elif self.window_type == 3:
+                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                        self.beam_loc / 180 * np.pi)) * signal.hamming(self.array_size)
+                elif self.window_type == 4:
+                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                        self.beam_loc / 180 * np.pi)) * signal.hann(self.array_size)
+                        
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     theta, array_geometry)
