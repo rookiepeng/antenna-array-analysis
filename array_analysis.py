@@ -45,7 +45,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgFigure.setDownsampling(auto=True, method='peak')
         self.plotView.setXRange(-90, 90)
         self.plotView.setYRange(-80, 0)
-        self.pen = pg.mkPen('b', width=3)
+        self.pen = pg.mkPen(color=(21, 101, 192), width=3)
         self.pgFigure.setPen(self.pen)
 
         self.plotView.addItem(self.pgFigure)
@@ -100,7 +100,8 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
 
-        self.ui.comboBox_Window.addItems(['Square', 'Chebyshev','Taylor','Hamming','Hann'])
+        self.ui.comboBox_Window.addItems(
+            ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
     def arraySizeValueChanged(self, value):
         self.updateLinearArrayParameter()
