@@ -48,7 +48,7 @@ class MyApp(QtWidgets.QMainWindow):
             axis='bottom', text='Angle', units='°')
         self.plotView.setLabel(
             axis='left',
-            text='Normalized amblitude', units='dB')
+            text='Normalized amplitude', units='dB')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
 
         self.initUI()
