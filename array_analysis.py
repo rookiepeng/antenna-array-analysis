@@ -187,7 +187,13 @@ class MyApp(QtWidgets.QMainWindow):
 
 
 if __name__ == '__main__':
+    # app = QtWidgets.QApplication.instance()
+    # if not app:  # create QApplication if it doesn't exist
+    #     app = QtWidgets.QApplication(sys.argv)
     app = QtWidgets.QApplication(sys.argv)
     window = MyApp()
     window.show()
-    sys.exit(app.exec_())
+
+    ##!
+    app.exec_()
+    #sys.exit(app.exec_())
