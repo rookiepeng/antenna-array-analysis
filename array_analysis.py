@@ -44,11 +44,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView.setYRange(-80, 0)
 
         self.plotView.addItem(self.pgFigure)
+        self.plotView.setLabel(axis='bottom', text='Angle', units='°')
         self.plotView.setLabel(
-            axis='bottom', text='Angle', units='°')
-        self.plotView.setLabel(
-            axis='left',
-            text='Normalized amplitude', units='dB')
+            axis='left', text='Normalized amplitude', units='dB')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
 
         self.initUI()
@@ -72,9 +70,10 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
         self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
-        
+
         self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
-        self.ui.horizontalSlider_nbar.valueChanged.connect(self.nbarSliderMoved)
+        self.ui.horizontalSlider_nbar.valueChanged.connect(
+            self.nbarSliderMoved)
 
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
@@ -161,7 +160,7 @@ class MyApp(QtWidgets.QMainWindow):
     def sllSliderMoved(self, value):
         self.ui.spinBox_SLL.setValue(value)
         self.updateLinearArrayParameter()
-        
+
     def nbarValueChange(self, value):
         self.ui.horizontalSlider_nbar.setValue(self.ui.spinBox_nbar.value())
         self.updateLinearArrayParameter()
@@ -169,7 +168,6 @@ class MyApp(QtWidgets.QMainWindow):
     def nbarSliderMoved(self, value):
         self.ui.spinBox_nbar.setValue(value)
         self.updateLinearArrayParameter()
-
 
     def updateLinearArrayParameter(self):
         self.array_size = self.ui.spinBox_ArraySize.value()
@@ -180,9 +178,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.window_sll = self.ui.spinBox_SLL.value()
         self.window_nbar = self.ui.spinBox_nbar.value()
 
-        self.linear_array.updateData(self.array_size, self.spacing,
-                                     self.beam_loc, self.plot_step,
-                                     self.window_type, self.window_sll, self.window_nbar)
+        self.linear_array.updateData(
+            self.array_size, self.spacing, self.beam_loc, self.plot_step,
+            self.window_type, self.window_sll, self.window_nbar)
 
     def updatePattern(self, angle, pattern):
         self.pgFigure.setData(angle, pattern)

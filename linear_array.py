@@ -60,14 +60,16 @@ class Linear_Array(QObject):
                 elif self.window_type == 2:
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                         self.beam_loc / 180 * np.pi)) * taylor(
-                            self.array_size, self.window_nbar, -self.window_sll)
+                            self.array_size, self.window_nbar,
+                            -self.window_sll)
                 elif self.window_type == 3:
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * signal.hamming(self.array_size)
+                        self.beam_loc / 180 * np.pi)) * signal.hamming(
+                            self.array_size)
                 elif self.window_type == 4:
                     weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * signal.hann(self.array_size)
-                        
+                        self.beam_loc / 180 * np.pi)) * signal.hann(
+                            self.array_size)
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     theta, array_geometry)

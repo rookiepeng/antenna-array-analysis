@@ -51,22 +51,23 @@ def taylor(N, nbar=4, level=-30):
     B = 10**(-level / 20)
     A = np.log(B + np.sqrt(B**2 - 1)) / np.pi
     s2 = nbar**2 / (A**2 + (nbar - 0.5)**2)
-    ma = np.arange(1,nbar)
-    
+    ma = np.arange(1, nbar)
+
     def calc_Fm(m):
-        numer = (-1)**(m+1) * np.prod(1 - m**2/s2/(A**2 + (ma - 0.5)**2))
-        denom = 2 * np.prod([1 - m**2/j**2 for j in ma if j != m])
-        return numer/denom
+        numer = (-1)**(m + 1) * np.prod(1 - m**2 / s2 / (A**2 + (ma - 0.5)**2))
+        denom = 2 * np.prod([1 - m**2 / j**2 for j in ma if j != m])
+        return numer / denom
 
     calc_Fm_vec = np.vectorize(calc_Fm)
     Fm = calc_Fm_vec(ma)
-    
+
     def W(n):
-        return 2*np.dot(Fm, np.cos(2*np.pi*ma*(n - N/2 + 1/2)/N)) + 1
+        return 2 * np.dot(Fm, np.cos(2 * np.pi * ma *
+                                     (n - N / 2 + 1 / 2) / N)) + 1
 
     W_vec = np.vectorize(W)
     w = W_vec(range(N))
-    
+
     # normalize (Note that this is not described in the original text [1])
     scale = 1.0 / W((N - 1) / 2)
     w *= scale
