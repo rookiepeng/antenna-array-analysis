@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
     <file>res/clear.png</file>
+    <file>res/hold.png</file>
   </qresource>
 </RCC>

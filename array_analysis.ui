@@ -153,7 +153,7 @@
             <double>0.500000000000000</double>
            </property>
            <property name="maximum">
-            <double>10.000000000000000</double>
+            <double>50.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.500000000000000</double>
@@ -503,19 +503,48 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="holdButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="res.qrc">
+             <normaloff>:/icons/res/hold.png</normaloff>:/icons/res/hold.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="clearButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset resource="res.qrc">
              <normaloff>:/icons/res/clear.png</normaloff>:/icons/res/clear.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>32</width>
-             <height>32</height>
-            </size>
            </property>
           </widget>
          </item>
@@ -545,7 +574,7 @@
      <x>0</x>
      <y>0</y>
      <width>1067</width>
-     <height>26</height>
+     <height>38</height>
     </rect>
    </property>
   </widget>

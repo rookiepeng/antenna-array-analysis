@@ -18,6 +18,7 @@
 """
 
 import sys
+import res_rc
 from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtCore import QThread
 
@@ -40,6 +41,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView = self.pgCanvas.addPlot()
         self.pgFigure = pg.PlotDataItem()
         self.pgFigure.setDownsampling(auto=True, method='peak')
+        self.pgFigureHold = pg.PlotDataItem()
         self.plotView.setXRange(-90, 90)
         self.plotView.setYRange(-80, 0)
 
@@ -48,6 +50,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView.setLabel(
             axis='left', text='Normalized amplitude', units='dB')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
+
+        self.penActive = pg.mkPen(color=(179, 229, 252), width=1)
+        self.pgFigure.setPen(self.penActive)
+        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
+        self.pgFigureHold.setPen(self.penHold)
 
         self.initUI()
 
@@ -75,6 +82,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.horizontalSlider_nbar.valueChanged.connect(
             self.nbarSliderMoved)
 
+        self.ui.holdButton.clicked.connect(self.holdFigure)
+        self.ui.clearButton.clicked.connect(self.clearFigure)
+
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
         self.linear_array.patternReady.connect(self.updatePattern)
@@ -93,6 +103,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.spinBox_nbar.setVisible(False)
         self.ui.label_nbar.setVisible(False)
         self.ui.horizontalSlider_nbar.setVisible(False)
+        self.ui.clearButton.setEnabled(False)
 
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
@@ -184,6 +195,17 @@ class MyApp(QtWidgets.QMainWindow):
 
     def updatePattern(self, angle, pattern):
         self.pgFigure.setData(angle, pattern)
+        self.angle = angle
+        self.pattern = pattern
+
+    def holdFigure(self):
+        self.pgFigureHold.setData(self.angle, self.pattern)
+        self.plotView.addItem(self.pgFigureHold)
+        self.ui.clearButton.setEnabled(True)
+
+    def clearFigure(self):
+        self.plotView.removeItem(self.pgFigureHold)
+        self.ui.clearButton.setEnabled(False)
 
 
 if __name__ == '__main__':
