@@ -25,28 +25,17 @@ from PyQt5.QtCore import QThread
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
-import vispy.app
-import vispy.scene
 #pg.setConfigOption('background', 'w')
 #pg.setConfigOption('foreground', 'k')
 #pg.setConfigOption('antialias', True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
+import numpy as np
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('array_analysis.ui', self)
-
-        #####################################################
-        self.visCanvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
-        self.figureLayout.addWidget(self.visCanvas.native)
-
-        #canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
-        # self.grid = self.visCanvas.central_widget.add_grid(spacing=0)
-        # self.viewbox = self.add_view(row=0, col=1, camera='panzoom')
-
-        #####################################################
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
@@ -107,8 +96,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.updateLinearArrayParameter()
         self.ui.show()
-
-        #vispy.app.run()
 
     def initUI(self):
         self.ui.spinBox_SLL.setVisible(False)
