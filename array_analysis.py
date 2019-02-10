@@ -107,11 +107,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.clearButton.setEnabled(False)
 
         self.window_dict = {
-            0: self.Square(),
-            1: self.Chebyshev(),
-            2: self.Taylor(),
-            3: self.Hamming(),
-            4: self.Hann()
+            0: self.disableWinConfig,
+            1: self.Chebyshev,
+            2: self.Taylor,
+            3: self.disableWinConfig,
+            4: self.disableWinConfig
         }
 
         self.ui.comboBox_Window.addItems(
@@ -127,7 +127,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.updateLinearArrayParameter()
 
     def windowComboBoxChanged(self, value):
-        self.window_dict[value]
+        self.window_dict[value]()
         self.updateLinearArrayParameter()
 
     def sllValueChange(self, value):
@@ -173,7 +173,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView.removeItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(False)
 
-    def Square(self):
+    def disableWinConfig(self):
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
@@ -197,21 +197,6 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_nbar.setVisible(True)
         self.ui.horizontalSlider_nbar.setVisible(True)
 
-    def Hamming(self):
-        self.ui.spinBox_SLL.setVisible(False)
-        self.ui.label_SLL.setVisible(False)
-        self.ui.horizontalSlider_SLL.setVisible(False)
-        self.ui.spinBox_nbar.setVisible(False)
-        self.ui.label_nbar.setVisible(False)
-        self.ui.horizontalSlider_nbar.setVisible(False)
-
-    def Hann(self):
-        self.ui.spinBox_SLL.setVisible(False)
-        self.ui.label_SLL.setVisible(False)
-        self.ui.horizontalSlider_SLL.setVisible(False)
-        self.ui.spinBox_nbar.setVisible(False)
-        self.ui.label_nbar.setVisible(False)
-        self.ui.horizontalSlider_nbar.setVisible(False)
 
 if __name__ == '__main__':
     # app = QtWidgets.QApplication.instance()
