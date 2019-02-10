@@ -32,6 +32,7 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 import numpy as np
 
+
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
@@ -41,7 +42,6 @@ class MyApp(QtWidgets.QMainWindow):
         self.figureLayout.addWidget(self.pgCanvas)
         self.plotView = self.pgCanvas.addPlot()
         self.pgFigure = pg.PlotDataItem()
-        self.pgFigure.setDownsampling(auto=True, method='peak')
         self.pgFigureHold = pg.PlotDataItem()
         self.plotView.setXRange(-90, 90)
         self.plotView.setYRange(-80, 0)
