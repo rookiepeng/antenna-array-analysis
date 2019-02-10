@@ -19,8 +19,8 @@
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 import numpy as np
-from scipy import signal
-import time
+from scipy.signal import chebwin, hamming, hann
+from time import sleep
 from taylor_win import taylor
 
 
@@ -39,10 +39,10 @@ class Linear_Array(QObject):
         self.window_nbar = window_nbar
         self.window_dict = {
             0: 1,
-            1: signal.chebwin(self.array_size, at=self.window_sll),
+            1: chebwin(self.array_size, at=self.window_sll),
             2: taylor(self.array_size, self.window_nbar, -self.window_sll),
-            3: signal.hamming(self.array_size),
-            4: signal.hann(self.array_size)
+            3: hamming(self.array_size),
+            4: hann(self.array_size)
         }
         self.new_data = True
 
@@ -70,4 +70,4 @@ class Linear_Array(QObject):
 
                 self.patternReady.emit(theta, AF - np.max(AF))
 
-            time.sleep(0.01)
+            sleep(0.01)
