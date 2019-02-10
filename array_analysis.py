@@ -35,7 +35,7 @@ import numpy as np
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
-        self.ui = uic.loadUi('array_analysis.ui', self)
+        self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
