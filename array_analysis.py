@@ -106,6 +106,14 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.horizontalSlider_nbar.setVisible(False)
         self.ui.clearButton.setEnabled(False)
 
+        self.window_dict = {
+            0: self.Square(),
+            1: self.Chebyshev(),
+            2: self.Taylor(),
+            3: self.Hamming(),
+            4: self.Hann()
+        }
+
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
@@ -128,41 +136,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.updateLinearArrayParameter()
 
     def windowComboBoxChanged(self, value):
-        if value == 0:
-            self.ui.spinBox_SLL.setVisible(False)
-            self.ui.label_SLL.setVisible(False)
-            self.ui.horizontalSlider_SLL.setVisible(False)
-            self.ui.spinBox_nbar.setVisible(False)
-            self.ui.label_nbar.setVisible(False)
-            self.ui.horizontalSlider_nbar.setVisible(False)
-        elif value == 1:
-            self.ui.spinBox_SLL.setVisible(True)
-            self.ui.label_SLL.setVisible(True)
-            self.ui.horizontalSlider_SLL.setVisible(True)
-            self.ui.spinBox_nbar.setVisible(False)
-            self.ui.label_nbar.setVisible(False)
-            self.ui.horizontalSlider_nbar.setVisible(False)
-        elif value == 2:
-            self.ui.spinBox_SLL.setVisible(True)
-            self.ui.label_SLL.setVisible(True)
-            self.ui.horizontalSlider_SLL.setVisible(True)
-            self.ui.spinBox_nbar.setVisible(True)
-            self.ui.label_nbar.setVisible(True)
-            self.ui.horizontalSlider_nbar.setVisible(True)
-        elif value == 3:
-            self.ui.spinBox_SLL.setVisible(False)
-            self.ui.label_SLL.setVisible(False)
-            self.ui.horizontalSlider_SLL.setVisible(False)
-            self.ui.spinBox_nbar.setVisible(False)
-            self.ui.label_nbar.setVisible(False)
-            self.ui.horizontalSlider_nbar.setVisible(False)
-        elif value == 4:
-            self.ui.spinBox_SLL.setVisible(False)
-            self.ui.label_SLL.setVisible(False)
-            self.ui.horizontalSlider_SLL.setVisible(False)
-            self.ui.spinBox_nbar.setVisible(False)
-            self.ui.label_nbar.setVisible(False)
-            self.ui.horizontalSlider_nbar.setVisible(False)
+        self.window_dict[value]
         self.updateLinearArrayParameter()
 
     def sllValueChange(self, value):
@@ -208,6 +182,45 @@ class MyApp(QtWidgets.QMainWindow):
         self.plotView.removeItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(False)
 
+    def Square(self):
+        self.ui.spinBox_SLL.setVisible(False)
+        self.ui.label_SLL.setVisible(False)
+        self.ui.horizontalSlider_SLL.setVisible(False)
+        self.ui.spinBox_nbar.setVisible(False)
+        self.ui.label_nbar.setVisible(False)
+        self.ui.horizontalSlider_nbar.setVisible(False)
+
+    def Chebyshev(self):
+        self.ui.spinBox_SLL.setVisible(True)
+        self.ui.label_SLL.setVisible(True)
+        self.ui.horizontalSlider_SLL.setVisible(True)
+        self.ui.spinBox_nbar.setVisible(False)
+        self.ui.label_nbar.setVisible(False)
+        self.ui.horizontalSlider_nbar.setVisible(False)
+
+    def Taylor(self):
+        self.ui.spinBox_SLL.setVisible(True)
+        self.ui.label_SLL.setVisible(True)
+        self.ui.horizontalSlider_SLL.setVisible(True)
+        self.ui.spinBox_nbar.setVisible(True)
+        self.ui.label_nbar.setVisible(True)
+        self.ui.horizontalSlider_nbar.setVisible(True)
+
+    def Hamming(self):
+        self.ui.spinBox_SLL.setVisible(False)
+        self.ui.label_SLL.setVisible(False)
+        self.ui.horizontalSlider_SLL.setVisible(False)
+        self.ui.spinBox_nbar.setVisible(False)
+        self.ui.label_nbar.setVisible(False)
+        self.ui.horizontalSlider_nbar.setVisible(False)
+
+    def Hann(self):
+        self.ui.spinBox_SLL.setVisible(False)
+        self.ui.label_SLL.setVisible(False)
+        self.ui.horizontalSlider_SLL.setVisible(False)
+        self.ui.spinBox_nbar.setVisible(False)
+        self.ui.label_nbar.setVisible(False)
+        self.ui.horizontalSlider_nbar.setVisible(False)
 
 if __name__ == '__main__':
     # app = QtWidgets.QApplication.instance()
