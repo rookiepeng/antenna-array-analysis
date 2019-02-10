@@ -60,13 +60,13 @@ class MyApp(QtWidgets.QMainWindow):
         self.initUI()
 
         self.ui.spinBox_ArraySize.valueChanged.connect(
-            self.arraySizeValueChanged)
+            self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.spacingValueChanged)
+            self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_Step.valueChanged.connect(
-            self.plotStepValueChanged)
+            self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steeringAngleValueChanged)
@@ -116,15 +116,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
-
-    def arraySizeValueChanged(self, value):
-        self.updateLinearArrayParameter()
-
-    def spacingValueChanged(self, value):
-        self.updateLinearArrayParameter()
-
-    def plotStepValueChanged(self):
-        self.updateLinearArrayParameter()
 
     def steeringAngleValueChanged(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(
