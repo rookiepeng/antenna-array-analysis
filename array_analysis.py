@@ -52,7 +52,7 @@ class MyApp(QtWidgets.QMainWindow):
             axis='left', text='Normalized amplitude', units='dB')
         self.plotView.showGrid(x=True, y=True, alpha=0.5)
 
-        self.penActive = pg.mkPen(color=(179, 229, 252), width=1)
+        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.pgFigure.setPen(self.penActive)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
