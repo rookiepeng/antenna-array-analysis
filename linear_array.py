@@ -37,6 +37,13 @@ class Linear_Array(QObject):
         self.window_type = window_type
         self.window_sll = window_sll
         self.window_nbar = window_nbar
+        self.window_dict = {
+            0: 1,
+            1: signal.chebwin(self.array_size, at=self.window_sll),
+            2: taylor(self.array_size, self.window_nbar, -self.window_sll),
+            3: signal.hamming(self.array_size),
+            4: signal.hann(self.array_size)
+        }
         self.new_data = True
 
     @pyqtSlot()
@@ -50,26 +57,9 @@ class Linear_Array(QObject):
                 array_geometry = np.arange(0, self.spacing * self.array_size,
                                            self.spacing)
 
-                if self.window_type == 0:
-                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi))
-                elif self.window_type == 1:
-                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * signal.chebwin(
-                            self.array_size, at=self.window_sll)
-                elif self.window_type == 2:
-                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * taylor(
-                            self.array_size, self.window_nbar,
-                            -self.window_sll)
-                elif self.window_type == 3:
-                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * signal.hamming(
-                            self.array_size)
-                elif self.window_type == 4:
-                    weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
-                        self.beam_loc / 180 * np.pi)) * signal.hann(
-                            self.array_size)
+                weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
+                    self.beam_loc / 180 * np.pi)) * self.window_dict[
+                        self.window_type]
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     theta, array_geometry)
