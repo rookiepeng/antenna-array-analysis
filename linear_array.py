@@ -28,6 +28,16 @@ class Linear_Array(QObject):
     patternReady = pyqtSignal(np.ndarray, np.ndarray)
     new_data = False
 
+    def __init__(self):
+        super(Linear_Array, self).__init__()
+        self.window_dict = {
+            0: self.square_win,
+            1: self.cheb_win,
+            2: self.taylor_win,
+            3: self.hamming_win,
+            4: self.hann_win
+        }
+
     def updateData(self, array_size, spacing, beam_loc, plot_step, window_type,
                    window_sll, window_nbar):
         self.array_size = array_size
@@ -37,14 +47,22 @@ class Linear_Array(QObject):
         self.window_type = window_type
         self.window_sll = window_sll
         self.window_nbar = window_nbar
-        self.window_dict = {
-            0: 1,
-            1: chebwin(self.array_size, at=self.window_sll),
-            2: taylor(self.array_size, self.window_nbar, -self.window_sll),
-            3: hamming(self.array_size),
-            4: hann(self.array_size)
-        }
         self.new_data = True
+
+    def square_win(self, array_size=1, sll=0, nbar=0):
+        return 1
+
+    def cheb_win(self, array_size, sll, nbar=0):
+        return chebwin(array_size, at=sll)
+
+    def taylor_win(self, array_size, sll, nbar):
+        return taylor(array_size, nbar, -sll)
+
+    def hamming_win(self, array_size, sll=0, nbar=0):
+        return hamming(array_size)
+
+    def hann_win(self, array_size, sll=0, nbar=0):
+        return hann(array_size)
 
     @pyqtSlot()
     def calculatePattern(self):
@@ -59,7 +77,8 @@ class Linear_Array(QObject):
 
                 weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                     self.beam_loc / 180 * np.pi)) * self.window_dict[
-                        self.window_type]
+                        self.window_type](self.array_size, self.window_sll,
+                                          self.window_nbar)
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     theta, array_geometry)
