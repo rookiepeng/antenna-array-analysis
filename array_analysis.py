@@ -24,17 +24,61 @@ from PyQt5.QtCore import QThread
 
 from linear_array import Linear_Array
 
+import vispy.app 
+import vispy.scene 
 import pyqtgraph as pg
 #pg.setConfigOption('background', 'w')
 #pg.setConfigOption('foreground', 'k')
 #pg.setConfigOption('antialias', True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
+import numpy as np 
+
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
+        
+        ##################################################### 
+        self.visCanvas = vispy.scene.SceneCanvas(keys='interactive', show=True) 
+        self.figureLayout.addWidget(self.visCanvas.native)
+        
+        self.grid = self.visCanvas.central_widget.add_grid(spacing=0)
+
+        self.viewbox = self.grid.add_view(row=0, col=1, camera='panzoom')
+        
+        # add some axes
+        x_axis = vispy.scene.AxisWidget(orientation='bottom')
+        x_axis.stretch = (1, 0.1)
+        self.grid.add_widget(x_axis, row=1, col=1)
+        x_axis.link_view(self.viewbox)
+        y_axis = vispy.scene.AxisWidget(orientation='left')
+        y_axis.stretch = (0.1, 1)
+        self.grid.add_widget(y_axis, row=0, col=0)
+        y_axis.link_view(self.viewbox)
+        
+        N = 200
+        pos = np.zeros((N, 2), dtype=np.float32)
+        x_lim = [50., 750.]
+        y_lim = [-2., 2.]
+        pos[:, 0] = np.linspace(x_lim[0], x_lim[1], N)
+        pos[:, 1] = np.random.normal(size=N)
+        
+        # color array
+        color = np.ones((N, 4), dtype=np.float32)
+        color[:, 0] = np.linspace(0, 1, N)
+        color[:, 1] = color[::-1, 0]
+        
+        # add a line plot inside the viewbox
+        line = vispy.scene.visuals.Line(pos, color, parent=self.viewbox.scene)
+        
+        line.set_data(pos=pos, color=color)
+        
+        # auto-scale to see the whole line.
+        self.viewbox.camera.set_range()
+ 
+        ##################################################### 
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
