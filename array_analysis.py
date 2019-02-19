@@ -30,6 +30,7 @@ import pyqtgraph as pg
 #pg.setConfigOption('antialias', True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
+import numpy as np
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
@@ -38,7 +39,8 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
-        self.plotView = self.pgCanvas.addPlot()
+
+        self.plotView = self.pgCanvas.addPlot(row=0, col=0)
         self.pgFigure = pg.PlotDataItem()
         self.pgFigureHold = pg.PlotDataItem()
         self.plotView.setXRange(-90, 90)
@@ -54,6 +56,32 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgFigure.setPen(self.penActive)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
+
+#############
+        self.testPlot = self.pgCanvas.addPlot(row=1, col=0)
+
+        self.testPlot.setAspectLocked()
+
+        self.testPlot.hideAxis('left')
+        self.testPlot.hideAxis('bottom')
+
+        # Add polar grid lines
+        self.testPlot.addLine(x=0, pen=0.2)
+        self.testPlot.addLine(y=0, pen=0.2)
+        for r in range(2, 20, 2):
+            circle = pg.QtGui.QGraphicsEllipseItem(-r, -r, r * 2, r * 2)
+            circle.setPen(pg.mkPen(0.2))
+            self.testPlot.addItem(circle)
+
+        # make polar data
+        theta = np.linspace(0, 2 * np.pi, 100)
+        radius = np.random.normal(loc=10, size=100)
+
+        # Transform to cartesian and plot
+        x = radius * np.cos(theta)
+        y = radius * np.sin(theta)
+        self.testPlot.plot(x, y)
+######################
 
         self.initUI()
 
