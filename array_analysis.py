@@ -25,12 +25,14 @@ from PyQt5.QtCore import QThread
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
-#pg.setConfigOption('background', 'w')
-#pg.setConfigOption('foreground', 'k')
-#pg.setConfigOption('antialias', True)
+
+# pg.setConfigOption('background', 'w')
+# pg.setConfigOption('foreground', 'k')
+# pg.setConfigOption('antialias', True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 import numpy as np
+
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
@@ -57,7 +59,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
 
-#############
+        #############
         self.testPlot = self.pgCanvas.addPlot(row=1, col=0)
 
         self.testPlot.setAspectLocked()
@@ -81,36 +83,9 @@ class MyApp(QtWidgets.QMainWindow):
         x = radius * np.cos(theta)
         y = radius * np.sin(theta)
         self.testPlot.plot(x, y)
-######################
+        ######################
 
         self.initUI()
-
-        self.ui.spinBox_ArraySize.valueChanged.connect(
-            self.updateLinearArrayParameter)
-
-        self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.updateLinearArrayParameter)
-
-        self.ui.doubleSpinBox_Step.valueChanged.connect(
-            self.updateLinearArrayParameter)
-
-        self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
-            self.steeringAngleValueChanged)
-        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(
-            self.steeringAngleSliderMoved)
-
-        self.ui.comboBox_Window.currentIndexChanged.connect(
-            self.windowComboBoxChanged)
-
-        self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
-        self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
-
-        self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
-        self.ui.horizontalSlider_nbar.valueChanged.connect(
-            self.nbarSliderMoved)
-
-        self.ui.holdButton.clicked.connect(self.holdFigure)
-        self.ui.clearButton.clicked.connect(self.clearFigure)
 
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
@@ -142,6 +117,33 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
+
+        self.ui.spinBox_ArraySize.valueChanged.connect(
+            self.updateLinearArrayParameter)
+
+        self.ui.doubleSpinBox_Spacing.valueChanged.connect(
+            self.updateLinearArrayParameter)
+
+        self.ui.doubleSpinBox_Step.valueChanged.connect(
+            self.updateLinearArrayParameter)
+
+        self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
+            self.steeringAngleValueChanged)
+        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(
+            self.steeringAngleSliderMoved)
+
+        self.ui.comboBox_Window.currentIndexChanged.connect(
+            self.windowComboBoxChanged)
+
+        self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
+        self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
+
+        self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
+        self.ui.horizontalSlider_nbar.valueChanged.connect(
+            self.nbarSliderMoved)
+
+        self.ui.holdButton.clicked.connect(self.holdFigure)
+        self.ui.clearButton.clicked.connect(self.clearFigure)
 
     def steeringAngleValueChanged(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(
