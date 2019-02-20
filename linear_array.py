@@ -70,8 +70,6 @@ class Linear_Array(QObject):
             if self.new_data:
                 self.new_data = False
 
-                #theta = np.arange(-90, 90, self.plot_step)
-
                 array_geometry = np.arange(0, self.spacing * self.array_size,
                                            self.spacing)
 

@@ -182,7 +182,6 @@ class MyApp(QtWidgets.QMainWindow):
         self.array_size = self.ui.spinBox_ArraySize.value()
         self.spacing = self.ui.doubleSpinBox_Spacing.value()
         self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
-        #self.plot_step = self.ui.doubleSpinBox_Step.value()
         self.window_type = self.ui.comboBox_Window.currentIndex()
         self.window_sll = self.ui.spinBox_SLL.value()
         self.window_nbar = self.ui.spinBox_nbar.value()
