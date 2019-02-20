@@ -66,9 +66,7 @@ class MyApp(QtWidgets.QMainWindow):
 
         #############
         self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
-
         self.testPlot.setAspectLocked()
-
         self.testPlot.hideAxis('left')
         self.testPlot.hideAxis('bottom')
 
@@ -81,13 +79,16 @@ class MyApp(QtWidgets.QMainWindow):
             self.testPlot.addItem(circle)
 
         # make polar data
-        theta = np.linspace(0, 2 * np.pi, 100)
-        radius = np.random.normal(loc=10, size=100)
+        # theta = np.linspace(0, 2 * np.pi, 100)
+        # radius = np.random.normal(loc=10, size=100)
 
-        # Transform to cartesian and plot
-        x = radius * np.cos(theta)
-        y = radius * np.sin(theta)
-        self.testPlot.plot(x, y)
+        # # Transform to cartesian and plot
+        # x = radius * np.cos(theta)
+        # y = radius * np.sin(theta)
+        # self.testPlot.plot(x, y)
+
+        self.pgPolarPlot = pg.PlotDataItem()
+        self.testPlot.addItem(self.pgPolarPlot)
         ######################
 
         self.initUI()
@@ -95,6 +96,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
         self.linear_array.patternReady.connect(self.updatePattern)
+        self.linear_array.patternReady.connect(self.updatePolarPattern)
         self.linear_array_thread.started.connect(
             self.linear_array.calculatePattern)
         self.linear_array.moveToThread(self.linear_array_thread)
@@ -194,6 +196,14 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgFigure.setData(angle, pattern)
         self.angle = angle
         self.pattern = pattern
+
+    def updatePolarPattern(self, angle, pattern):
+        pattern=pattern+60
+        pattern[np.where(pattern<0)]=0
+        x = pattern * np.sin(angle/180*np.pi)
+        y = pattern * np.cos(angle/180*np.pi)
+        # self.testPlot.plot(x, y)
+        self.pgPolarPlot.setData(x,y)
 
     def holdFigure(self):
         self.pgFigureHold.setData(self.angle, self.pattern)
