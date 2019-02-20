@@ -59,7 +59,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
 
-        self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=10, minXRange=0.1, minYRange=0.1)
+        self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
 
 
         #############
