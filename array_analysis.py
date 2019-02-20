@@ -42,7 +42,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
 
-        self.plotView = self.pgCanvas.addPlot(row=0, col=0)
+        self.plotView = self.pgCanvas.addPlot(row=0, col=0, rowspan=1)
         self.pgFigure = pg.PlotDataItem()
         self.pgFigureHold = pg.PlotDataItem()
         self.plotView.setXRange(-90, 90)
@@ -59,8 +59,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
 
+        self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=10, minXRange=0.1, minYRange=0.1)
+
+
         #############
-        self.testPlot = self.pgCanvas.addPlot(row=1, col=0)
+        self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
 
         self.testPlot.setAspectLocked()
 
