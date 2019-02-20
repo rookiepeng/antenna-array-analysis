@@ -61,6 +61,8 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
 
+        self.plotView.sigXRangeChanged.connect(self.plotViewXRangeChanged)
+
 
         #############
         self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
@@ -102,6 +104,8 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.show()
 
     def initUI(self):
+        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
@@ -125,9 +129,6 @@ class MyApp(QtWidgets.QMainWindow):
             self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.updateLinearArrayParameter)
-
-        self.ui.doubleSpinBox_Step.valueChanged.connect(
             self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
@@ -181,13 +182,13 @@ class MyApp(QtWidgets.QMainWindow):
         self.array_size = self.ui.spinBox_ArraySize.value()
         self.spacing = self.ui.doubleSpinBox_Spacing.value()
         self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
-        self.plot_step = self.ui.doubleSpinBox_Step.value()
+        #self.plot_step = self.ui.doubleSpinBox_Step.value()
         self.window_type = self.ui.comboBox_Window.currentIndex()
         self.window_sll = self.ui.spinBox_SLL.value()
         self.window_nbar = self.ui.spinBox_nbar.value()
 
         self.linear_array.updateData(
-            self.array_size, self.spacing, self.beam_loc, self.plot_step,
+            self.array_size, self.spacing, self.beam_loc, self.theta,
             self.window_type, self.window_sll, self.window_nbar)
 
     def updatePattern(self, angle, pattern):
@@ -227,6 +228,10 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.spinBox_nbar.setVisible(True)
         self.ui.label_nbar.setVisible(True)
         self.ui.horizontalSlider_nbar.setVisible(True)
+
+    def plotViewXRangeChanged(self, item):
+        self.theta = np.linspace(item.viewRange()[0][0], item.viewRange()[0][1], num=1801, endpoint=True)
+        self.updateLinearArrayParameter()
 
 
 if __name__ == '__main__':

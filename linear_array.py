@@ -38,12 +38,12 @@ class Linear_Array(QObject):
             4: self.hann_win
         }
 
-    def updateData(self, array_size, spacing, beam_loc, plot_step, window_type,
+    def updateData(self, array_size, spacing, beam_loc, theta, window_type,
                    window_sll, window_nbar):
         self.array_size = array_size
         self.spacing = spacing
         self.beam_loc = beam_loc
-        self.plot_step = plot_step
+        self.theta = theta
         self.window_type = window_type
         self.window_sll = window_sll
         self.window_nbar = window_nbar
@@ -70,7 +70,7 @@ class Linear_Array(QObject):
             if self.new_data:
                 self.new_data = False
 
-                theta = np.arange(-90, 90, self.plot_step)
+                #theta = np.arange(-90, 90, self.plot_step)
 
                 array_geometry = np.arange(0, self.spacing * self.array_size,
                                            self.spacing)
@@ -80,13 +80,15 @@ class Linear_Array(QObject):
                         self.window_type](self.array_size, self.window_sll,
                                           self.window_nbar)
 
+                weight=weight/np.sum(np.abs(weight))
+
                 theta_grid, array_geometry_grid = np.meshgrid(
-                    theta, array_geometry)
+                    self.theta, array_geometry)
                 A = np.exp(1j * 2 * np.pi * array_geometry_grid * np.sin(
                     theta_grid / 180 * np.pi))
 
                 AF = 20 * np.log10(np.abs(np.matmul(weight, A)) + 0.00001)
 
-                self.patternReady.emit(theta, AF - np.max(AF))
+                self.patternReady.emit(self.theta, AF)
 
             sleep(0.01)
