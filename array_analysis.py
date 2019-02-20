@@ -63,7 +63,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.plotView.sigXRangeChanged.connect(self.plotViewXRangeChanged)
 
-
         #############
         self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
         self.testPlot.setAspectLocked()
@@ -198,12 +197,12 @@ class MyApp(QtWidgets.QMainWindow):
         self.pattern = pattern
 
     def updatePolarPattern(self, angle, pattern):
-        pattern=pattern+60
-        pattern[np.where(pattern<0)]=0
-        x = pattern * np.sin(angle/180*np.pi)
-        y = pattern * np.cos(angle/180*np.pi)
+        pattern = pattern + 60
+        pattern[np.where(pattern < 0)] = 0
+        x = pattern * np.sin(angle / 180 * np.pi)
+        y = pattern * np.cos(angle / 180 * np.pi)
         # self.testPlot.plot(x, y)
-        self.pgPolarPlot.setData(x,y)
+        self.pgPolarPlot.setData(x, y)
 
     def holdFigure(self):
         self.pgFigureHold.setData(self.angle, self.pattern)
