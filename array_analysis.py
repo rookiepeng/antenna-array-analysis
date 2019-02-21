@@ -37,6 +37,14 @@ import numpy as np
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
+        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.window_dict = {
+            0: self.disableWinConfig,
+            1: self.chebyshev,
+            2: self.taylor,
+            3: self.disableWinConfig,
+            4: self.disableWinConfig
+        }
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
@@ -61,7 +69,7 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
 
-        self.plotView.sigXRangeChanged.connect(self.plotViewXRangeChanged)
+        self.plotView.sigXRangeChanged.connect(self.plotview_x_range_changed)
 
         #############
         self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
@@ -77,20 +85,14 @@ class MyApp(QtWidgets.QMainWindow):
             circle.setPen(pg.mkPen(0.2))
             self.testPlot.addItem(circle)
 
-        # make polar data
-        # theta = np.linspace(0, 2 * np.pi, 100)
-        # radius = np.random.normal(loc=10, size=100)
-
-        # # Transform to cartesian and plot
-        # x = radius * np.cos(theta)
-        # y = radius * np.sin(theta)
-        # self.testPlot.plot(x, y)
-
         self.pgPolarPlot = pg.PlotDataItem()
         self.testPlot.addItem(self.pgPolarPlot)
+
+        # self.pgCanvas.removeItem(self.testPlot)
+        # self.pgCanvas.addItem(self.testPlot)
         ######################
 
-        self.initUI()
+        self.init_ui()
 
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
@@ -104,9 +106,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.updateLinearArrayParameter()
         self.ui.show()
 
-    def initUI(self):
-        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-
+    def init_ui(self):
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
@@ -114,14 +114,6 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_nbar.setVisible(False)
         self.ui.horizontalSlider_nbar.setVisible(False)
         self.ui.clearButton.setEnabled(False)
-
-        self.window_dict = {
-            0: self.disableWinConfig,
-            1: self.Chebyshev,
-            2: self.Taylor,
-            3: self.disableWinConfig,
-            4: self.disableWinConfig
-        }
 
         self.ui.comboBox_Window.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
@@ -133,14 +125,14 @@ class MyApp(QtWidgets.QMainWindow):
             self.updateLinearArrayParameter)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
-            self.steeringAngleValueChanged)
+            self.steering_angle_value_changed)
         self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(
-            self.steeringAngleSliderMoved)
+            self.steering_angle_slider_moved)
 
         self.ui.comboBox_Window.currentIndexChanged.connect(
-            self.windowComboBoxChanged)
+            self.window_combobox_changed)
 
-        self.ui.spinBox_SLL.valueChanged.connect(self.sllValueChange)
+        self.ui.spinBox_SLL.valueChanged.connect(self.sll_value_change)
         self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
 
         self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
@@ -150,20 +142,20 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.holdButton.clicked.connect(self.holdFigure)
         self.ui.clearButton.clicked.connect(self.clearFigure)
 
-    def steeringAngleValueChanged(self, value):
+    def steering_angle_value_changed(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(
             self.ui.doubleSpinBox_SteeringAngle.value() * 10)
         self.updateLinearArrayParameter()
 
-    def steeringAngleSliderMoved(self, value):
+    def steering_angle_slider_moved(self, value):
         self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
         self.updateLinearArrayParameter()
 
-    def windowComboBoxChanged(self, value):
+    def window_combobox_changed(self, value):
         self.window_dict[value]()
         self.updateLinearArrayParameter()
 
-    def sllValueChange(self, value):
+    def sll_value_change(self, value):
         self.ui.horizontalSlider_SLL.setValue(self.ui.spinBox_SLL.value())
         self.updateLinearArrayParameter()
 
@@ -221,7 +213,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_nbar.setVisible(False)
         self.ui.horizontalSlider_nbar.setVisible(False)
 
-    def Chebyshev(self):
+    def chebyshev(self):
         self.ui.spinBox_SLL.setVisible(True)
         self.ui.label_SLL.setVisible(True)
         self.ui.horizontalSlider_SLL.setVisible(True)
@@ -229,7 +221,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_nbar.setVisible(False)
         self.ui.horizontalSlider_nbar.setVisible(False)
 
-    def Taylor(self):
+    def taylor(self):
         self.ui.spinBox_SLL.setVisible(True)
         self.ui.label_SLL.setVisible(True)
         self.ui.horizontalSlider_SLL.setVisible(True)
@@ -237,7 +229,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_nbar.setVisible(True)
         self.ui.horizontalSlider_nbar.setVisible(True)
 
-    def plotViewXRangeChanged(self, item):
+    def plotview_x_range_changed(self, item):
         self.theta = np.linspace(item.viewRange()[0][0], item.viewRange()[0][1], num=1801, endpoint=True)
         self.updateLinearArrayParameter()
 
