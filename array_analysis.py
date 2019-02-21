@@ -50,47 +50,52 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgCanvas = pg.GraphicsLayoutWidget()
         self.figureLayout.addWidget(self.pgCanvas)
 
-        self.plotView = self.pgCanvas.addPlot(row=0, col=0, rowspan=1)
+        self.cartesianPlot = pg.PlotItem()
+
+        # self.plotView = self.pgCanvas.addPlot(row=0, col=0, rowspan=1)
         self.pgFigure = pg.PlotDataItem()
         self.pgFigureHold = pg.PlotDataItem()
-        self.plotView.setXRange(-90, 90)
-        self.plotView.setYRange(-80, 0)
+        self.cartesianPlot.setXRange(-90, 90)
+        self.cartesianPlot.setYRange(-80, 0)
 
-        self.plotView.addItem(self.pgFigure)
-        self.plotView.setLabel(axis='bottom', text='Angle', units='°')
-        self.plotView.setLabel(
+        self.cartesianPlot.addItem(self.pgFigure)
+        self.cartesianPlot.setLabel(axis='bottom', text='Angle', units='°')
+        self.cartesianPlot.setLabel(
             axis='left', text='Normalized amplitude', units='dB')
-        self.plotView.showGrid(x=True, y=True, alpha=0.5)
+        self.cartesianPlot.showGrid(x=True, y=True, alpha=0.5)
 
         self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.pgFigure.setPen(self.penActive)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
         self.pgFigureHold.setPen(self.penHold)
 
-        self.plotView.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
+        self.cartesianPlot.setLimits(xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
 
-        self.plotView.sigXRangeChanged.connect(self.plotview_x_range_changed)
+        self.cartesianPlot.sigXRangeChanged.connect(self.plotview_x_range_changed)
 
         #############
-        self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
-        self.testPlot.setAspectLocked()
-        self.testPlot.hideAxis('left')
-        self.testPlot.hideAxis('bottom')
+        self.polarPlot = pg.PlotItem()
+        # self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
+        self.polarPlot.setAspectLocked()
+        self.polarPlot.hideAxis('left')
+        self.polarPlot.hideAxis('bottom')
 
         # Add polar grid lines
-        self.testPlot.addLine(x=0, pen=0.2)
-        self.testPlot.addLine(y=0, pen=0.2)
+        self.polarPlot.addLine(x=0, pen=0.2)
+        self.polarPlot.addLine(y=0, pen=0.2)
         for r in range(2, 20, 2):
             circle = pg.QtGui.QGraphicsEllipseItem(-r, -r, r * 2, r * 2)
             circle.setPen(pg.mkPen(0.2))
-            self.testPlot.addItem(circle)
+            self.polarPlot.addItem(circle)
 
         self.pgPolarPlot = pg.PlotDataItem()
-        self.testPlot.addItem(self.pgPolarPlot)
+        self.polarPlot.addItem(self.pgPolarPlot)
 
         # self.pgCanvas.removeItem(self.testPlot)
         # self.pgCanvas.addItem(self.testPlot)
         ######################
+
+        self.show_cartesian_plot()
 
         self.init_ui()
 
@@ -198,11 +203,11 @@ class MyApp(QtWidgets.QMainWindow):
 
     def holdFigure(self):
         self.pgFigureHold.setData(self.angle, self.pattern)
-        self.plotView.addItem(self.pgFigureHold)
+        self.cartesianPlot.addItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(True)
 
     def clearFigure(self):
-        self.plotView.removeItem(self.pgFigureHold)
+        self.cartesianPlot.removeItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(False)
 
     def disableWinConfig(self):
@@ -232,6 +237,20 @@ class MyApp(QtWidgets.QMainWindow):
     def plotview_x_range_changed(self, item):
         self.theta = np.linspace(item.viewRange()[0][0], item.viewRange()[0][1], num=1801, endpoint=True)
         self.updateLinearArrayParameter()
+
+    def show_cartesian_plot(self):
+        self.pgCanvas.addItem(self.cartesianPlot)
+
+    def show_polar_plot(self):
+        self.pgCanvas.addItem(self.polarPlot)
+
+    def switch_to_cartesian_plot(self):
+        self.pgCanvas.removeItem(self.polarPlot)
+        self.pgCanvas.addItem(self.cartesianPlot)
+
+    def switch_to_polar_plot(self):
+        self.pgCanvas.removeItem(self.cartesianPlot)
+        self.pgCanvas.addItem(self.polarPlot)
 
 
 if __name__ == '__main__':
