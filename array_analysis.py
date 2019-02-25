@@ -84,8 +84,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.polarPlot.hideAxis('bottom')
 
         # Add polar grid lines
-        self.polarPlot.addLine(x=0, pen=0.2)
-        self.polarPlot.addLine(y=0, pen=0.2)
+
 
         self.circleList = []
         self.circleLabel = []
@@ -110,7 +109,10 @@ class MyApp(QtWidgets.QMainWindow):
                 self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
             self.polarPlot.addItem(self.circleLabel[circle_idx + 1])
 
+        self.polarPlot.addLine(x=0, pen=0.6)
+        self.polarPlot.addLine(y=0, pen=0.6)
         self.pgPolarPlot = pg.PlotDataItem()
+        self.pgPolarPlot.setPen(self.penActive)
         self.polarPlot.addItem(self.pgPolarPlot)
         self.polarPlot.setMouseEnabled(x=False, y=False)
 
