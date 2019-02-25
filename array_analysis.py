@@ -44,6 +44,8 @@ class MyApp(QtWidgets.QMainWindow):
             3: self.disable_window_config,
             4: self.disable_window_config
         }
+        self.plotType = 'Cartesian'
+
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
         self.pgCanvas = pg.GraphicsLayoutWidget()
@@ -252,20 +254,31 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter()
 
     def cartesian_plot_toggled(self, checked):
-        if checked:
+        if checked and self.plotType is not 'Cartesian':
             self.pgCanvas.removeItem(self.polarPlot)
             self.pgCanvas.addItem(self.cartesianPlot)
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
+            self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+            self.update_linear_array_parameter()
+            self.cartesianPlot.setXRange(-90, 90)
+            self.cartesianPlot.setYRange(-80, 0)
+
+            self.plotType = 'Cartesian'
+
     def polar_plot_toggled(self, checked):
-        if checked:
+        if checked and self.plotType is not 'Polar':
             self.pgCanvas.removeItem(self.cartesianPlot)
             self.pgCanvas.addItem(self.polarPlot)
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
+
+            self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+            self.update_linear_array_parameter()
+            self.plotType = 'Polar'
 
     def show_cartesian_plot(self):
         self.pgCanvas.addItem(self.cartesianPlot)
