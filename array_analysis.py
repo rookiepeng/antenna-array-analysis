@@ -85,16 +85,28 @@ class MyApp(QtWidgets.QMainWindow):
         self.polarPlot.addLine(y=0, pen=0.2)
 
         self.circleList = []
-        for circle_idx in range(0, 5):
-            self.circleList.append(pg.QtGui.QGraphicsEllipseItem(-self.ampOffset + self.ampOffset / 5 * circle_idx,
-                                                                 -self.ampOffset + self.ampOffset / 5 * circle_idx,
-                                                                 (self.ampOffset - self.ampOffset / 5 * circle_idx) * 2,
+        self.circleLabel = []
+        self.circleLabel.append(pg.TextItem('0 dB'))
+        self.polarPlot.addItem(self.circleLabel[0])
+        self.circleLabel[0].setPos(self.ampOffset, 0)
+        for circle_idx in range(0, 6):
+            self.circleList.append(pg.QtGui.QGraphicsEllipseItem(-self.ampOffset + self.ampOffset / 6 * circle_idx,
+                                                                 -self.ampOffset + self.ampOffset / 6 * circle_idx,
+                                                                 (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
                                                                  (
-                                                                         self.ampOffset - self.ampOffset / 5 * circle_idx) * 2))
+                                                                         self.ampOffset - self.ampOffset / 6 * circle_idx) * 2))
             self.circleList[circle_idx].setStartAngle(2880)
             self.circleList[circle_idx].setSpanAngle(2880)
             self.circleList[circle_idx].setPen(pg.mkPen(0.2))
             self.polarPlot.addItem(self.circleList[circle_idx])
+
+            self.circleLabel.append(pg.TextItem(str(-self.ampOffset / 6 * (circle_idx + 1))))
+            self.circleLabel[circle_idx + 1].setPos(self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
+            self.polarPlot.addItem(self.circleLabel[circle_idx + 1])
+
+        # self.labelAmpMin = pg.TextItem('-'+str(self.ampOffset)+' dB')
+        # self.polarPlot.addItem(self.labelAmpMin)
+        # self.labelAmpMin.setPos(60, 0)
 
         self.pgPolarPlot = pg.PlotDataItem()
         self.polarPlot.addItem(self.pgPolarPlot)
@@ -225,12 +237,16 @@ class MyApp(QtWidgets.QMainWindow):
         pattern[np.where(pattern < 0)] = 0
         x = pattern * np.sin(angle / 180 * np.pi)
         y = pattern * np.cos(angle / 180 * np.pi)
-        for circle_idx in range(0, 5):
-            self.circleList[circle_idx].setRect(-self.ampOffset + self.ampOffset / 5 * circle_idx,
-                                                -self.ampOffset + self.ampOffset / 5 * circle_idx,
-                                                (self.ampOffset - self.ampOffset / 5 * circle_idx) * 2,
+
+        self.circleLabel[0].setPos(self.ampOffset, 0)
+        for circle_idx in range(0, 6):
+            self.circleList[circle_idx].setRect(-self.ampOffset + self.ampOffset / 6 * circle_idx,
+                                                -self.ampOffset + self.ampOffset / 6 * circle_idx,
+                                                (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
                                                 (
-                                                        self.ampOffset - self.ampOffset / 5 * circle_idx) * 2)
+                                                        self.ampOffset - self.ampOffset / 6 * circle_idx) * 2)
+            self.circleLabel[circle_idx + 1].setText(str(round(-self.ampOffset / 6 * (circle_idx + 1), 1)))
+            self.circleLabel[circle_idx + 1].setPos(self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
         self.pgPolarPlot.setData(x, y)
 
     def hold_figure(self):
