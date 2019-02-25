@@ -45,6 +45,7 @@ class MyApp(QtWidgets.QMainWindow):
             4: self.disable_window_config
         }
         self.plotType = 'Cartesian'
+        self.ampOffset = 60
 
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
@@ -82,12 +83,18 @@ class MyApp(QtWidgets.QMainWindow):
         # Add polar grid lines
         self.polarPlot.addLine(x=0, pen=0.2)
         self.polarPlot.addLine(y=0, pen=0.2)
-        for r in range(10, 70, 10):
-            circle = pg.QtGui.QGraphicsEllipseItem(-r, -r, r * 2, r * 2)
-            circle.setStartAngle(2880)
-            circle.setSpanAngle(2880)
-            circle.setPen(pg.mkPen(0.2))
-            self.polarPlot.addItem(circle)
+
+        self.circleList = []
+        for circle_idx in range(0, 5):
+            self.circleList.append(pg.QtGui.QGraphicsEllipseItem(-self.ampOffset + self.ampOffset / 5 * circle_idx,
+                                                                 -self.ampOffset + self.ampOffset / 5 * circle_idx,
+                                                                 (self.ampOffset - self.ampOffset / 5 * circle_idx) * 2,
+                                                                 (
+                                                                         self.ampOffset - self.ampOffset / 5 * circle_idx) * 2))
+            self.circleList[circle_idx].setStartAngle(2880)
+            self.circleList[circle_idx].setSpanAngle(2880)
+            self.circleList[circle_idx].setPen(pg.mkPen(0.2))
+            self.polarPlot.addItem(self.circleList[circle_idx])
 
         self.pgPolarPlot = pg.PlotDataItem()
         self.polarPlot.addItem(self.pgPolarPlot)
@@ -186,10 +193,12 @@ class MyApp(QtWidgets.QMainWindow):
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
+        self.ampOffset = -value
         self.update_linear_array_parameter()
 
     def polar_min_amp_slider_moved(self, value):
         self.ui.spinBox_polarMinAmp.setValue(value)
+        self.ampOffset = -value
         self.update_linear_array_parameter()
 
     def update_linear_array_parameter(self):
@@ -210,10 +219,18 @@ class MyApp(QtWidgets.QMainWindow):
         self.pattern = pattern
 
     def update_polar_pattern(self, angle, pattern):
-        pattern = pattern + 60
+        self.angle = angle
+        self.pattern = pattern
+        pattern = pattern + self.ampOffset
         pattern[np.where(pattern < 0)] = 0
         x = pattern * np.sin(angle / 180 * np.pi)
         y = pattern * np.cos(angle / 180 * np.pi)
+        for circle_idx in range(0, 5):
+            self.circleList[circle_idx].setRect(-self.ampOffset + self.ampOffset / 5 * circle_idx,
+                                                -self.ampOffset + self.ampOffset / 5 * circle_idx,
+                                                (self.ampOffset - self.ampOffset / 5 * circle_idx) * 2,
+                                                (
+                                                        self.ampOffset - self.ampOffset / 5 * circle_idx) * 2)
         self.pgPolarPlot.setData(x, y)
 
     def hold_figure(self):
