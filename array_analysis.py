@@ -52,7 +52,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.cartesianPlot = pg.PlotItem()
 
-        # self.plotView = self.pgCanvas.addPlot(row=0, col=0, rowspan=1)
         self.pgFigure = pg.PlotDataItem()
         self.pgFigureHold = pg.PlotDataItem()
         self.cartesianPlot.setXRange(-90, 90)
@@ -93,8 +92,6 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgPolarPlot = pg.PlotDataItem()
         self.polarPlot.addItem(self.pgPolarPlot)
 
-        # self.pgCanvas.removeItem(self.testPlot)
-        # self.pgCanvas.addItem(self.testPlot)
         ######################
 
         self.show_cartesian_plot()
@@ -278,14 +275,6 @@ class MyApp(QtWidgets.QMainWindow):
 
     def show_polar_plot(self):
         self.pgCanvas.addItem(self.polarPlot)
-
-    # def switch_to_cartesian_plot(self):
-    #     self.pgCanvas.removeItem(self.polarPlot)
-    #     self.pgCanvas.addItem(self.cartesianPlot)
-    #
-    # def switch_to_polar_plot(self):
-    #     self.pgCanvas.removeItem(self.cartesianPlot)
-    #     self.pgCanvas.addItem(self.polarPlot)
 
 
 if __name__ == '__main__':
