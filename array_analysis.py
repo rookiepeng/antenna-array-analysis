@@ -28,7 +28,6 @@ import pyqtgraph as pg
 
 # pg.setConfigOption('background', 'w')
 # pg.setConfigOption('foreground', 'k')
-# pg.setConfigOption('antialias', True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 import numpy as np
@@ -213,7 +212,6 @@ class MyApp(QtWidgets.QMainWindow):
         pattern[np.where(pattern < 0)] = 0
         x = pattern * np.sin(angle / 180 * np.pi)
         y = pattern * np.cos(angle / 180 * np.pi)
-        # self.testPlot.plot(x, y)
         self.pgPolarPlot.setData(x, y)
 
     def hold_figure(self):
