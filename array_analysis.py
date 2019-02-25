@@ -39,11 +39,11 @@ class MyApp(QtWidgets.QMainWindow):
         super(QtWidgets.QMainWindow, self).__init__()
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
         self.window_dict = {
-            0: self.disableWinConfig,
+            0: self.disable_window_config,
             1: self.chebyshev,
             2: self.taylor,
-            3: self.disableWinConfig,
-            4: self.disableWinConfig
+            3: self.disable_window_config,
+            4: self.disable_window_config
         }
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
@@ -74,7 +74,6 @@ class MyApp(QtWidgets.QMainWindow):
 
         #############
         self.polarPlot = pg.PlotItem()
-        # self.testPlot = self.pgCanvas.addPlot(row=1, col=0, rowspan=2)
         self.polarPlot.setAspectLocked()
         self.polarPlot.hideAxis('left')
         self.polarPlot.hideAxis('bottom')
@@ -100,14 +99,14 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
-        self.linear_array.patternReady.connect(self.updatePattern)
-        self.linear_array.patternReady.connect(self.updatePolarPattern)
+        self.linear_array.patternReady.connect(self.update_pattern)
+        self.linear_array.patternReady.connect(self.update_polar_pattern)
         self.linear_array_thread.started.connect(
             self.linear_array.calculatePattern)
         self.linear_array.moveToThread(self.linear_array_thread)
         self.linear_array_thread.start()
 
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
         self.ui.show()
 
     def init_ui(self):
@@ -123,10 +122,10 @@ class MyApp(QtWidgets.QMainWindow):
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
         self.ui.spinBox_ArraySize.valueChanged.connect(
-            self.updateLinearArrayParameter)
+            self.update_linear_array_parameter)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.updateLinearArrayParameter)
+            self.update_linear_array_parameter)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steering_angle_value_changed)
@@ -137,11 +136,11 @@ class MyApp(QtWidgets.QMainWindow):
             self.window_combobox_changed)
 
         self.ui.spinBox_SLL.valueChanged.connect(self.sll_value_change)
-        self.ui.horizontalSlider_SLL.valueChanged.connect(self.sllSliderMoved)
+        self.ui.horizontalSlider_SLL.valueChanged.connect(self.sll_slider_moved)
 
-        self.ui.spinBox_nbar.valueChanged.connect(self.nbarValueChange)
+        self.ui.spinBox_nbar.valueChanged.connect(self.nbar_value_changed)
         self.ui.horizontalSlider_nbar.valueChanged.connect(
-            self.nbarSliderMoved)
+            self.nbar_slider_moved)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(self.polar_min_amp_value_changed)
         self.ui.horizontalSlider_polarMinAmp.valueChanged.connect(self.polar_min_amp_slider_moved)
@@ -150,49 +149,49 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
-        self.ui.holdButton.clicked.connect(self.holdFigure)
-        self.ui.clearButton.clicked.connect(self.clearFigure)
+        self.ui.holdButton.clicked.connect(self.hold_figure)
+        self.ui.clearButton.clicked.connect(self.clear_figure)
 
         self.ui.radioButton_Cartesian.toggled.connect(self.cartesian_plot_toggled)
         self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
 
     def steering_angle_value_changed(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(value * 10)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def steering_angle_slider_moved(self, value):
         self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def window_combobox_changed(self, value):
         self.window_dict[value]()
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def sll_value_change(self, value):
         self.ui.horizontalSlider_SLL.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
-    def sllSliderMoved(self, value):
+    def sll_slider_moved(self, value):
         self.ui.spinBox_SLL.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
-    def nbarValueChange(self, value):
+    def nbar_value_changed(self, value):
         self.ui.horizontalSlider_nbar.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
-    def nbarSliderMoved(self, value):
+    def nbar_slider_moved(self, value):
         self.ui.spinBox_nbar.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def polar_min_amp_slider_moved(self, value):
         self.ui.spinBox_polarMinAmp.setValue(value)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
-    def updateLinearArrayParameter(self):
+    def update_linear_array_parameter(self):
         self.array_size = self.ui.spinBox_ArraySize.value()
         self.spacing = self.ui.doubleSpinBox_Spacing.value()
         self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
@@ -204,12 +203,12 @@ class MyApp(QtWidgets.QMainWindow):
             self.array_size, self.spacing, self.beam_loc, self.theta,
             self.window_type, self.window_sll, self.window_nbar)
 
-    def updatePattern(self, angle, pattern):
+    def update_pattern(self, angle, pattern):
         self.pgFigure.setData(angle, pattern)
         self.angle = angle
         self.pattern = pattern
 
-    def updatePolarPattern(self, angle, pattern):
+    def update_polar_pattern(self, angle, pattern):
         pattern = pattern + 60
         pattern[np.where(pattern < 0)] = 0
         x = pattern * np.sin(angle / 180 * np.pi)
@@ -217,16 +216,16 @@ class MyApp(QtWidgets.QMainWindow):
         # self.testPlot.plot(x, y)
         self.pgPolarPlot.setData(x, y)
 
-    def holdFigure(self):
+    def hold_figure(self):
         self.pgFigureHold.setData(self.angle, self.pattern)
         self.cartesianPlot.addItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(True)
 
-    def clearFigure(self):
+    def clear_figure(self):
         self.cartesianPlot.removeItem(self.pgFigureHold)
         self.ui.clearButton.setEnabled(False)
 
-    def disableWinConfig(self):
+    def disable_window_config(self):
         self.ui.spinBox_SLL.setVisible(False)
         self.ui.label_SLL.setVisible(False)
         self.ui.horizontalSlider_SLL.setVisible(False)
@@ -252,7 +251,7 @@ class MyApp(QtWidgets.QMainWindow):
 
     def plotview_x_range_changed(self, item):
         self.theta = np.linspace(item.viewRange()[0][0], item.viewRange()[0][1], num=1801, endpoint=True)
-        self.updateLinearArrayParameter()
+        self.update_linear_array_parameter()
 
     def cartesian_plot_toggled(self, checked):
         if checked:
