@@ -83,8 +83,10 @@ class MyApp(QtWidgets.QMainWindow):
         # Add polar grid lines
         self.polarPlot.addLine(x=0, pen=0.2)
         self.polarPlot.addLine(y=0, pen=0.2)
-        for r in range(2, 20, 2):
+        for r in range(10, 70, 10):
             circle = pg.QtGui.QGraphicsEllipseItem(-r, -r, r * 2, r * 2)
+            circle.setStartAngle(2880)
+            circle.setSpanAngle(2880)
             circle.setPen(pg.mkPen(0.2))
             self.polarPlot.addItem(circle)
 
@@ -144,12 +146,21 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.horizontalSlider_nbar.valueChanged.connect(
             self.nbarSliderMoved)
 
+        self.ui.spinBox_polarMinAmp.valueChanged.connect(self.polar_min_amp_value_changed)
+        self.ui.horizontalSlider_polarMinAmp.valueChanged.connect(self.polar_min_amp_slider_moved)
+
+        self.ui.label_polarMinAmp.setVisible(False)
+        self.ui.spinBox_polarMinAmp.setVisible(False)
+        self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+
         self.ui.holdButton.clicked.connect(self.holdFigure)
         self.ui.clearButton.clicked.connect(self.clearFigure)
 
+        self.ui.radioButton_Cartesian.toggled.connect(self.cartesian_plot_toggled)
+        self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
+
     def steering_angle_value_changed(self, value):
-        self.ui.horizontalSlider_SteeringAngle.setValue(
-            self.ui.doubleSpinBox_SteeringAngle.value() * 10)
+        self.ui.horizontalSlider_SteeringAngle.setValue(value * 10)
         self.updateLinearArrayParameter()
 
     def steering_angle_slider_moved(self, value):
@@ -161,7 +172,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.updateLinearArrayParameter()
 
     def sll_value_change(self, value):
-        self.ui.horizontalSlider_SLL.setValue(self.ui.spinBox_SLL.value())
+        self.ui.horizontalSlider_SLL.setValue(value)
         self.updateLinearArrayParameter()
 
     def sllSliderMoved(self, value):
@@ -169,11 +180,19 @@ class MyApp(QtWidgets.QMainWindow):
         self.updateLinearArrayParameter()
 
     def nbarValueChange(self, value):
-        self.ui.horizontalSlider_nbar.setValue(self.ui.spinBox_nbar.value())
+        self.ui.horizontalSlider_nbar.setValue(value)
         self.updateLinearArrayParameter()
 
     def nbarSliderMoved(self, value):
         self.ui.spinBox_nbar.setValue(value)
+        self.updateLinearArrayParameter()
+
+    def polar_min_amp_value_changed(self, value):
+        self.ui.horizontalSlider_polarMinAmp.setValue(value)
+        self.updateLinearArrayParameter()
+
+    def polar_min_amp_slider_moved(self, value):
+        self.ui.spinBox_polarMinAmp.setValue(value)
         self.updateLinearArrayParameter()
 
     def updateLinearArrayParameter(self):
@@ -238,19 +257,35 @@ class MyApp(QtWidgets.QMainWindow):
         self.theta = np.linspace(item.viewRange()[0][0], item.viewRange()[0][1], num=1801, endpoint=True)
         self.updateLinearArrayParameter()
 
+    def cartesian_plot_toggled(self, checked):
+        if checked:
+            self.pgCanvas.removeItem(self.polarPlot)
+            self.pgCanvas.addItem(self.cartesianPlot)
+            self.ui.label_polarMinAmp.setVisible(False)
+            self.ui.spinBox_polarMinAmp.setVisible(False)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+
+    def polar_plot_toggled(self, checked):
+        if checked:
+            self.pgCanvas.removeItem(self.cartesianPlot)
+            self.pgCanvas.addItem(self.polarPlot)
+            self.ui.label_polarMinAmp.setVisible(True)
+            self.ui.spinBox_polarMinAmp.setVisible(True)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(True)
+
     def show_cartesian_plot(self):
         self.pgCanvas.addItem(self.cartesianPlot)
 
     def show_polar_plot(self):
         self.pgCanvas.addItem(self.polarPlot)
 
-    def switch_to_cartesian_plot(self):
-        self.pgCanvas.removeItem(self.polarPlot)
-        self.pgCanvas.addItem(self.cartesianPlot)
-
-    def switch_to_polar_plot(self):
-        self.pgCanvas.removeItem(self.cartesianPlot)
-        self.pgCanvas.addItem(self.polarPlot)
+    # def switch_to_cartesian_plot(self):
+    #     self.pgCanvas.removeItem(self.polarPlot)
+    #     self.pgCanvas.addItem(self.cartesianPlot)
+    #
+    # def switch_to_polar_plot(self):
+    #     self.pgCanvas.removeItem(self.cartesianPlot)
+    #     self.pgCanvas.addItem(self.polarPlot)
 
 
 if __name__ == '__main__':
