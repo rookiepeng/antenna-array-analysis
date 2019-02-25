@@ -481,13 +481,13 @@
               </size>
              </property>
              <property name="minimum">
-              <number>10</number>
+              <number>-120</number>
              </property>
              <property name="maximum">
-              <number>120</number>
+              <number>-10</number>
              </property>
              <property name="value">
-              <number>60</number>
+              <number>-60</number>
              </property>
             </widget>
            </item>
@@ -496,13 +496,13 @@
          <item>
           <widget class="QSlider" name="horizontalSlider_polarMinAmp">
            <property name="minimum">
-            <number>10</number>
+            <number>-120</number>
            </property>
            <property name="maximum">
-            <number>120</number>
+            <number>-10</number>
            </property>
            <property name="value">
-            <number>60</number>
+            <number>-60</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -549,7 +549,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
-        <layout class="QVBoxLayout" name="figureLayout" stretch=""/>
+        <layout class="QVBoxLayout" name="figureLayout"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -628,7 +628,44 @@
      <height>38</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExport_plot_data"/>
+    <addaction name="actionExport_array_configurations"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout_antenna_array_analysis"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
+  <action name="actionExport_array_configurations">
+   <property name="text">
+    <string>Export array config</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionExport_plot_data">
+   <property name="text">
+    <string>Export Plot Data</string>
+   </property>
+  </action>
+  <action name="actionAbout_antenna_array_analysis">
+   <property name="text">
+    <string>About Antenna Array Analysis</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="res.qrc"/>
