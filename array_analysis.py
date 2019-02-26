@@ -22,6 +22,8 @@ import res_rc
 from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtCore import QThread
 
+import numpy as np
+
 from linear_array import Linear_Array
 
 import pyqtgraph as pg
@@ -29,8 +31,6 @@ import pyqtgraph as pg
 # pg.setConfigOption('background', 'w')
 # pg.setConfigOption('foreground', 'k')
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-
-import numpy as np
 
 
 class MyApp(QtWidgets.QMainWindow):
