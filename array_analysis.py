@@ -260,10 +260,13 @@ class MyApp(QtWidgets.QMainWindow):
                 self.circleLabel[circle_idx + 1].setPos(
                     self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
             self.pgPolarPlot.setData(x, y)
+        elif plot_type is 'Cartesian_Hold':
+            self.pgFigureHold.setData(angle, pattern)
+            self.cartesianPlot.addItem(self.pgFigureHold)
 
     def hold_figure(self):
-        self.pgFigureHold.setData(self.angle, self.pattern)
-        self.cartesianPlot.addItem(self.pgFigureHold)
+        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.update_linear_array_parameter('Cartesian_Hold')
         self.ui.clearButton.setEnabled(True)
 
     def clear_figure(self):
