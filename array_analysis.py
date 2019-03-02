@@ -127,13 +127,12 @@ class MyApp(QtWidgets.QMainWindow):
         self.linear_array = Linear_Array()
         self.linear_array_thread = QThread()
         self.linear_array.patternReady.connect(self.update_pattern)
-        self.linear_array.patternReady.connect(self.update_polar_pattern)
         self.linear_array_thread.started.connect(
             self.linear_array.calculatePattern)
         self.linear_array.moveToThread(self.linear_array_thread)
         self.linear_array_thread.start()
 
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
         self.ui.show()
 
     def init_ui(self):
@@ -188,43 +187,43 @@ class MyApp(QtWidgets.QMainWindow):
 
     def steering_angle_value_changed(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(value * 10)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def steering_angle_slider_moved(self, value):
         self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def window_combobox_changed(self, value):
         self.window_dict[value]()
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def sll_value_change(self, value):
         self.ui.horizontalSlider_SLL.setValue(value)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def sll_slider_moved(self, value):
         self.ui.spinBox_SLL.setValue(value)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def nbar_value_changed(self, value):
         self.ui.horizontalSlider_nbar.setValue(value)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def nbar_slider_moved(self, value):
         self.ui.spinBox_nbar.setValue(value)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
         self.ampOffset = -value
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def polar_min_amp_slider_moved(self, value):
         self.ui.spinBox_polarMinAmp.setValue(value)
         self.ampOffset = -value
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
-    def update_linear_array_parameter(self):
+    def update_linear_array_parameter(self, plotType):
         self.array_size = self.ui.spinBox_ArraySize.value()
         self.spacing = self.ui.doubleSpinBox_Spacing.value()
         self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
@@ -234,33 +233,33 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.linear_array.updateData(
             self.array_size, self.spacing, self.beam_loc, self.theta,
-            self.window_type, self.window_sll, self.window_nbar)
+            self.window_type, self.window_sll, self.window_nbar, plotType)
 
-    def update_pattern(self, angle, pattern):
-        self.pgFigure.setData(angle, pattern)
-        self.angle = angle
-        self.pattern = pattern
+    def update_pattern(self, angle, pattern, plot_type):
+        if plot_type is 'Cartesian':
+            self.pgFigure.setData(angle, pattern)
+            self.angle = angle
+            self.pattern = pattern
+        elif plot_type is 'Polar':
+            self.angle = angle
+            self.pattern = pattern
+            pattern = pattern + self.ampOffset
+            pattern[np.where(pattern < 0)] = 0
+            x = pattern * np.sin(angle / 180 * np.pi)
+            y = pattern * np.cos(angle / 180 * np.pi)
 
-    def update_polar_pattern(self, angle, pattern):
-        self.angle = angle
-        self.pattern = pattern
-        pattern = pattern + self.ampOffset
-        pattern[np.where(pattern < 0)] = 0
-        x = pattern * np.sin(angle / 180 * np.pi)
-        y = pattern * np.cos(angle / 180 * np.pi)
-
-        self.circleLabel[0].setPos(self.ampOffset, 0)
-        for circle_idx in range(0, 6):
-            self.circleList[circle_idx].setRect(
-                -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
-                (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2)
-            self.circleLabel[circle_idx + 1].setText(
-                str(round(-self.ampOffset / 6 * (circle_idx + 1), 1)))
-            self.circleLabel[circle_idx + 1].setPos(
-                self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
-        self.pgPolarPlot.setData(x, y)
+            self.circleLabel[0].setPos(self.ampOffset, 0)
+            for circle_idx in range(0, 6):
+                self.circleList[circle_idx].setRect(
+                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
+                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
+                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
+                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2)
+                self.circleLabel[circle_idx + 1].setText(
+                    str(round(-self.ampOffset / 6 * (circle_idx + 1), 1)))
+                self.circleLabel[circle_idx + 1].setPos(
+                    self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
+            self.pgPolarPlot.setData(x, y)
 
     def hold_figure(self):
         self.pgFigureHold.setData(self.angle, self.pattern)
@@ -301,7 +300,7 @@ class MyApp(QtWidgets.QMainWindow):
             item.viewRange()[0][1],
             num=1801,
             endpoint=True)
-        self.update_linear_array_parameter()
+        self.update_linear_array_parameter(self.plotType)
 
     def cartesian_plot_toggled(self, checked):
         if checked and self.plotType is not 'Cartesian':
@@ -312,11 +311,10 @@ class MyApp(QtWidgets.QMainWindow):
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
             self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-            self.update_linear_array_parameter()
+            self.plotType = 'Cartesian'
+            self.update_linear_array_parameter(self.plotType)
             self.cartesianPlot.setXRange(-90, 90)
             self.cartesianPlot.setYRange(-80, 0)
-
-            self.plotType = 'Cartesian'
 
     def polar_plot_toggled(self, checked):
         if checked and self.plotType is not 'Polar':
@@ -327,8 +325,8 @@ class MyApp(QtWidgets.QMainWindow):
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
 
             self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-            self.update_linear_array_parameter()
             self.plotType = 'Polar'
+            self.update_linear_array_parameter(self.plotType)
 
     def show_cartesian_plot(self):
         self.pgCanvas.addItem(self.cartesianPlot)

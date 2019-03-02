@@ -25,7 +25,7 @@ from taylor_win import taylor
 
 
 class Linear_Array(QObject):
-    patternReady = pyqtSignal(np.ndarray, np.ndarray)
+    patternReady = pyqtSignal(np.ndarray, np.ndarray, object)
     new_data = False
 
     def __init__(self):
@@ -39,7 +39,7 @@ class Linear_Array(QObject):
         }
 
     def updateData(self, array_size, spacing, beam_loc, theta, window_type,
-                   window_sll, window_nbar):
+                   window_sll, window_nbar, plot):
         self.array_size = array_size
         self.spacing = spacing
         self.beam_loc = beam_loc
@@ -48,6 +48,7 @@ class Linear_Array(QObject):
         self.window_sll = window_sll
         self.window_nbar = window_nbar
         self.new_data = True
+        self.plot=plot
 
     def square_win(self, array_size=1, sll=0, nbar=0):
         return 1
@@ -87,6 +88,6 @@ class Linear_Array(QObject):
 
                 AF = 20 * np.log10(np.abs(np.matmul(weight, A)) + 0.00001)
 
-                self.patternReady.emit(self.theta, AF)
+                self.patternReady.emit(self.theta, AF, self.plot)
 
             sleep(0.01)
