@@ -19,7 +19,7 @@
 
 import sys
 import res_rc
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 
 import numpy as np
@@ -36,97 +36,51 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
+        self.ui = uic.loadUi('ui_array_analysis.ui', self)
+        self.pgCanvas = pg.GraphicsLayoutWidget()
+        self.figureLayout.addWidget(self.pgCanvas)
+
+        self.linearArrayConfig = {'array_size': 64,
+                                  'spacing': 0.5,
+                                  'beam_loc': 0,
+                                  'window_type_idx': 0,
+                                  'window_sll': 60,
+                                  'window_nbar': 20
+                                  }
+
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.hold_angle = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.hold_pattern = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.window_dict = {
+        self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.pattern = np.zeros(np.shape(self.theta))
+
+        self.plotType = 'Cartesian'  # 'Cartesian' or 'Polar'
+        self.polarAmpOffset = 60
+
+        self.holdAngle = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.holdPattern = np.zeros(np.shape(self.theta))
+        self.holdEnabled = False
+
+        self.windowDict = {
             0: self.disable_window_config,
             1: self.chebyshev,
             2: self.taylor,
             3: self.disable_window_config,
             4: self.disable_window_config
         }
-        self.plotType = 'Cartesian'
-        self.ampOffset = 60
 
-        self.ui = uic.loadUi('ui_array_analysis.ui', self)
+        self.cartesianView = pg.PlotItem()
+        self.cartesianPlot = pg.PlotDataItem()
+        self.cartesianPlotHold = pg.PlotDataItem()
 
-        self.pgCanvas = pg.GraphicsLayoutWidget()
-        self.figureLayout.addWidget(self.pgCanvas)
-
-        self.cartesianPlot = pg.PlotItem()
-
-        self.pgFigure = pg.PlotDataItem()
-        self.pgFigureHold = pg.PlotDataItem()
-        self.cartesianPlot.setXRange(-90, 90)
-        self.cartesianPlot.setYRange(-80, 0)
-
-        self.cartesianPlot.addItem(self.pgFigure)
-        self.cartesianPlot.setLabel(axis='bottom', text='Angle', units='°')
-        self.cartesianPlot.setLabel(
-            axis='left', text='Normalized amplitude', units='dB')
-        self.cartesianPlot.showGrid(x=True, y=True, alpha=0.5)
-
-        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
-        self.pgFigure.setPen(self.penActive)
-        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
-        self.pgFigureHold.setPen(self.penHold)
-
-        self.cartesianPlot.setLimits(
-            xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
-
-        self.cartesianPlot.sigXRangeChanged.connect(
-            self.plotview_x_range_changed)
-
-        #############
-        self.polarPlot = pg.PlotItem()
-        self.polarPlot.setAspectLocked()
-        self.polarPlot.hideAxis('left')
-        self.polarPlot.hideAxis('bottom')
-
-        # Add polar grid lines
-
+        self.polarView = pg.PlotItem()
+        self.polarPlot = pg.PlotDataItem()
+        self.polarPlotHold = pg.PlotDataItem()
         self.circleList = []
         self.circleLabel = []
-        self.circleLabel.append(pg.TextItem('0 dB'))
-        self.polarPlot.addItem(self.circleLabel[0])
-        self.circleLabel[0].setPos(self.ampOffset, 0)
-        for circle_idx in range(0, 6):
-            self.circleList.append(
-                pg.QtGui.QGraphicsEllipseItem(
-                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
-                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2))
-            self.circleList[circle_idx].setStartAngle(2880)
-            self.circleList[circle_idx].setSpanAngle(2880)
-            self.circleList[circle_idx].setPen(pg.mkPen(0.2))
-            self.polarPlot.addItem(self.circleList[circle_idx])
 
-            self.circleLabel.append(
-                pg.TextItem(str(-self.ampOffset / 6 * (circle_idx + 1))))
-            self.circleLabel[circle_idx + 1].setPos(
-                self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
-            self.polarPlot.addItem(self.circleLabel[circle_idx + 1])
+        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
+        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
 
-        self.polarPlot.addLine(x=0, pen=0.6)
-        self.polarPlot.addLine(y=0, pen=0.6)
-        l1 = self.polarPlot.addLine(y=0, pen=0.3)
-        l1.setAngle(45)
-        l2 = self.polarPlot.addLine(y=0, pen=0.3)
-        l2.setAngle(-45)
-        self.pgPolarPlot = pg.PlotDataItem()
-        self.pgPolarPlot.setPen(self.penActive)
-        self.polarPlot.addItem(self.pgPolarPlot)
-        self.polarPlot.setMouseEnabled(x=False, y=False)
-
-        self.pgPolarPlotHold = pg.PlotDataItem()
-        self.pgPolarPlotHold.setPen(self.penHold)
-
-        ######################
-
-        self.show_cartesian_plot()
-
+        self.init_plot_view()
         self.init_ui()
 
         self.linear_array = Linear_Array()
@@ -153,10 +107,10 @@ class MyApp(QtWidgets.QMainWindow):
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
         self.ui.spinBox_ArraySize.valueChanged.connect(
-            self.basic_value_changed)
+            self.array_changed)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.basic_value_changed)
+            self.array_changed)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steering_angle_value_changed)
@@ -190,7 +144,65 @@ class MyApp(QtWidgets.QMainWindow):
             self.cartesian_plot_toggled)
         self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
 
-    def basic_value_changed(self):
+    def init_plot_view(self):
+        ############################################
+        # Cartesian View
+        self.cartesianPlot.setPen(self.penActive)
+        self.cartesianPlotHold.setPen(self.penHold)
+        self.cartesianView.addItem(self.cartesianPlot)
+
+        self.cartesianView.setXRange(-90, 90)
+        self.cartesianView.setYRange(-80, 0)
+        self.cartesianView.setLabel(axis='bottom', text='Angle', units='°')
+        self.cartesianView.setLabel(
+            axis='left', text='Normalized amplitude', units='dB')
+        self.cartesianView.showGrid(x=True, y=True, alpha=0.5)
+        self.cartesianView.setLimits(
+            xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
+
+        ############################################
+        # Polar View
+        self.polarPlot.setPen(self.penActive)
+        self.polarPlotHold.setPen(self.penHold)
+        self.polarView.addItem(self.polarPlot)
+
+        self.polarView.setAspectLocked()
+        self.polarView.hideAxis('left')
+        self.polarView.hideAxis('bottom')
+
+        self.circleLabel.append(pg.TextItem('0 dB'))
+        self.polarView.addItem(self.circleLabel[0])
+        self.circleLabel[0].setPos(self.polarAmpOffset, 0)
+        for circle_idx in range(0, 6):
+            self.circleList.append(
+                QtGui.QGraphicsEllipseItem(
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2))
+            self.circleList[circle_idx].setStartAngle(2880)
+            self.circleList[circle_idx].setSpanAngle(2880)
+            self.circleList[circle_idx].setPen(pg.mkPen(0.2))
+            self.polarView.addItem(self.circleList[circle_idx])
+
+            self.circleLabel.append(
+                pg.TextItem(str(-self.polarAmpOffset / 6 * (circle_idx + 1))))
+            self.circleLabel[circle_idx + 1].setPos(
+                self.polarAmpOffset - self.polarAmpOffset / 6 * (circle_idx + 1), 0)
+            self.polarView.addItem(self.circleLabel[circle_idx + 1])
+
+        self.polarView.addLine(x=0, pen=0.6)
+        self.polarView.addLine(y=0, pen=0.6)
+        self.polarView.addLine(y=0, pen=0.3).setAngle(45)
+        self.polarView.addLine(y=0, pen=0.3).setAngle(-45)
+        self.polarView.setMouseEnabled(x=False, y=False)
+
+        ############################################
+        self.cartesianView.sigXRangeChanged.connect(
+            self.plotview_x_range_changed)
+        self.show_cartesian_plot()
+
+    def array_changed(self):
         self.update_linear_array_parameter(self.plotType)
 
     def steering_angle_value_changed(self, value):
@@ -202,7 +214,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def window_combobox_changed(self, value):
-        self.window_dict[value]()
+        self.windowDict[value]()
         self.update_linear_array_parameter(self.plotType)
 
     def sll_value_change(self, value):
@@ -223,80 +235,89 @@ class MyApp(QtWidgets.QMainWindow):
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
-        self.ampOffset = -value
+        self.polarAmpOffset = -value
         self.update_linear_array_parameter(self.plotType)
 
     def polar_min_amp_slider_moved(self, value):
         self.ui.spinBox_polarMinAmp.setValue(value)
-        self.ampOffset = -value
+        self.polarAmpOffset = -value
         self.update_linear_array_parameter(self.plotType)
 
-    def update_linear_array_parameter(self, plotType):
-        self.array_size = self.ui.spinBox_ArraySize.value()
-        self.spacing = self.ui.doubleSpinBox_Spacing.value()
-        self.beam_loc = self.ui.doubleSpinBox_SteeringAngle.value()
-        self.window_type = self.ui.comboBox_Window.currentIndex()
-        self.window_sll = self.ui.spinBox_SLL.value()
-        self.window_nbar = self.ui.spinBox_nbar.value()
+    def update_linear_array_parameter(self, plot_type):
+        self.linearArrayConfig['array_size'] = self.ui.spinBox_ArraySize.value()
+        self.linearArrayConfig['spacing'] = self.ui.doubleSpinBox_Spacing.value()
+        self.linearArrayConfig['beam_loc'] = self.ui.doubleSpinBox_SteeringAngle.value()
+        self.linearArrayConfig['window_type_idx'] = self.ui.comboBox_Window.currentIndex()
+        self.linearArrayConfig['window_sll'] = self.ui.spinBox_SLL.value()
+        self.linearArrayConfig['window_nbar'] = self.ui.spinBox_nbar.value()
 
-        self.linear_array.updateData(
-            self.array_size, self.spacing, self.beam_loc, self.theta,
-            self.window_type, self.window_sll, self.window_nbar, plotType)
+        self.linear_array.updateData(self.linearArrayConfig, self.theta, plot_type)
 
     def update_pattern(self, angle, pattern, plot_type):
         if plot_type is 'Cartesian':
-            self.pgFigure.setData(angle, pattern)
+            self.cartesianPlot.setData(angle, pattern)
             self.angle = angle
             self.pattern = pattern
         elif plot_type is 'Polar':
             self.angle = angle
             self.pattern = pattern
-            pattern = pattern + self.ampOffset
+            pattern = pattern + self.polarAmpOffset
             pattern[np.where(pattern < 0)] = 0
             x = pattern * np.sin(angle / 180 * np.pi)
             y = pattern * np.cos(angle / 180 * np.pi)
 
-            self.circleLabel[0].setPos(self.ampOffset, 0)
+            self.circleLabel[0].setPos(self.polarAmpOffset, 0)
             for circle_idx in range(0, 6):
                 self.circleList[circle_idx].setRect(
-                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                    -self.ampOffset + self.ampOffset / 6 * circle_idx,
-                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2,
-                    (self.ampOffset - self.ampOffset / 6 * circle_idx) * 2)
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2)
                 self.circleLabel[circle_idx + 1].setText(
-                    str(round(-self.ampOffset / 6 * (circle_idx + 1), 1)))
+                    str(round(-self.polarAmpOffset / 6 * (circle_idx + 1), 1)))
                 self.circleLabel[circle_idx + 1].setPos(
-                    self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
-            self.pgPolarPlot.setData(x, y)
+                    self.polarAmpOffset - self.polarAmpOffset / 6 * (circle_idx + 1), 0)
+            self.polarPlot.setData(x, y)
 
-            pattern = self.hold_pattern + self.ampOffset
+            pattern = self.holdPattern + self.polarAmpOffset
             pattern[np.where(pattern < 0)] = 0
-            x = pattern * np.sin(self.hold_angle / 180 * np.pi)
-            y = pattern * np.cos(self.hold_angle / 180 * np.pi)
-            self.pgPolarPlotHold.setData(x, y)
+            x = pattern * np.sin(self.holdAngle / 180 * np.pi)
+            y = pattern * np.cos(self.holdAngle / 180 * np.pi)
+            self.polarPlotHold.setData(x, y)
 
-        elif plot_type is 'Cartesian_Polar_Hold':
-            self.hold_angle = angle
-            self.hold_pattern = pattern
-            self.pgFigureHold.setData(angle, pattern)
-            self.cartesianPlot.addItem(self.pgFigureHold)
+        elif plot_type is 'Cartesian_Hold':
+            self.holdAngle = angle
+            self.holdPattern = pattern
+            self.cartesianPlotHold.setData(angle, pattern)
+            self.cartesianView.addItem(self.cartesianPlotHold)
 
-            pattern = pattern + self.ampOffset
+        elif plot_type is 'Polar_Hold':
+            self.holdAngle = angle
+            self.holdPattern = pattern
+            pattern = pattern + self.polarAmpOffset
             pattern[np.where(pattern < 0)] = 0
             x = pattern * np.sin(angle / 180 * np.pi)
             y = pattern * np.cos(angle / 180 * np.pi)
-            self.pgPolarPlotHold.setData(x, y)
-            self.polarPlot.addItem(self.pgPolarPlotHold)
+            self.polarPlotHold.setData(x, y)
+            self.polarView.addItem(self.polarPlotHold)
 
     def hold_figure(self):
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.update_linear_array_parameter('Cartesian_Polar_Hold')
+        if self.plotType is 'Cartesian':
+            self.update_linear_array_parameter('Cartesian_Hold')
+        elif self.plotType is 'Polar':
+            self.update_linear_array_parameter('Polar_Hold')
         self.ui.clearButton.setEnabled(True)
+        self.holdEnabled = True
 
     def clear_figure(self):
-        self.cartesianPlot.removeItem(self.pgFigureHold)
-        self.polarPlot.removeItem(self.pgPolarPlotHold)
+        if self.plotType is 'Cartesian':
+            self.cartesianView.removeItem(self.cartesianPlotHold)
+        elif self.plotType is 'Polar':
+            self.polarView.removeItem(self.polarPlotHold)
+
         self.ui.clearButton.setEnabled(False)
+        self.holdEnabled = False
 
     def disable_window_config(self):
         self.ui.spinBox_SLL.setVisible(False)
@@ -332,8 +353,13 @@ class MyApp(QtWidgets.QMainWindow):
 
     def cartesian_plot_toggled(self, checked):
         if checked and self.plotType is not 'Cartesian':
-            self.pgCanvas.removeItem(self.polarPlot)
-            self.pgCanvas.addItem(self.cartesianPlot)
+            if self.holdEnabled:
+                self.polarView.removeItem(self.polarPlotHold)
+                self.holdEnabled = False
+                self.ui.clearButton.setEnabled(False)
+
+            self.pgCanvas.removeItem(self.polarView)
+            self.pgCanvas.addItem(self.cartesianView)
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
@@ -341,13 +367,18 @@ class MyApp(QtWidgets.QMainWindow):
             self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
             self.plotType = 'Cartesian'
             self.update_linear_array_parameter(self.plotType)
-            self.cartesianPlot.setXRange(-90, 90)
-            self.cartesianPlot.setYRange(-80, 0)
+            self.cartesianView.setXRange(-90, 90)
+            self.cartesianView.setYRange(-80, 0)
 
     def polar_plot_toggled(self, checked):
         if checked and self.plotType is not 'Polar':
-            self.pgCanvas.removeItem(self.cartesianPlot)
-            self.pgCanvas.addItem(self.polarPlot)
+            if self.holdEnabled:
+                self.cartesianView.removeItem(self.cartesianPlotHold)
+                self.holdEnabled = False
+                self.ui.clearButton.setEnabled(False)
+
+            self.pgCanvas.removeItem(self.cartesianView)
+            self.pgCanvas.addItem(self.polarView)
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
@@ -357,10 +388,10 @@ class MyApp(QtWidgets.QMainWindow):
             self.update_linear_array_parameter(self.plotType)
 
     def show_cartesian_plot(self):
-        self.pgCanvas.addItem(self.cartesianPlot)
+        self.pgCanvas.addItem(self.cartesianView)
 
     def show_polar_plot(self):
-        self.pgCanvas.addItem(self.polarPlot)
+        self.pgCanvas.addItem(self.polarView)
 
 
 if __name__ == '__main__':

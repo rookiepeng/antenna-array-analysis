@@ -37,18 +37,26 @@ class Linear_Array(QObject):
             3: self.hamming_win,
             4: self.hann_win
         }
+        self.array_size = 64
+        self.spacing = 0.5
+        self.beam_loc = 0
+        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.window_type = 0
+        self.window_sll = 60
+        self.window_nbar = 20
+        self.new_data = False
+        self.plot = 'Cartesian'
 
-    def updateData(self, array_size, spacing, beam_loc, theta, window_type,
-                   window_sll, window_nbar, plot):
-        self.array_size = array_size
-        self.spacing = spacing
-        self.beam_loc = beam_loc
+    def updateData(self, linear_array_config, theta, plot):
+        self.array_size = linear_array_config['array_size']
+        self.spacing = linear_array_config['spacing']
+        self.beam_loc = linear_array_config['beam_loc']
         self.theta = theta
-        self.window_type = window_type
-        self.window_sll = window_sll
-        self.window_nbar = window_nbar
+        self.window_type = linear_array_config['window_type_idx']
+        self.window_sll = linear_array_config['window_sll']
+        self.window_nbar = linear_array_config['window_nbar']
         self.new_data = True
-        self.plot=plot
+        self.plot = plot
 
     def square_win(self, array_size=1, sll=0, nbar=0):
         return 1
@@ -76,10 +84,10 @@ class Linear_Array(QObject):
 
                 weight = np.exp(-1j * 2 * np.pi * array_geometry * np.sin(
                     self.beam_loc / 180 * np.pi)) * self.window_dict[
-                        self.window_type](self.array_size, self.window_sll,
-                                          self.window_nbar)
+                             self.window_type](self.array_size, self.window_sll,
+                                               self.window_nbar)
 
-                weight=weight/np.sum(np.abs(weight))
+                weight = weight / np.sum(np.abs(weight))
 
                 theta_grid, array_geometry_grid = np.meshgrid(
                     self.theta, array_geometry)
