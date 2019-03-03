@@ -37,6 +37,8 @@ class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(QtWidgets.QMainWindow, self).__init__()
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.hold_angle = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.hold_pattern = np.linspace(-90, 90, num=1801, endpoint=True)
         self.window_dict = {
             0: self.disable_window_config,
             1: self.chebyshev,
@@ -118,6 +120,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.polarPlot.addItem(self.pgPolarPlot)
         self.polarPlot.setMouseEnabled(x=False, y=False)
 
+        self.pgPolarPlotHold = pg.PlotDataItem()
+        self.pgPolarPlotHold.setPen(self.penHold)
+
         ######################
 
         self.show_cartesian_plot()
@@ -148,10 +153,10 @@ class MyApp(QtWidgets.QMainWindow):
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
         self.ui.spinBox_ArraySize.valueChanged.connect(
-            self.update_linear_array_parameter)
+            self.basic_value_changed)
 
         self.ui.doubleSpinBox_Spacing.valueChanged.connect(
-            self.update_linear_array_parameter)
+            self.basic_value_changed)
 
         self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
             self.steering_angle_value_changed)
@@ -184,6 +189,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.radioButton_Cartesian.toggled.connect(
             self.cartesian_plot_toggled)
         self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
+
+    def basic_value_changed(self):
+        self.update_linear_array_parameter(self.plotType)
 
     def steering_angle_value_changed(self, value):
         self.ui.horizontalSlider_SteeringAngle.setValue(value * 10)
@@ -260,17 +268,34 @@ class MyApp(QtWidgets.QMainWindow):
                 self.circleLabel[circle_idx + 1].setPos(
                     self.ampOffset - self.ampOffset / 6 * (circle_idx + 1), 0)
             self.pgPolarPlot.setData(x, y)
-        elif plot_type is 'Cartesian_Hold':
+
+            pattern = self.hold_pattern + self.ampOffset
+            pattern[np.where(pattern < 0)] = 0
+            x = pattern * np.sin(self.hold_angle / 180 * np.pi)
+            y = pattern * np.cos(self.hold_angle / 180 * np.pi)
+            self.pgPolarPlotHold.setData(x, y)
+
+        elif plot_type is 'Cartesian_Polar_Hold':
+            self.hold_angle = angle
+            self.hold_pattern = pattern
             self.pgFigureHold.setData(angle, pattern)
             self.cartesianPlot.addItem(self.pgFigureHold)
 
+            pattern = pattern + self.ampOffset
+            pattern[np.where(pattern < 0)] = 0
+            x = pattern * np.sin(angle / 180 * np.pi)
+            y = pattern * np.cos(angle / 180 * np.pi)
+            self.pgPolarPlotHold.setData(x, y)
+            self.polarPlot.addItem(self.pgPolarPlotHold)
+
     def hold_figure(self):
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.update_linear_array_parameter('Cartesian_Hold')
+        self.update_linear_array_parameter('Cartesian_Polar_Hold')
         self.ui.clearButton.setEnabled(True)
 
     def clear_figure(self):
         self.cartesianPlot.removeItem(self.pgFigureHold)
+        self.polarPlot.removeItem(self.pgPolarPlotHold)
         self.ui.clearButton.setEnabled(False)
 
     def disable_window_config(self):
