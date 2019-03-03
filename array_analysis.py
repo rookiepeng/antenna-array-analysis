@@ -258,6 +258,7 @@ class MyApp(QtWidgets.QMainWindow):
             self.cartesianPlot.setData(angle, pattern)
             self.angle = angle
             self.pattern = pattern
+
         elif plot_type is 'Polar':
             self.angle = angle
             self.pattern = pattern
