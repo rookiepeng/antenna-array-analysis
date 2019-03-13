@@ -144,6 +144,8 @@ class MyApp(QtWidgets.QMainWindow):
             self.cartesian_plot_toggled)
         self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
 
+        self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
+
     def init_plot_view(self):
         ############################################
         # Cartesian View
