@@ -2,7 +2,7 @@
 
 A simple GUI tool for antenna array analysis.
 
-*Only support linear arrays now* 
+***Only support linear arrays now*** 
 
 ## Usage
 
