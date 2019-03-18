@@ -2,6 +2,8 @@
 
 A simple GUI tool for antenna array analysis.
 
+*Only support linear arrays now* 
+
 ## Usage
 
 - [Download](https://github.com/rookiepeng/antenna-array-analysis/releases) the corresponded release based on your system
