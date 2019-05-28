@@ -1,6 +1,9 @@
 """
     Antenna Array Analysis
+
     Copyright (C) 2019  Zhengyu Peng
+    E-mail: zpeng.me@gmail.com
+    Website: https://zpeng.me
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,6 +17,28 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+    `                      `
+    -:.                  -#:
+    -//:.              -###:
+    -////:.          -#####:
+    -/:.://:.      -###++##:
+    ..   `://:-  -###+. :##:
+           `:/+####+.   :##:
+    .::::::::/+###.     :##:
+    .////-----+##:    `:###:
+     `-//:.   :##:  `:###/.
+       `-//:. :##:`:###/.
+         `-//:+######/.
+           `-/+####/.
+             `+##+.
+              :##:
+              :##:
+              :##:
+              :##:
+              :##:
+               .+:
+
 """
 
 import sys
@@ -407,29 +432,3 @@ if __name__ == '__main__':
     window = MyApp()
     window.show()
     sys.exit(app.exec_())
-
-'''
-    Z. Peng
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
-'''

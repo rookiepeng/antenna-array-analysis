@@ -1,6 +1,9 @@
 """
     Antenna Array Analysis
+
     Copyright (C) 2019  Zhengyu Peng
+    E-mail: zpeng.me@gmail.com
+    Website: https://zpeng.me
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,6 +17,28 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+    `                      `
+    -:.                  -#:
+    -//:.              -###:
+    -////:.          -#####:
+    -/:.://:.      -###++##:
+    ..   `://:-  -###+. :##:
+           `:/+####+.   :##:
+    .::::::::/+###.     :##:
+    .////-----+##:    `:###:
+     `-//:.   :##:  `:###/.
+       `-//:. :##:`:###/.
+         `-//:+######/.
+           `-/+####/.
+             `+##+.
+              :##:
+              :##:
+              :##:
+              :##:
+              :##:
+               .+:
+
 """
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
@@ -74,30 +99,3 @@ class LinearArray(QObject):
                 self.patternReady.emit(self.theta, AF, self.plot)
 
             sleep(0.01)
-
-
-'''
-    Z. Peng
-
-    `                      `
-    -:.                  -#:
-    -//:.              -###:
-    -////:.          -#####:
-    -/:.://:.      -###++##:
-    ..   `://:-  -###+. :##:
-           `:/+####+.   :##:
-    .::::::::/+###.     :##:
-    .////-----+##:    `:###:
-     `-//:.   :##:  `:###/.
-       `-//:. :##:`:###/.
-         `-//:+######/.
-           `-/+####/.
-             `+##+.
-              :##:
-              :##:
-              :##:
-              :##:
-              :##:
-               .+:
-
-'''
