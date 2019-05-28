@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     Antenna Array Analysis
     Copyright (C) 2019  Zhengyu Peng
@@ -24,7 +23,7 @@ from PyQt5.QtCore import QThread
 
 import numpy as np
 
-from linear_array import Linear_Array
+from lineararray import LinearArray
 
 import pyqtgraph as pg
 
@@ -35,6 +34,7 @@ QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
+        super().__init__()
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
         self.pgCanvas = pg.GraphicsLayoutWidget()
@@ -83,11 +83,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.init_plot_view()
         self.init_ui()
 
-        self.linear_array = Linear_Array()
+        self.linear_array = LinearArray()
         self.linear_array_thread = QThread()
         self.linear_array.patternReady.connect(self.update_pattern)
         self.linear_array_thread.started.connect(
-            self.linear_array.calculatePattern)
+            self.linear_array.calculate_pattern)
         self.linear_array.moveToThread(self.linear_array_thread)
         self.linear_array_thread.start()
 
@@ -246,14 +246,19 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def update_linear_array_parameter(self, plot_type):
-        self.linearArrayConfig['array_size'] = self.ui.spinBox_ArraySize.value()
-        self.linearArrayConfig['spacing'] = self.ui.doubleSpinBox_Spacing.value()
-        self.linearArrayConfig['beam_loc'] = self.ui.doubleSpinBox_SteeringAngle.value()
-        self.linearArrayConfig['window_type_idx'] = self.ui.comboBox_Window.currentIndex()
+        self.linearArrayConfig['array_size'] = self.ui.spinBox_ArraySize.value(
+        )
+        self.linearArrayConfig['spacing'] = self.ui.doubleSpinBox_Spacing.value(
+        )
+        self.linearArrayConfig['beam_loc'] = self.ui.doubleSpinBox_SteeringAngle.value(
+        )
+        self.linearArrayConfig['window_type_idx'] = self.ui.comboBox_Window.currentIndex(
+        )
         self.linearArrayConfig['window_sll'] = self.ui.spinBox_SLL.value()
         self.linearArrayConfig['window_nbar'] = self.ui.spinBox_nbar.value()
 
-        self.linear_array.updateData(self.linearArrayConfig, self.theta, plot_type)
+        self.linear_array.update_config(
+            self.linearArrayConfig, self.theta, plot_type)
 
     def update_pattern(self, angle, pattern, plot_type):
         if plot_type is 'Cartesian':
