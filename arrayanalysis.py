@@ -63,7 +63,7 @@ class MyApp(QtWidgets.QMainWindow):
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
         self.pgCanvas = pg.GraphicsLayoutWidget()
-        self.figureLayout.addWidget(self.pgCanvas)
+        self.layout_figure.addWidget(self.pgCanvas)
 
         self.linearArrayConfig = {'array_size': 64,
                                   'spacing': 0.5,
@@ -120,37 +120,37 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.show()
 
     def init_ui(self):
-        self.ui.spinBox_SLL.setVisible(False)
-        self.ui.label_SLL.setVisible(False)
-        self.ui.horizontalSlider_SLL.setVisible(False)
-        self.ui.spinBox_nbar.setVisible(False)
-        self.ui.label_nbar.setVisible(False)
-        self.ui.horizontalSlider_nbar.setVisible(False)
+        self.ui.sb_sidelobex.setVisible(False)
+        self.ui.label_sidelobex.setVisible(False)
+        self.ui.hs_sidelobex.setVisible(False)
+        self.ui.sb_adjsidelobex.setVisible(False)
+        self.ui.label_adjsidelobex.setVisible(False)
+        self.ui.hs_adjsidelobex.setVisible(False)
         self.ui.clearButton.setEnabled(False)
 
-        self.ui.comboBox_Window.addItems(
+        self.ui.cb_windowx.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
 
-        self.ui.spinBox_ArraySize.valueChanged.connect(
+        self.ui.sb_sizex.valueChanged.connect(
             self.array_changed)
 
-        self.ui.doubleSpinBox_Spacing.valueChanged.connect(
+        self.ui.dsb_spacingx.valueChanged.connect(
             self.array_changed)
 
-        self.ui.doubleSpinBox_SteeringAngle.valueChanged.connect(
+        self.ui.dsb_angletheta.valueChanged.connect(
             self.steering_angle_value_changed)
-        self.ui.horizontalSlider_SteeringAngle.valueChanged.connect(
+        self.ui.hs_angletheta.valueChanged.connect(
             self.steering_angle_slider_moved)
 
-        self.ui.comboBox_Window.currentIndexChanged.connect(
+        self.ui.cb_windowx.currentIndexChanged.connect(
             self.window_combobox_changed)
 
-        self.ui.spinBox_SLL.valueChanged.connect(self.sll_value_change)
-        self.ui.horizontalSlider_SLL.valueChanged.connect(
+        self.ui.sb_sidelobex.valueChanged.connect(self.sll_value_change)
+        self.ui.hs_sidelobex.valueChanged.connect(
             self.sll_slider_moved)
 
-        self.ui.spinBox_nbar.valueChanged.connect(self.nbar_value_changed)
-        self.ui.horizontalSlider_nbar.valueChanged.connect(
+        self.ui.sb_adjsidelobex.valueChanged.connect(self.nbar_value_changed)
+        self.ui.hs_adjsidelobex.valueChanged.connect(
             self.nbar_slider_moved)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
@@ -233,11 +233,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def steering_angle_value_changed(self, value):
-        self.ui.horizontalSlider_SteeringAngle.setValue(value * 10)
+        self.ui.hs_angletheta.setValue(value * 10)
         self.update_linear_array_parameter(self.plotType)
 
     def steering_angle_slider_moved(self, value):
-        self.ui.doubleSpinBox_SteeringAngle.setValue(value / 10)
+        self.ui.dsb_angletheta.setValue(value / 10)
         self.update_linear_array_parameter(self.plotType)
 
     def window_combobox_changed(self, value):
@@ -245,19 +245,19 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def sll_value_change(self, value):
-        self.ui.horizontalSlider_SLL.setValue(value)
+        self.ui.hs_sidelobex.setValue(value)
         self.update_linear_array_parameter(self.plotType)
 
     def sll_slider_moved(self, value):
-        self.ui.spinBox_SLL.setValue(value)
+        self.ui.sb_sidelobex.setValue(value)
         self.update_linear_array_parameter(self.plotType)
 
     def nbar_value_changed(self, value):
-        self.ui.horizontalSlider_nbar.setValue(value)
+        self.ui.hs_adjsidelobex.setValue(value)
         self.update_linear_array_parameter(self.plotType)
 
     def nbar_slider_moved(self, value):
-        self.ui.spinBox_nbar.setValue(value)
+        self.ui.sb_adjsidelobex.setValue(value)
         self.update_linear_array_parameter(self.plotType)
 
     def polar_min_amp_value_changed(self, value):
@@ -271,16 +271,16 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def update_linear_array_parameter(self, plot_type):
-        self.linearArrayConfig['array_size'] = self.ui.spinBox_ArraySize.value(
+        self.linearArrayConfig['array_size'] = self.ui.sb_sizex.value(
         )
-        self.linearArrayConfig['spacing'] = self.ui.doubleSpinBox_Spacing.value(
+        self.linearArrayConfig['spacing'] = self.ui.dsb_spacingx.value(
         )
-        self.linearArrayConfig['beam_loc'] = self.ui.doubleSpinBox_SteeringAngle.value(
+        self.linearArrayConfig['beam_loc'] = self.ui.dsb_angletheta.value(
         )
-        self.linearArrayConfig['window_type_idx'] = self.ui.comboBox_Window.currentIndex(
+        self.linearArrayConfig['window_type_idx'] = self.ui.cb_windowx.currentIndex(
         )
-        self.linearArrayConfig['window_sll'] = self.ui.spinBox_SLL.value()
-        self.linearArrayConfig['window_nbar'] = self.ui.spinBox_nbar.value()
+        self.linearArrayConfig['window_sll'] = self.ui.sb_sidelobex.value()
+        self.linearArrayConfig['window_nbar'] = self.ui.sb_adjsidelobex.value()
 
         self.linear_array.update_config(
             self.linearArrayConfig, self.theta, plot_type)
@@ -353,28 +353,28 @@ class MyApp(QtWidgets.QMainWindow):
         self.holdEnabled = False
 
     def disable_window_config(self):
-        self.ui.spinBox_SLL.setVisible(False)
-        self.ui.label_SLL.setVisible(False)
-        self.ui.horizontalSlider_SLL.setVisible(False)
-        self.ui.spinBox_nbar.setVisible(False)
-        self.ui.label_nbar.setVisible(False)
-        self.ui.horizontalSlider_nbar.setVisible(False)
+        self.ui.sb_sidelobex.setVisible(False)
+        self.ui.label_sidelobex.setVisible(False)
+        self.ui.hs_sidelobex.setVisible(False)
+        self.ui.sb_adjsidelobex.setVisible(False)
+        self.ui.label_adjsidelobex.setVisible(False)
+        self.ui.hs_adjsidelobex.setVisible(False)
 
     def chebyshev(self):
-        self.ui.spinBox_SLL.setVisible(True)
-        self.ui.label_SLL.setVisible(True)
-        self.ui.horizontalSlider_SLL.setVisible(True)
-        self.ui.spinBox_nbar.setVisible(False)
-        self.ui.label_nbar.setVisible(False)
-        self.ui.horizontalSlider_nbar.setVisible(False)
+        self.ui.sb_sidelobex.setVisible(True)
+        self.ui.label_sidelobex.setVisible(True)
+        self.ui.hs_sidelobex.setVisible(True)
+        self.ui.sb_adjsidelobex.setVisible(False)
+        self.ui.label_adjsidelobex.setVisible(False)
+        self.ui.hs_adjsidelobex.setVisible(False)
 
     def taylor(self):
-        self.ui.spinBox_SLL.setVisible(True)
-        self.ui.label_SLL.setVisible(True)
-        self.ui.horizontalSlider_SLL.setVisible(True)
-        self.ui.spinBox_nbar.setVisible(True)
-        self.ui.label_nbar.setVisible(True)
-        self.ui.horizontalSlider_nbar.setVisible(True)
+        self.ui.sb_sidelobex.setVisible(True)
+        self.ui.label_sidelobex.setVisible(True)
+        self.ui.hs_sidelobex.setVisible(True)
+        self.ui.sb_adjsidelobex.setVisible(True)
+        self.ui.label_adjsidelobex.setVisible(True)
+        self.ui.hs_adjsidelobex.setVisible(True)
 
     def plotview_x_range_changed(self, item):
         self.theta = np.linspace(
