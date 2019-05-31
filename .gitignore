@@ -108,3 +108,9 @@ pyqtgraph/
 \.idea/
 
 antarray/
+
+\.vs/
+
+*.pyproj
+
+*.sln
