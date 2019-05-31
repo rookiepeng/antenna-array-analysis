@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1004</width>
-    <height>650</height>
+    <width>1026</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -635,12 +635,12 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_11">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0">
           <item>
-           <widget class="QGroupBox" name="groupBox_3">
+           <widget class="QGroupBox" name="gb_arrayconfig">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>1</horstretch>
+              <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
@@ -655,7 +655,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QGroupBox" name="groupBox_4">
+              <widget class="QGroupBox" name="gb_horizontal">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -672,7 +672,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_13">
                   <item>
-                   <widget class="QLabel" name="label_6">
+                   <widget class="QLabel" name="label_sizex">
                     <property name="text">
                      <string>Size:</string>
                     </property>
@@ -692,14 +692,14 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox"/>
+                   <widget class="QSpinBox" name="sb_sizex"/>
                   </item>
                  </layout>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_14">
                   <item>
-                   <widget class="QLabel" name="label_7">
+                   <widget class="QLabel" name="label_spacingx">
                     <property name="text">
                      <string>Spacing (λ):</string>
                     </property>
@@ -719,7 +719,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+                   <widget class="QDoubleSpinBox" name="dsb_spacingx"/>
                   </item>
                  </layout>
                 </item>
@@ -733,7 +733,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_12">
                   <item>
-                   <widget class="QLabel" name="label_5">
+                   <widget class="QLabel" name="label_windowx">
                     <property name="text">
                      <string>Window:</string>
                     </property>
@@ -753,14 +753,14 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="comboBox"/>
+                   <widget class="QComboBox" name="cb_windowx"/>
                   </item>
                  </layout>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_20">
                   <item>
-                   <widget class="QLabel" name="label_13">
+                   <widget class="QLabel" name="label_sidelobex">
                     <property name="text">
                      <string>Side lobe (dB):</string>
                     </property>
@@ -780,17 +780,36 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox_3"/>
+                   <widget class="QSpinBox" name="sb_sidelobex">
+                    <property name="minimum">
+                     <number>10</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>60</number>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider_2">
+                 <widget class="QSlider" name="hs_sidelobex">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>60</number>
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -803,7 +822,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_21">
                   <item>
-                   <widget class="QLabel" name="label_14">
+                   <widget class="QLabel" name="label_adjsidelobex">
                     <property name="text">
                      <string>Adjacent sidelobes:</string>
                     </property>
@@ -823,17 +842,36 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox_4"/>
+                   <widget class="QSpinBox" name="sb_adjsidelobex">
+                    <property name="minimum">
+                     <number>2</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>20</number>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider_3">
+                 <widget class="QSlider" name="hs_adjsidelobex">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>2</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>20</number>
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -847,7 +885,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_5">
+              <widget class="QGroupBox" name="gb_vertical">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -864,7 +902,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_15">
                   <item>
-                   <widget class="QLabel" name="label_8">
+                   <widget class="QLabel" name="label_sizey">
                     <property name="text">
                      <string>Size:</string>
                     </property>
@@ -884,14 +922,14 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox_2"/>
+                   <widget class="QSpinBox" name="sb_sizey"/>
                   </item>
                  </layout>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_16">
                   <item>
-                   <widget class="QLabel" name="label_9">
+                   <widget class="QLabel" name="label_spacingy">
                     <property name="text">
                      <string>Spacing (λ):</string>
                     </property>
@@ -911,7 +949,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+                   <widget class="QDoubleSpinBox" name="dsb_spacingy"/>
                   </item>
                  </layout>
                 </item>
@@ -925,7 +963,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_19">
                   <item>
-                   <widget class="QLabel" name="label_12">
+                   <widget class="QLabel" name="label_windowy">
                     <property name="text">
                      <string>Window:</string>
                     </property>
@@ -945,14 +983,14 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="comboBox_2"/>
+                   <widget class="QComboBox" name="cb_windowy"/>
                   </item>
                  </layout>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_22">
                   <item>
-                   <widget class="QLabel" name="label_15">
+                   <widget class="QLabel" name="label_sidelobey">
                     <property name="text">
                      <string>Side lobe (dB):</string>
                     </property>
@@ -972,17 +1010,36 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox_5"/>
+                   <widget class="QSpinBox" name="sb_sidelobey">
+                    <property name="minimum">
+                     <number>10</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>60</number>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider_4">
+                 <widget class="QSlider" name="hs_sidelobey">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>60</number>
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -995,7 +1052,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_23">
                   <item>
-                   <widget class="QLabel" name="label_16">
+                   <widget class="QLabel" name="label_adjsidelobey">
                     <property name="text">
                      <string>Adjacent sidelobes:</string>
                     </property>
@@ -1015,17 +1072,36 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="spinBox_6"/>
+                   <widget class="QSpinBox" name="sb_adjsidelobey">
+                    <property name="minimum">
+                     <number>2</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>20</number>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider_5">
+                 <widget class="QSlider" name="hs_adjsidelobey">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>2</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>20</number>
                   </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -1057,31 +1133,36 @@
          </layout>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="gb_figure">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>3</horstretch>
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="sizeIncrement">
            <size>
-            <width>1</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
           <property name="title">
            <string>Figure</string>
           </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_24">
+           <item>
+            <layout class="QVBoxLayout" name="layout_figure"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0">
           <item>
-           <widget class="QGroupBox" name="groupBox_6">
+           <widget class="QGroupBox" name="gb_plotconfig">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>1</horstretch>
+              <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
@@ -1096,7 +1177,13 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_10">
              <item>
-              <widget class="QGroupBox" name="groupBox_7">
+              <widget class="QGroupBox" name="gb_steering">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="title">
                 <string>Steering</string>
                </property>
@@ -1107,7 +1194,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_17">
                   <item>
-                   <widget class="QLabel" name="label_10">
+                   <widget class="QLabel" name="label_angletheta">
                     <property name="text">
                      <string>Angle θ (°):</string>
                     </property>
@@ -1127,12 +1214,12 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+                   <widget class="QDoubleSpinBox" name="dsb_angletheta"/>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider">
+                 <widget class="QSlider" name="hs_angletheta">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -1150,7 +1237,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_18">
                   <item>
-                   <widget class="QLabel" name="label_11">
+                   <widget class="QLabel" name="label_anglephi">
                     <property name="text">
                      <string>Angle φ (°):</string>
                     </property>
@@ -1170,12 +1257,12 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+                   <widget class="QDoubleSpinBox" name="dsb_anglephi"/>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="horizontalSlider_6">
+                 <widget class="QSlider" name="hs_anglephi">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -1194,7 +1281,13 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_8">
+              <widget class="QGroupBox" name="gb_plot">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="title">
                 <string>Plot</string>
                </property>
@@ -1267,8 +1360,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1004</width>
-     <height>22</height>
+     <width>1026</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1304,5 +1397,134 @@
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>sb_sidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_sidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>156</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_sidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_sidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>247</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>137</x>
+     <y>574</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_sidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_sidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>175</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_sidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_sidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>539</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_adjsidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_adjsidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>242</x>
+     <y>331</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>345</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_adjsidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_adjsidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>224</x>
+     <y>609</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>194</x>
+     <y>634</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_adjsidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_adjsidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>321</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_adjsidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_adjsidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>629</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>235</x>
+     <y>602</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
