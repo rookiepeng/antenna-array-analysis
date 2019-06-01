@@ -165,9 +165,9 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.holdButton.clicked.connect(self.hold_figure)
         self.ui.clearButton.clicked.connect(self.clear_figure)
 
-        self.ui.radioButton_Cartesian.toggled.connect(
+        self.ui.rb_cartesian.toggled.connect(
             self.cartesian_plot_toggled)
-        self.ui.radioButton_Polar.toggled.connect(self.polar_plot_toggled)
+        self.ui.rb_polar.toggled.connect(self.polar_plot_toggled)
 
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
