@@ -49,8 +49,10 @@ from PyQt5.QtCore import QThread
 import numpy as np
 
 from lineararray import LinearArray
+from calpattern import CalPattern
 
 import pyqtgraph as pg
+import pyqtgraph.opengl as gl
 
 # pg.setConfigOption('background', 'w')
 # pg.setConfigOption('foreground', 'k')
@@ -63,7 +65,7 @@ class MyApp(QtWidgets.QMainWindow):
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
         self.pgCanvas = pg.GraphicsLayoutWidget()
-        self.layout_figure.addWidget(self.pgCanvas)
+        # self.layout_figure.addWidget(self.pgCanvas)
 
         self.linearArrayConfig = {'array_size': 64,
                                   'spacing': 0.5,
@@ -74,6 +76,7 @@ class MyApp(QtWidgets.QMainWindow):
                                   }
 
         self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.phi = np.linspace(-90, 90, num=181, endpoint=True)
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.pattern = np.zeros(np.shape(self.theta))
 
@@ -102,19 +105,33 @@ class MyApp(QtWidgets.QMainWindow):
         self.circleList = []
         self.circleLabel = []
 
+        self.surface_view = gl.GLViewWidget()
+        self.surface_plot = gl.GLSurfacePlotItem(shader='heightColor', computeNormals=False, color=(0.5, 0.5, 1, 1))
+        self.layout_figure.addWidget(self.surface_view)
+        self.surface_view.addItem(self.surface_plot)
+        self.surface_view.setCameraPosition(distance=50)
+
         self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
 
         self.init_plot_view()
         self.init_ui()
 
-        self.linear_array = LinearArray()
-        self.linear_array_thread = QThread()
-        self.linear_array.patternReady.connect(self.update_pattern)
-        self.linear_array_thread.started.connect(
-            self.linear_array.calculate_pattern)
-        self.linear_array.moveToThread(self.linear_array_thread)
-        self.linear_array_thread.start()
+        # self.linear_array = LinearArray()
+        # self.linear_array_thread = QThread()
+        # self.linear_array.patternReady.connect(self.update_pattern)
+        # self.linear_array_thread.started.connect(
+        #     self.linear_array.calculate_pattern)
+        # self.linear_array.moveToThread(self.linear_array_thread)
+        # self.linear_array_thread.start()
+
+        self.calpattern = CalPattern()
+        self.calpattern_thread = QThread()
+        self.calpattern.patternReady.connect(self.update_pattern)
+        self.calpattern_thread.started.connect(
+            self.calpattern.cal_pattern)
+        self.calpattern.moveToThread(self.calpattern_thread)
+        self.calpattern_thread.start()
 
         self.update_linear_array_parameter(self.plotType)
         self.ui.show()
@@ -224,10 +241,13 @@ class MyApp(QtWidgets.QMainWindow):
         self.polarView.addLine(y=0, pen=0.3).setAngle(-45)
         self.polarView.setMouseEnabled(x=False, y=False)
 
+        # self.surface_view.addItem(self.surface_plot)
+
         ############################################
         self.cartesianView.sigXRangeChanged.connect(
             self.plotview_x_range_changed)
-        self.show_cartesian_plot()
+        # self.show_cartesian_plot()
+        # self.show_3d_plot()
 
     def array_changed(self):
         self.update_linear_array_parameter(self.plotType)
@@ -271,23 +291,25 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_linear_array_parameter(self.plotType)
 
     def update_linear_array_parameter(self, plot_type):
-        self.linearArrayConfig['array_size'] = self.ui.sb_sizex.value(
+        self.linearArrayConfig['sizex'] = self.ui.sb_sizex.value(
         )
-        self.linearArrayConfig['spacing'] = self.ui.dsb_spacingx.value(
+        self.linearArrayConfig['spacingx'] = self.ui.dsb_spacingx.value(
         )
-        self.linearArrayConfig['beam_loc'] = self.ui.dsb_angletheta.value(
+        self.linearArrayConfig['beam_theta'] = self.ui.dsb_angletheta.value(
         )
-        self.linearArrayConfig['window_type_idx'] = self.ui.cb_windowx.currentIndex(
+        self.linearArrayConfig['windowx'] = self.ui.cb_windowx.currentIndex(
         )
-        self.linearArrayConfig['window_sll'] = self.ui.sb_sidelobex.value()
-        self.linearArrayConfig['window_nbar'] = self.ui.sb_adjsidelobex.value()
+        self.linearArrayConfig['sllx'] = self.ui.sb_sidelobex.value()
+        self.linearArrayConfig['nbarx'] = self.ui.sb_adjsidelobex.value()
 
-        self.linear_array.update_config(
-            self.linearArrayConfig, self.theta, plot_type)
+        self.calpattern.update_config(
+            self.linearArrayConfig, self.theta, self.phi, plot_type)
 
-    def update_pattern(self, angle, pattern, plot_type):
+    def update_pattern(self, angle, angle_phi, pattern, plot_type):
+        print(np.shape(pattern))
+        self.surface_plot.setData(x=angle_phi, y=angle, z=pattern)
         if plot_type is 'Cartesian':
-            self.cartesianPlot.setData(angle, pattern)
+            # self.cartesianPlot.setData(angle, pattern)
             self.angle = angle
             self.pattern = pattern
 
@@ -425,6 +447,9 @@ class MyApp(QtWidgets.QMainWindow):
 
     def show_polar_plot(self):
         self.pgCanvas.addItem(self.polarView)
+
+    # def show_3d_plot(self):
+        # self.pgCanvas.addItem(self.surface_view)
 
 
 if __name__ == '__main__':
