@@ -59,7 +59,7 @@ import pyqtgraph.opengl as gl
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 
-class MyApp(QtWidgets.QMainWindow):
+class AntArrayAnalysis(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         super(QtWidgets.QMainWindow, self).__init__()
@@ -583,6 +583,6 @@ class MyApp(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = MyApp()
+    window = AntArrayAnalysis()
     window.show()
     sys.exit(app.exec_())
