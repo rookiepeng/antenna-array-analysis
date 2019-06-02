@@ -201,13 +201,21 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.cb_windowy.currentIndexChanged.connect(
             self.windowy_combobox_changed)
 
-        self.ui.sb_sidelobex.valueChanged.connect(self.sll_value_change)
+        self.ui.sb_sidelobex.valueChanged.connect(self.sllx_value_change)
         self.ui.hs_sidelobex.valueChanged.connect(
-            self.sll_slider_moved)
+            self.sllx_slider_moved)
 
-        self.ui.sb_adjsidelobex.valueChanged.connect(self.nbar_value_changed)
+        self.ui.sb_sidelobey.valueChanged.connect(self.slly_value_change)
+        self.ui.hs_sidelobey.valueChanged.connect(
+            self.slly_slider_moved)
+
+        self.ui.sb_adjsidelobex.valueChanged.connect(self.nbarx_value_changed)
         self.ui.hs_adjsidelobex.valueChanged.connect(
-            self.nbar_slider_moved)
+            self.nbarx_slider_moved)
+
+        self.ui.sb_adjsidelobey.valueChanged.connect(self.nbary_value_changed)
+        self.ui.hs_adjsidelobey.valueChanged.connect(
+            self.nbary_slider_moved)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -315,20 +323,36 @@ class MyApp(QtWidgets.QMainWindow):
         self.windowy_change_config[value]()
         self.update_array_parameters(self.plotType)
 
-    def sll_value_change(self, value):
+    def sllx_value_change(self, value):
         self.ui.hs_sidelobex.setValue(value)
         self.update_array_parameters(self.plotType)
 
-    def sll_slider_moved(self, value):
+    def slly_value_change(self, value):
+        self.ui.hs_sidelobey.setValue(value)
+        self.update_array_parameters(self.plotType)
+
+    def sllx_slider_moved(self, value):
         self.ui.sb_sidelobex.setValue(value)
         self.update_array_parameters(self.plotType)
 
-    def nbar_value_changed(self, value):
+    def slly_slider_moved(self, value):
+        self.ui.sb_sidelobey.setValue(value)
+        self.update_array_parameters(self.plotType)
+
+    def nbarx_value_changed(self, value):
         self.ui.hs_adjsidelobex.setValue(value)
         self.update_array_parameters(self.plotType)
 
-    def nbar_slider_moved(self, value):
+    def nbary_value_changed(self, value):
+        self.ui.hs_adjsidelobey.setValue(value)
+        self.update_array_parameters(self.plotType)
+
+    def nbarx_slider_moved(self, value):
         self.ui.sb_adjsidelobex.setValue(value)
+        self.update_array_parameters(self.plotType)
+
+    def nbary_slider_moved(self, value):
+        self.ui.sb_adjsidelobey.setValue(value)
         self.update_array_parameters(self.plotType)
 
     def polar_min_amp_value_changed(self, value):
@@ -359,7 +383,7 @@ class MyApp(QtWidgets.QMainWindow):
             self.array_config, self.theta, self.phi, plot_type)
 
     def update_pattern(self, angle, angle_phi, pattern, plot_type):
-        print(np.shape(pattern))
+        # print(np.shape(pattern))
         rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
         self.surface_plot.setData(z=pattern+100, colors=rgba_img)
         if plot_type is 'Cartesian':
@@ -451,7 +475,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.sb_adjsidelobex.setVisible(False)
         self.ui.label_adjsidelobex.setVisible(False)
         self.ui.hs_adjsidelobex.setVisible(False)
-    
+
     def chebyshevy(self):
         self.ui.sb_sidelobey.setVisible(True)
         self.ui.label_sidelobey.setVisible(True)
