@@ -64,11 +64,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         super().__init__()
         super(QtWidgets.QMainWindow, self).__init__()
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
-        self.pgCanvas = pg.GraphicsLayoutWidget()
-        # self.layout_figure.addWidget(self.pgCanvas)
+        self.canvas2d = pg.GraphicsLayoutWidget()
+        self.canvas3d = gl.GLViewWidget()
+
+        self.layout_figure.addWidget(self.canvas3d)
+        # self.layout_figure.addWidget(self.canvas2d)
 
         self.cmap = cm.get_cmap('jet')
-
         self.minZ = -100
         self.maxZ = 0
 
@@ -80,16 +82,18 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                              'window_nbar': 20
                              }
 
-        self.theta = np.linspace(-1, 1, num=101, endpoint=True)
-        self.phi = np.linspace(-1, 1, num=101, endpoint=True)
+        self.az_nfft = 512
+        self.el_nfft = 512
+        self.azimuth = np.linspace(-90, 90, num=self.az_nfft, endpoint=False)
+        self.elevation = np.linspace(-90, 90, num=self.el_nfft, endpoint=False)
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.pattern = np.zeros(np.shape(self.theta))
+        self.pattern = np.zeros(np.shape(self.azimuth))
 
         self.plotType = 'Cartesian'  # 'Cartesian' or 'Polar'
         self.polarAmpOffset = 60
 
         self.holdAngle = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.holdPattern = np.zeros(np.shape(self.theta))
+        self.holdPattern = np.zeros(np.shape(self.azimuth))
         self.holdEnabled = False
 
         self.windowx_change_config = {
@@ -118,24 +122,36 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.circleList = []
         self.circleLabel = []
 
-        self.surface_view = gl.GLViewWidget()
         self.surface_plot = gl.GLSurfacePlotItem(computeNormals=False)
-        self.layout_figure.addWidget(self.surface_view)
-        self.surface_view.addItem(self.surface_plot)
-        self.surface_view.setCameraPosition(distance=5)
-        # self.surface_plot.scale(1, 1, 1.0/50)
+        self.surface_plot.translate(0, 0, 100)
 
-        self.xgrid = gl.GLGridItem()
-        self.ygrid = gl.GLGridItem()
-        self.zgrid = gl.GLGridItem()
-        self.surface_view.addItem(self.xgrid)
-        self.surface_view.addItem(self.ygrid)
-        self.surface_view.addItem(self.zgrid)
-        self.xgrid.setSpacing(x=0.1, y=0.1, z=10)
+        self.axis = gl.GLAxisItem()
+        self.canvas3d.addItem(self.axis)
+        self.axis.setSize(x=150, y=150, z=150)
+
+        self.xzgrid = gl.GLGridItem()
+        self.yzgrid = gl.GLGridItem()
+        self.xygrid = gl.GLGridItem()
+        self.canvas3d.addItem(self.xzgrid)
+        self.canvas3d.addItem(self.yzgrid)
+        self.canvas3d.addItem(self.xygrid)
+        self.xzgrid.setSize(x=180, y=100, z=0)
+        self.xzgrid.setSpacing(x=10, y=10, z=10)
+        self.yzgrid.setSize(x=100, y=180, z=0)
+        self.yzgrid.setSpacing(x=10, y=10, z=10)
+        self.xygrid.setSize(x=180, y=180, z=0)
+        self.xygrid.setSpacing(x=10, y=10, z=10)
 
         # rotate x and y grids to face the correct direction
-        self.xgrid.rotate(90, 0, 1, 0)
-        self.ygrid.rotate(90, 1, 0, 0)
+        self.xzgrid.rotate(90, 1, 0, 0)
+        self.xzgrid.translate(0, -90, 50)
+        self.yzgrid.rotate(90, 0, 1, 0)
+        self.yzgrid.translate(-90, 0, 50)
+        # self.xygrid.translate(0, 0, -50)
+
+        self.canvas3d.addItem(self.surface_plot)
+        self.canvas3d.setCameraPosition(distance=300)
+        # self.surface_plot.scale(0.1, 0.1, 0.1)
 
         self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
@@ -186,14 +202,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.array_changed)
 
         self.ui.dsb_angleaz.valueChanged.connect(
-            self.theta_value_changed)
+            self.azimuth_value_changed)
         self.ui.hs_angletheta.valueChanged.connect(
-            self.theta_slider_moved)
+            self.azimuth_slider_moved)
 
         self.ui.dsb_angleel.valueChanged.connect(
-            self.phi_value_changed)
+            self.elevation_value_changed)
         self.ui.hs_anglephi.valueChanged.connect(
-            self.phi_slider_moved)
+            self.elevation_slider_moved)
 
         self.ui.cb_windowx.currentIndexChanged.connect(
             self.windowx_combobox_changed)
@@ -267,10 +283,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         for circle_idx in range(0, 6):
             self.circleList.append(
                 QtGui.QGraphicsEllipseItem(
-                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
-                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
-                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2,
-                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2))
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 *
+                    circle_idx,
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 *
+                    circle_idx,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 *
+                     circle_idx) * 2,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 *
+                     circle_idx) * 2))
             self.circleList[circle_idx].setStartAngle(2880)
             self.circleList[circle_idx].setSpanAngle(2880)
             self.circleList[circle_idx].setPen(pg.mkPen(0.2))
@@ -279,7 +299,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.circleLabel.append(
                 pg.TextItem(str(-self.polarAmpOffset / 6 * (circle_idx + 1))))
             self.circleLabel[circle_idx + 1].setPos(
-                self.polarAmpOffset - self.polarAmpOffset / 6 * (circle_idx + 1), 0)
+                self.polarAmpOffset - self.polarAmpOffset / 6 * (
+                    circle_idx + 1), 0)
             self.polarView.addItem(self.circleLabel[circle_idx + 1])
 
         self.polarView.addLine(x=0, pen=0.6)
@@ -288,7 +309,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.polarView.addLine(y=0, pen=0.3).setAngle(-45)
         self.polarView.setMouseEnabled(x=False, y=False)
 
-        # self.surface_view.addItem(self.surface_plot)
+        # self.canvas3d.addItem(self.surface_plot)
 
         ############################################
         self.cartesianView.sigXRangeChanged.connect(
@@ -299,19 +320,19 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
     def array_changed(self):
         self.update_array_parameters(self.plotType)
 
-    def theta_value_changed(self, value):
+    def azimuth_value_changed(self, value):
         self.ui.hs_angletheta.setValue(value * 10)
         self.update_array_parameters(self.plotType)
 
-    def phi_value_changed(self, value):
+    def elevation_value_changed(self, value):
         self.ui.hs_anglephi.setValue(value * 10)
         self.update_array_parameters(self.plotType)
 
-    def theta_slider_moved(self, value):
+    def azimuth_slider_moved(self, value):
         self.ui.dsb_angleaz.setValue(value / 10)
         self.update_array_parameters(self.plotType)
 
-    def phi_slider_moved(self, value):
+    def elevation_slider_moved(self, value):
         self.ui.dsb_angleel.setValue(value / 10)
         self.update_array_parameters(self.plotType)
 
@@ -380,12 +401,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['nbary'] = self.ui.sb_adjsidelobey.value()
 
         self.calpattern.update_config(
-            self.array_config, self.theta, self.phi, plot_type)
+            self.array_config, self.azimuth, self.elevation, plot_type)
 
     def update_pattern(self, angle, angle_phi, pattern, plot_type):
         # print(np.shape(pattern))
         rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
-        self.surface_plot.setData(z=pattern+100, colors=rgba_img)
+        self.surface_plot.setData(
+            x=self.azimuth, y=self.elevation, z=pattern, colors=rgba_img)
         if plot_type is 'Cartesian':
             # self.cartesianPlot.setData(angle, pattern)
             self.angle = angle
@@ -402,14 +424,19 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.circleLabel[0].setPos(self.polarAmpOffset, 0)
             for circle_idx in range(0, 6):
                 self.circleList[circle_idx].setRect(
-                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
-                    -self.polarAmpOffset + self.polarAmpOffset / 6 * circle_idx,
-                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2,
-                    (self.polarAmpOffset - self.polarAmpOffset / 6 * circle_idx) * 2)
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 *
+                    circle_idx,
+                    -self.polarAmpOffset + self.polarAmpOffset / 6 *
+                    circle_idx,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 *
+                     circle_idx) * 2,
+                    (self.polarAmpOffset - self.polarAmpOffset / 6 *
+                     circle_idx) * 2)
                 self.circleLabel[circle_idx + 1].setText(
                     str(round(-self.polarAmpOffset / 6 * (circle_idx + 1), 1)))
                 self.circleLabel[circle_idx + 1].setPos(
-                    self.polarAmpOffset - self.polarAmpOffset / 6 * (circle_idx + 1), 0)
+                    self.polarAmpOffset - self.polarAmpOffset / 6 * (
+                        circle_idx + 1), 0)
             self.polarPlot.setData(x, y)
 
             pattern = self.holdPattern + self.polarAmpOffset
@@ -435,7 +462,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.polarView.addItem(self.polarPlotHold)
 
     def hold_figure(self):
-        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
         if self.plotType is 'Cartesian':
             self.update_array_parameters('Cartesian_Hold')
         elif self.plotType is 'Polar':
@@ -501,7 +528,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.hs_adjsidelobey.setVisible(True)
 
     def plotview_x_range_changed(self, item):
-        self.theta = np.linspace(
+        self.azimuth = np.linspace(
             item.viewRange()[0][0],
             item.viewRange()[0][1],
             num=1801,
@@ -515,13 +542,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.holdEnabled = False
                 self.ui.clearButton.setEnabled(False)
 
-            self.pgCanvas.removeItem(self.polarView)
-            self.pgCanvas.addItem(self.cartesianView)
+            self.canvas2d.removeItem(self.polarView)
+            self.canvas2d.addItem(self.cartesianView)
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
-            self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+            self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
             self.plotType = 'Cartesian'
             self.update_array_parameters(self.plotType)
             self.cartesianView.setXRange(-90, 90)
@@ -534,51 +561,24 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.holdEnabled = False
                 self.ui.clearButton.setEnabled(False)
 
-            self.pgCanvas.removeItem(self.cartesianView)
-            self.pgCanvas.addItem(self.polarView)
+            self.canvas2d.removeItem(self.cartesianView)
+            self.canvas2d.addItem(self.polarView)
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
 
-            self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
+            self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
             self.plotType = 'Polar'
             self.update_array_parameters(self.plotType)
 
     def show_cartesian_plot(self):
-        self.pgCanvas.addItem(self.cartesianView)
+        self.canvas2d.addItem(self.cartesianView)
 
     def show_polar_plot(self):
-        self.pgCanvas.addItem(self.polarView)
+        self.canvas2d.addItem(self.polarView)
 
     # def show_3d_plot(self):
-        # self.pgCanvas.addItem(self.surface_view)
-
-    def colormap_lut(self, color='viridis', ncolors=None):
-        # build lookup table
-        if color == 'r':
-            pos = np.array([0.0, 1.0])
-            color = np.array([[0, 0, 0, 255], [255, 0, 0, 255]],
-                             dtype=np.ubyte)
-            ncolors = 512
-        elif color == 'g':
-            pos = np.array([0.0, 1.0])
-            color = np.array([[0, 0, 0, 255], [0, 255, 0, 255]],
-                             dtype=np.ubyte)
-            ncolors = 512
-        elif color == 'b':
-            pos = np.array([0.0, 1.0])
-            color = np.array([[0, 0, 0, 255], [0, 0, 255, 255]],
-                             dtype=np.ubyte)
-            ncolors = 512
-        else:
-            cmap = cm.get_cmap(color)
-            if ncolors is None:
-                ncolors = cmap.N
-            pos = np.linspace(0.0, 1.0, ncolors)
-            color = cmap(pos, bytes=True)
-
-        cmap = pg.ColorMap(pos, color)
-        return cmap.getLookupTable(0.0, 1.0, ncolors)
+        # self.canvas2d.addItem(self.canvas3d)
 
 
 if __name__ == '__main__':

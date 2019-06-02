@@ -266,7 +266,7 @@
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>40</width>
+                      <width>0</width>
                       <height>0</height>
                      </size>
                     </property>
@@ -355,13 +355,13 @@
                   <item>
                    <widget class="QSpinBox" name="sb_sizey">
                     <property name="minimum">
-                     <number>1</number>
+                     <number>32</number>
                     </property>
                     <property name="maximum">
                      <number>1024</number>
                     </property>
                     <property name="value">
-                     <number>1</number>
+                     <number>32</number>
                     </property>
                    </widget>
                   </item>
@@ -516,7 +516,7 @@
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>40</width>
+                      <width>0</width>
                       <height>0</height>
                      </size>
                     </property>

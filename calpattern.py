@@ -83,7 +83,7 @@ class CalPattern(QObject):
         self.sizex = linear_array_config.get('sizex', 64)
         self.sizey = linear_array_config.get('sizey', 32)
         self.spacingx = linear_array_config['spacingx']
-        self.spacingy = linear_array_config.get('spacingx', 0.5)
+        self.spacingy = linear_array_config.get('spacingy', 0.5)
         self.beam_theta = linear_array_config['beam_theta']
         self.beam_phi = linear_array_config.get('beam_phi', 0)
         # self.u = u
@@ -107,7 +107,8 @@ class CalPattern(QObject):
                 self.new_data = False
 
                 AF_data = self.rect_array.get_pattern(
-                    self.u, self.v, beam_theta=self.beam_theta,
+                    self.u, self.v, Nx=512,
+                    Ny=512, beam_theta=self.beam_theta,
                     beam_phi=self.beam_phi, windowx=self.win_type[
                         self.windowx], sllx=self.sllx,
                     nbarx=self.nbarx, windowy=self.win_type[
@@ -115,7 +116,7 @@ class CalPattern(QObject):
                     nbary=self.nbary, polar=False
                 )
 
-                AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.000001)
+                AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
 
                 self.patternReady.emit(self.u, self.v, AF, self.plot)
 
