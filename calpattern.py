@@ -68,8 +68,8 @@ class CalPattern(QObject):
             self.sizex, self.sizey, self.spacingx, self.spacingy)
         self.beam_theta = 0
         self.beam_phi = 0
-        self.u = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.v = np.linspace(-90, 90, num=1801, endpoint=True)
+        self.u = np.linspace(-1, 1, num=101, endpoint=True)
+        self.v = np.linspace(-1, 1, num=101, endpoint=True)
         self.windowx = 0
         self.windowy = 0
         self.sllx = 60
@@ -81,13 +81,13 @@ class CalPattern(QObject):
 
     def update_config(self, linear_array_config, u, v, plot):
         self.sizex = linear_array_config.get('sizex', 64)
-        self.sizey = linear_array_config.get('sizey', 1)
+        self.sizey = linear_array_config.get('sizey', 32)
         self.spacingx = linear_array_config['spacingx']
         self.spacingy = linear_array_config.get('spacingx', 0.5)
         self.beam_theta = linear_array_config['beam_theta']
         self.beam_phi = linear_array_config.get('beam_phi', 0)
-        self.u = u
-        self.v = v
+        # self.u = u
+        # self.v = v
         self.windowx = linear_array_config['windowx']
         self.windowy = linear_array_config.get('windowy', 0)
         self.sllx = linear_array_config['sllx']
@@ -112,10 +112,10 @@ class CalPattern(QObject):
                         self.windowx], sllx=self.sllx,
                     nbarx=self.nbarx, windowy=self.win_type[
                         self.windowy], slly=self.slly,
-                    nbary=self.nbary, polar=True
+                    nbary=self.nbary, polar=False
                 )
 
-                AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
+                AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.000001)
 
                 self.patternReady.emit(self.u, self.v, AF, self.plot)
 

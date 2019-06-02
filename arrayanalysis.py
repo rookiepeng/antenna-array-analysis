@@ -47,6 +47,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 
 import numpy as np
+import matplotlib.cm as cm
 
 from lineararray import LinearArray
 from calpattern import CalPattern
@@ -67,6 +68,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.pgCanvas = pg.GraphicsLayoutWidget()
         # self.layout_figure.addWidget(self.pgCanvas)
 
+        self.cmap = cm.get_cmap('jet')
+
+        self.minZ = -100
+        self.maxZ = 0
+
         self.linearArrayConfig = {'array_size': 64,
                                   'spacing': 0.5,
                                   'beam_loc': 0,
@@ -75,8 +81,8 @@ class MyApp(QtWidgets.QMainWindow):
                                   'window_nbar': 20
                                   }
 
-        self.theta = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.phi = np.linspace(-90, 90, num=181, endpoint=True)
+        self.theta = np.linspace(-1, 1, num=101, endpoint=True)
+        self.phi = np.linspace(-1, 1, num=101, endpoint=True)
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.pattern = np.zeros(np.shape(self.theta))
 
@@ -106,10 +112,23 @@ class MyApp(QtWidgets.QMainWindow):
         self.circleLabel = []
 
         self.surface_view = gl.GLViewWidget()
-        self.surface_plot = gl.GLSurfacePlotItem(shader='heightColor', computeNormals=False, color=(0.5, 0.5, 1, 1))
+        self.surface_plot = gl.GLSurfacePlotItem(computeNormals=False)
         self.layout_figure.addWidget(self.surface_view)
         self.surface_view.addItem(self.surface_plot)
-        self.surface_view.setCameraPosition(distance=50)
+        self.surface_view.setCameraPosition(distance=5)
+        self.surface_plot.scale(1, 1, 1.0/50)
+
+        self.xgrid = gl.GLGridItem()
+        self.ygrid = gl.GLGridItem()
+        self.zgrid = gl.GLGridItem()
+        self.surface_view.addItem(self.xgrid)
+        self.surface_view.addItem(self.ygrid)
+        self.surface_view.addItem(self.zgrid)
+        self.xgrid.setSpacing(x=0.1, y=0.1, z=10)
+
+        # rotate x and y grids to face the correct direction
+        self.xgrid.rotate(90, 0, 1, 0)
+        self.ygrid.rotate(90, 1, 0, 0)
 
         self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
@@ -307,7 +326,9 @@ class MyApp(QtWidgets.QMainWindow):
 
     def update_pattern(self, angle, angle_phi, pattern, plot_type):
         print(np.shape(pattern))
-        self.surface_plot.setData(x=angle_phi, y=angle, z=pattern)
+        rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
+        self.surface_plot.setData(
+            x=angle_phi, y=angle, z=pattern, colors=rgba_img)
         if plot_type is 'Cartesian':
             # self.cartesianPlot.setData(angle, pattern)
             self.angle = angle
@@ -450,6 +471,33 @@ class MyApp(QtWidgets.QMainWindow):
 
     # def show_3d_plot(self):
         # self.pgCanvas.addItem(self.surface_view)
+
+    def colormap_lut(self, color='viridis', ncolors=None):
+        # build lookup table
+        if color == 'r':
+            pos = np.array([0.0, 1.0])
+            color = np.array([[0, 0, 0, 255], [255, 0, 0, 255]],
+                             dtype=np.ubyte)
+            ncolors = 512
+        elif color == 'g':
+            pos = np.array([0.0, 1.0])
+            color = np.array([[0, 0, 0, 255], [0, 255, 0, 255]],
+                             dtype=np.ubyte)
+            ncolors = 512
+        elif color == 'b':
+            pos = np.array([0.0, 1.0])
+            color = np.array([[0, 0, 0, 255], [0, 0, 255, 255]],
+                             dtype=np.ubyte)
+            ncolors = 512
+        else:
+            cmap = cm.get_cmap(color)
+            if ncolors is None:
+                ncolors = cmap.N
+            pos = np.linspace(0.0, 1.0, ncolors)
+            color = cmap(pos, bytes=True)
+
+        cmap = pg.ColorMap(pos, color)
+        return cmap.getLookupTable(0.0, 1.0, ncolors)
 
 
 if __name__ == '__main__':
