@@ -185,12 +185,12 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.dsb_spacingy.valueChanged.connect(
             self.array_changed)
 
-        self.ui.dsb_angletheta.valueChanged.connect(
+        self.ui.dsb_angleaz.valueChanged.connect(
             self.theta_value_changed)
         self.ui.hs_angletheta.valueChanged.connect(
             self.theta_slider_moved)
 
-        self.ui.dsb_anglephi.valueChanged.connect(
+        self.ui.dsb_angleel.valueChanged.connect(
             self.phi_value_changed)
         self.ui.hs_anglephi.valueChanged.connect(
             self.phi_slider_moved)
@@ -308,11 +308,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_array_parameters(self.plotType)
 
     def theta_slider_moved(self, value):
-        self.ui.dsb_angletheta.setValue(value / 10)
+        self.ui.dsb_angleaz.setValue(value / 10)
         self.update_array_parameters(self.plotType)
 
     def phi_slider_moved(self, value):
-        self.ui.dsb_anglephi.setValue(value / 10)
+        self.ui.dsb_angleel.setValue(value / 10)
         self.update_array_parameters(self.plotType)
 
     def windowx_combobox_changed(self, value):
@@ -370,8 +370,8 @@ class MyApp(QtWidgets.QMainWindow):
         self.array_config['sizey'] = self.ui.sb_sizey.value()
         self.array_config['spacingx'] = self.ui.dsb_spacingx.value()
         self.array_config['spacingy'] = self.ui.dsb_spacingy.value()
-        self.array_config['beam_theta'] = self.ui.dsb_angletheta.value()
-        self.array_config['beam_phi'] = self.ui.dsb_anglephi.value()
+        self.array_config['beam_theta'] = self.ui.dsb_angleaz.value()
+        self.array_config['beam_phi'] = self.ui.dsb_angleel.value()
         self.array_config['windowx'] = self.ui.cb_windowx.currentIndex()
         self.array_config['windowy'] = self.ui.cb_windowy.currentIndex()
         self.array_config['sllx'] = self.ui.sb_sidelobex.value()

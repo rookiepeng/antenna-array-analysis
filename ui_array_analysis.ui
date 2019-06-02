@@ -645,9 +645,9 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_17">
                   <item>
-                   <widget class="QLabel" name="label_angletheta">
+                   <widget class="QLabel" name="label_angleaz">
                     <property name="text">
-                     <string>Angle θ (°):</string>
+                     <string>Azimuth (°):</string>
                     </property>
                    </widget>
                   </item>
@@ -665,7 +665,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="dsb_angletheta">
+                   <widget class="QDoubleSpinBox" name="dsb_angleaz">
                     <property name="minimum">
                      <double>-90.000000000000000</double>
                     </property>
@@ -707,9 +707,9 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_18">
                   <item>
-                   <widget class="QLabel" name="label_anglephi">
+                   <widget class="QLabel" name="label_angleel">
                     <property name="text">
-                     <string>Angle φ (°):</string>
+                     <string>Elevation (°):</string>
                     </property>
                    </widget>
                   </item>
@@ -727,7 +727,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="dsb_anglephi">
+                   <widget class="QDoubleSpinBox" name="dsb_angleel">
                     <property name="minimum">
                      <double>-90.000000000000000</double>
                     </property>
