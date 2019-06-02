@@ -92,12 +92,20 @@ class MyApp(QtWidgets.QMainWindow):
         self.holdPattern = np.zeros(np.shape(self.theta))
         self.holdEnabled = False
 
-        self.window_change_config = {
-            0: self.disable_window_config,
-            1: self.chebyshev,
-            2: self.taylor,
-            3: self.disable_window_config,
-            4: self.disable_window_config
+        self.windowx_change_config = {
+            0: self.disable_windowx_config,
+            1: self.chebyshevx,
+            2: self.taylorx,
+            3: self.disable_windowx_config,
+            4: self.disable_windowx_config
+        }
+
+        self.windowy_change_config = {
+            0: self.disable_windowy_config,
+            1: self.chebyshevy,
+            2: self.taylory,
+            3: self.disable_windowy_config,
+            4: self.disable_windowy_config
         }
 
         self.cartesianView = pg.PlotItem()
@@ -189,7 +197,7 @@ class MyApp(QtWidgets.QMainWindow):
 
         self.ui.cb_windowx.currentIndexChanged.connect(
             self.windowx_combobox_changed)
-        
+
         self.ui.cb_windowy.currentIndexChanged.connect(
             self.windowy_combobox_changed)
 
@@ -300,11 +308,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.update_array_parameters(self.plotType)
 
     def windowx_combobox_changed(self, value):
-        self.window_change_config[value]()
+        self.windowx_change_config[value]()
         self.update_array_parameters(self.plotType)
 
     def windowy_combobox_changed(self, value):
-        self.window_change_config[value]()
+        self.windowy_change_config[value]()
         self.update_array_parameters(self.plotType)
 
     def sll_value_change(self, value):
@@ -420,7 +428,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.clearButton.setEnabled(False)
         self.holdEnabled = False
 
-    def disable_window_config(self):
+    def disable_windowx_config(self):
         self.ui.sb_sidelobex.setVisible(False)
         self.ui.label_sidelobex.setVisible(False)
         self.ui.hs_sidelobex.setVisible(False)
@@ -428,21 +436,45 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_adjsidelobex.setVisible(False)
         self.ui.hs_adjsidelobex.setVisible(False)
 
-    def chebyshev(self):
+    def disable_windowy_config(self):
+        self.ui.sb_sidelobey.setVisible(False)
+        self.ui.label_sidelobey.setVisible(False)
+        self.ui.hs_sidelobey.setVisible(False)
+        self.ui.sb_adjsidelobey.setVisible(False)
+        self.ui.label_adjsidelobey.setVisible(False)
+        self.ui.hs_adjsidelobey.setVisible(False)
+
+    def chebyshevx(self):
         self.ui.sb_sidelobex.setVisible(True)
         self.ui.label_sidelobex.setVisible(True)
         self.ui.hs_sidelobex.setVisible(True)
         self.ui.sb_adjsidelobex.setVisible(False)
         self.ui.label_adjsidelobex.setVisible(False)
         self.ui.hs_adjsidelobex.setVisible(False)
+    
+    def chebyshevy(self):
+        self.ui.sb_sidelobey.setVisible(True)
+        self.ui.label_sidelobey.setVisible(True)
+        self.ui.hs_sidelobey.setVisible(True)
+        self.ui.sb_adjsidelobey.setVisible(False)
+        self.ui.label_adjsidelobey.setVisible(False)
+        self.ui.hs_adjsidelobey.setVisible(False)
 
-    def taylor(self):
+    def taylorx(self):
         self.ui.sb_sidelobex.setVisible(True)
         self.ui.label_sidelobex.setVisible(True)
         self.ui.hs_sidelobex.setVisible(True)
         self.ui.sb_adjsidelobex.setVisible(True)
         self.ui.label_adjsidelobex.setVisible(True)
         self.ui.hs_adjsidelobex.setVisible(True)
+
+    def taylory(self):
+        self.ui.sb_sidelobey.setVisible(True)
+        self.ui.label_sidelobey.setVisible(True)
+        self.ui.hs_sidelobey.setVisible(True)
+        self.ui.sb_adjsidelobey.setVisible(True)
+        self.ui.label_adjsidelobey.setVisible(True)
+        self.ui.hs_adjsidelobey.setVisible(True)
 
     def plotview_x_range_changed(self, item):
         self.theta = np.linspace(
