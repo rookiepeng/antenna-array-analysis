@@ -92,7 +92,7 @@ class MyApp(QtWidgets.QMainWindow):
         self.holdPattern = np.zeros(np.shape(self.theta))
         self.holdEnabled = False
 
-        self.windowDict = {
+        self.window_change_config = {
             0: self.disable_window_config,
             1: self.chebyshev,
             2: self.taylor,
@@ -178,12 +178,20 @@ class MyApp(QtWidgets.QMainWindow):
             self.array_changed)
 
         self.ui.dsb_angletheta.valueChanged.connect(
-            self.steering_angle_value_changed)
+            self.theta_value_changed)
         self.ui.hs_angletheta.valueChanged.connect(
-            self.steering_angle_slider_moved)
+            self.theta_slider_moved)
+
+        self.ui.dsb_anglephi.valueChanged.connect(
+            self.phi_value_changed)
+        self.ui.hs_anglephi.valueChanged.connect(
+            self.phi_slider_moved)
 
         self.ui.cb_windowx.currentIndexChanged.connect(
-            self.window_combobox_changed)
+            self.windowx_combobox_changed)
+        
+        self.ui.cb_windowy.currentIndexChanged.connect(
+            self.windowy_combobox_changed)
 
         self.ui.sb_sidelobex.valueChanged.connect(self.sll_value_change)
         self.ui.hs_sidelobex.valueChanged.connect(
@@ -275,16 +283,28 @@ class MyApp(QtWidgets.QMainWindow):
     def array_changed(self):
         self.update_array_parameters(self.plotType)
 
-    def steering_angle_value_changed(self, value):
+    def theta_value_changed(self, value):
         self.ui.hs_angletheta.setValue(value * 10)
         self.update_array_parameters(self.plotType)
 
-    def steering_angle_slider_moved(self, value):
+    def phi_value_changed(self, value):
+        self.ui.hs_anglephi.setValue(value * 10)
+        self.update_array_parameters(self.plotType)
+
+    def theta_slider_moved(self, value):
         self.ui.dsb_angletheta.setValue(value / 10)
         self.update_array_parameters(self.plotType)
 
-    def window_combobox_changed(self, value):
-        self.windowDict[value]()
+    def phi_slider_moved(self, value):
+        self.ui.dsb_anglephi.setValue(value / 10)
+        self.update_array_parameters(self.plotType)
+
+    def windowx_combobox_changed(self, value):
+        self.window_change_config[value]()
+        self.update_array_parameters(self.plotType)
+
+    def windowy_combobox_changed(self, value):
+        self.window_change_config[value]()
         self.update_array_parameters(self.plotType)
 
     def sll_value_change(self, value):
