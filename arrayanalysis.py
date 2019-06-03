@@ -42,7 +42,6 @@
 """
 
 import sys
-import res_rc
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 
@@ -78,8 +77,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         self.az_nfft = 512
         self.el_nfft = 512
-        self.azimuth = np.linspace(-90, 90, num=self.az_nfft, endpoint=False)
-        self.elevation = np.linspace(-90, 90, num=self.el_nfft, endpoint=False)
+        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft, endpoint=False))/np.pi*180
+        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft, endpoint=False))/np.pi*180
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.pattern = np.zeros(np.shape(self.azimuth))
 
