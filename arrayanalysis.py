@@ -74,13 +74,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.minZ = -100
         self.maxZ = 0
 
-        self.array_config = {'array_size': 64,
-                             'spacing': 0.5,
-                             'beam_loc': 0,
-                             'window_type_idx': 0,
-                             'window_sll': 60,
-                             'window_nbar': 20
-                             }
+        self.array_config = dict()
 
         self.az_nfft = 512
         self.el_nfft = 512
@@ -391,8 +385,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['sizey'] = self.ui.sb_sizey.value()
         self.array_config['spacingx'] = self.ui.dsb_spacingx.value()
         self.array_config['spacingy'] = self.ui.dsb_spacingy.value()
-        self.array_config['beam_theta'] = self.ui.dsb_angleaz.value()
-        self.array_config['beam_phi'] = self.ui.dsb_angleel.value()
+        self.array_config['beam_az'] = self.ui.dsb_angleaz.value()
+        self.array_config['beam_el'] = self.ui.dsb_angleel.value()
         self.array_config['windowx'] = self.ui.cb_windowx.currentIndex()
         self.array_config['windowy'] = self.ui.cb_windowy.currentIndex()
         self.array_config['sllx'] = self.ui.sb_sidelobex.value()

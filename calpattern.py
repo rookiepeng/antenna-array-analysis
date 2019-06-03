@@ -66,8 +66,8 @@ class CalPattern(QObject):
         self.spacingy = 0.5
         self.rect_array = antarray.RectArray(
             self.sizex, self.sizey, self.spacingx, self.spacingy)
-        self.beam_theta = 0
-        self.beam_phi = 0
+        self.beam_az = 0
+        self.beam_el = 0
         self.u = np.linspace(-1, 1, num=101, endpoint=True)
         self.v = np.linspace(-1, 1, num=101, endpoint=True)
         self.windowx = 0
@@ -84,8 +84,8 @@ class CalPattern(QObject):
         self.sizey = linear_array_config.get('sizey', 32)
         self.spacingx = linear_array_config['spacingx']
         self.spacingy = linear_array_config.get('spacingy', 0.5)
-        self.beam_theta = linear_array_config['beam_theta']
-        self.beam_phi = linear_array_config.get('beam_phi', 0)
+        self.beam_az = linear_array_config['beam_az']
+        self.beam_el = linear_array_config.get('beam_el', 0)
         # self.u = u
         # self.v = v
         self.windowx = linear_array_config['windowx']
@@ -107,9 +107,9 @@ class CalPattern(QObject):
                 self.new_data = False
 
                 AF_data = self.rect_array.get_pattern(
-                    self.u, self.v, Nx=512,
-                    Ny=512, beam_theta=self.beam_theta,
-                    beam_phi=self.beam_phi, windowx=self.win_type[
+                    Nx=512,
+                    Ny=512, beam_az=self.beam_az,
+                    beam_el=self.beam_el, windowx=self.win_type[
                         self.windowx], sllx=self.sllx,
                     nbarx=self.nbarx, windowy=self.win_type[
                         self.windowy], slly=self.slly,
