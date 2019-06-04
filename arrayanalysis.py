@@ -77,8 +77,10 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         self.az_nfft = 512
         self.el_nfft = 512
-        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft, endpoint=False))/np.pi*180
-        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft, endpoint=False))/np.pi*180
+        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft,
+                                             endpoint=False))/np.pi*180
+        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft,
+                                               endpoint=False))/np.pi*180
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.pattern = np.zeros(np.shape(self.azimuth))
 
@@ -184,6 +186,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
         self.ui.cb_windowy.addItems(
             ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
+
+        self.ui.cb_plottype.addItems(
+            ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar'])
 
         self.ui.sb_sizex.valueChanged.connect(
             self.array_changed)
