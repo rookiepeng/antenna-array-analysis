@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1026</width>
-    <height>628</height>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -963,7 +963,7 @@
      <x>0</x>
      <y>0</y>
      <width>1026</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -999,5 +999,134 @@
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>sb_sidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_sidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>265</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>284</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_adjsidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_adjsidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>136</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_sidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_sidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>546</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>570</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sb_adjsidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>hs_adjsidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>209</x>
+     <y>615</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>633</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_sidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_sidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>176</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>203</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_adjsidelobex</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_adjsidelobex</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_sidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_sidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>563</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>538</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_adjsidelobey</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sb_adjsidelobey</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>631</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>202</x>
+     <y>602</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
