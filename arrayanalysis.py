@@ -66,6 +66,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
         self.canvas2d = pg.GraphicsLayoutWidget()
         self.canvas3d = gl.GLViewWidget()
+        self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
 
         self.layout_figure.addWidget(self.canvas3d)
         # self.layout_figure.addWidget(self.canvas2d)
@@ -91,22 +92,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.holdAngle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.holdPattern = np.zeros(np.shape(self.azimuth))
         self.holdEnabled = False
-
-        self.windowx_change_config = {
-            0: self.disable_windowx_config,
-            1: self.chebyshevx,
-            2: self.taylorx,
-            3: self.disable_windowx_config,
-            4: self.disable_windowx_config
-        }
-
-        self.windowy_change_config = {
-            0: self.disable_windowy_config,
-            1: self.chebyshevy,
-            2: self.taylory,
-            3: self.disable_windowy_config,
-            4: self.disable_windowy_config
-        }
 
         self.cartesianView = pg.PlotItem()
         self.cartesianPlot = pg.PlotDataItem()
@@ -167,29 +152,16 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.show()
 
     def init_ui(self):
-        self.ui.sb_sidelobex.setVisible(False)
-        self.ui.label_sidelobex.setVisible(False)
-        self.ui.hs_sidelobex.setVisible(False)
-        self.ui.sb_adjsidelobex.setVisible(False)
-        self.ui.label_adjsidelobex.setVisible(False)
-        self.ui.hs_adjsidelobex.setVisible(False)
-
-        self.ui.sb_sidelobey.setVisible(False)
-        self.ui.label_sidelobey.setVisible(False)
-        self.ui.hs_sidelobey.setVisible(False)
-        self.ui.sb_adjsidelobey.setVisible(False)
-        self.ui.label_adjsidelobey.setVisible(False)
-        self.ui.hs_adjsidelobey.setVisible(False)
+        self.windowx_config(0)
+        self.windowy_config(0)
 
         self.ui.clearButton.setEnabled(False)
 
-        self.ui.cb_windowx.addItems(
-            ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
-        self.ui.cb_windowy.addItems(
-            ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann'])
+        self.ui.cb_windowx.addItems(self.window_list)
+        self.ui.cb_windowy.addItems(self.window_list)
 
         self.ui.cb_plottype.addItems(
-            ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar'])
+            ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar', 'Array layout'])
 
         self.ui.sb_sizex.valueChanged.connect(
             self.update_array_parameters)
@@ -218,10 +190,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.elevation_slider_moved)
 
         self.ui.cb_windowx.currentIndexChanged.connect(
-            self.windowx_combobox_changed)
+            self.windowx_config)
+        self.ui.cb_windowx.currentIndexChanged.connect(
+            self.update_array_parameters)
 
         self.ui.cb_windowy.currentIndexChanged.connect(
-            self.windowy_combobox_changed)
+            self.windowy_config)
+        self.ui.cb_windowy.currentIndexChanged.connect(
+            self.update_array_parameters)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -434,53 +410,51 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.clearButton.setEnabled(False)
         self.holdEnabled = False
 
-    def disable_windowx_config(self):
-        self.ui.sb_sidelobex.setVisible(False)
-        self.ui.label_sidelobex.setVisible(False)
-        self.ui.hs_sidelobex.setVisible(False)
-        self.ui.sb_adjsidelobex.setVisible(False)
-        self.ui.label_adjsidelobex.setVisible(False)
-        self.ui.hs_adjsidelobex.setVisible(False)
+    def windowx_config(self, window_idx):
+        if self.window_list[window_idx] is 'Chebyshev':
+            self.ui.sb_sidelobex.setVisible(True)
+            self.ui.label_sidelobex.setVisible(True)
+            self.ui.hs_sidelobex.setVisible(True)
+            self.ui.sb_adjsidelobex.setVisible(False)
+            self.ui.label_adjsidelobex.setVisible(False)
+            self.ui.hs_adjsidelobex.setVisible(False)
+        elif self.window_list[window_idx] is 'Taylor':
+            self.ui.sb_sidelobex.setVisible(True)
+            self.ui.label_sidelobex.setVisible(True)
+            self.ui.hs_sidelobex.setVisible(True)
+            self.ui.sb_adjsidelobex.setVisible(True)
+            self.ui.label_adjsidelobex.setVisible(True)
+            self.ui.hs_adjsidelobex.setVisible(True)
+        else:
+            self.ui.sb_sidelobex.setVisible(False)
+            self.ui.label_sidelobex.setVisible(False)
+            self.ui.hs_sidelobex.setVisible(False)
+            self.ui.sb_adjsidelobex.setVisible(False)
+            self.ui.label_adjsidelobex.setVisible(False)
+            self.ui.hs_adjsidelobex.setVisible(False)
 
-    def disable_windowy_config(self):
-        self.ui.sb_sidelobey.setVisible(False)
-        self.ui.label_sidelobey.setVisible(False)
-        self.ui.hs_sidelobey.setVisible(False)
-        self.ui.sb_adjsidelobey.setVisible(False)
-        self.ui.label_adjsidelobey.setVisible(False)
-        self.ui.hs_adjsidelobey.setVisible(False)
-
-    def chebyshevx(self):
-        self.ui.sb_sidelobex.setVisible(True)
-        self.ui.label_sidelobex.setVisible(True)
-        self.ui.hs_sidelobex.setVisible(True)
-        self.ui.sb_adjsidelobex.setVisible(False)
-        self.ui.label_adjsidelobex.setVisible(False)
-        self.ui.hs_adjsidelobex.setVisible(False)
-
-    def chebyshevy(self):
-        self.ui.sb_sidelobey.setVisible(True)
-        self.ui.label_sidelobey.setVisible(True)
-        self.ui.hs_sidelobey.setVisible(True)
-        self.ui.sb_adjsidelobey.setVisible(False)
-        self.ui.label_adjsidelobey.setVisible(False)
-        self.ui.hs_adjsidelobey.setVisible(False)
-
-    def taylorx(self):
-        self.ui.sb_sidelobex.setVisible(True)
-        self.ui.label_sidelobex.setVisible(True)
-        self.ui.hs_sidelobex.setVisible(True)
-        self.ui.sb_adjsidelobex.setVisible(True)
-        self.ui.label_adjsidelobex.setVisible(True)
-        self.ui.hs_adjsidelobex.setVisible(True)
-
-    def taylory(self):
-        self.ui.sb_sidelobey.setVisible(True)
-        self.ui.label_sidelobey.setVisible(True)
-        self.ui.hs_sidelobey.setVisible(True)
-        self.ui.sb_adjsidelobey.setVisible(True)
-        self.ui.label_adjsidelobey.setVisible(True)
-        self.ui.hs_adjsidelobey.setVisible(True)
+    def windowy_config(self, window_idx):
+        if self.window_list[window_idx] is 'Chebyshev':
+            self.ui.sb_sidelobey.setVisible(True)
+            self.ui.label_sidelobey.setVisible(True)
+            self.ui.hs_sidelobey.setVisible(True)
+            self.ui.sb_adjsidelobey.setVisible(False)
+            self.ui.label_adjsidelobey.setVisible(False)
+            self.ui.hs_adjsidelobey.setVisible(False)
+        elif self.window_list[window_idx] is 'Taylor':
+            self.ui.sb_sidelobey.setVisible(True)
+            self.ui.label_sidelobey.setVisible(True)
+            self.ui.hs_sidelobey.setVisible(True)
+            self.ui.sb_adjsidelobey.setVisible(True)
+            self.ui.label_adjsidelobey.setVisible(True)
+            self.ui.hs_adjsidelobey.setVisible(True)
+        else:
+            self.ui.sb_sidelobey.setVisible(False)
+            self.ui.label_sidelobey.setVisible(False)
+            self.ui.hs_sidelobey.setVisible(False)
+            self.ui.sb_adjsidelobey.setVisible(False)
+            self.ui.label_adjsidelobey.setVisible(False)
+            self.ui.hs_adjsidelobey.setVisible(False)
 
     def plotview_x_range_changed(self, item):
         self.azimuth = np.linspace(
