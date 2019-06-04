@@ -42,6 +42,7 @@
 """
 
 import sys
+import res_rc
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 
