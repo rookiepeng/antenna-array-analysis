@@ -148,7 +148,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.moveToThread(self.calpattern_thread)
         self.calpattern_thread.start()
 
-        self.update_array_parameters()
+        self.new_params()
         self.ui.show()
 
     def init_ui(self):
@@ -163,41 +163,27 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.cb_plottype.addItems(
             ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar', 'Array layout'])
 
-        self.ui.sb_sizex.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.sb_sizey.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.dsb_spacingx.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.dsb_spacingy.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.sb_sidelobex.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.sb_sidelobey.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.sb_adjsidelobex.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.sb_adjsidelobey.valueChanged.connect(
-            self.update_array_parameters)
-        self.ui.dsb_angleaz.valueChanged.connect(
-            self.azimuth_value_changed)
-        self.ui.hs_angletheta.valueChanged.connect(
-            self.azimuth_slider_moved)
+        self.ui.sb_sizex.valueChanged.connect(self.new_params)
+        self.ui.sb_sizey.valueChanged.connect(self.new_params)
+        self.ui.dsb_spacingx.valueChanged.connect(self.new_params)
+        self.ui.dsb_spacingy.valueChanged.connect(self.new_params)
+        self.ui.sb_sidelobex.valueChanged.connect(self.new_params)
+        self.ui.sb_sidelobey.valueChanged.connect(self.new_params)
+        self.ui.sb_adjsidelobex.valueChanged.connect(self.new_params)
+        self.ui.sb_adjsidelobey.valueChanged.connect(self.new_params)
+        self.ui.dsb_angleaz.valueChanged.connect(self.azimuth_value_changed)
+        self.ui.hs_angletheta.valueChanged.connect(self.azimuth_slider_moved)
 
         self.ui.dsb_angleel.valueChanged.connect(
             self.elevation_value_changed)
         self.ui.hs_anglephi.valueChanged.connect(
             self.elevation_slider_moved)
 
-        self.ui.cb_windowx.currentIndexChanged.connect(
-            self.windowx_config)
-        self.ui.cb_windowx.currentIndexChanged.connect(
-            self.update_array_parameters)
+        self.ui.cb_windowx.currentIndexChanged.connect(self.windowx_config)
+        self.ui.cb_windowx.currentIndexChanged.connect(self.new_params)
 
-        self.ui.cb_windowy.currentIndexChanged.connect(
-            self.windowy_config)
-        self.ui.cb_windowy.currentIndexChanged.connect(
-            self.update_array_parameters)
+        self.ui.cb_windowy.currentIndexChanged.connect(self.windowy_config)
+        self.ui.cb_windowy.currentIndexChanged.connect(self.new_params)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -285,39 +271,39 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
     def azimuth_value_changed(self, value):
         self.ui.hs_angletheta.setValue(value * 10)
-        self.update_array_parameters()
+        self.new_params()
 
     def elevation_value_changed(self, value):
         self.ui.hs_anglephi.setValue(value * 10)
-        self.update_array_parameters()
+        self.new_params()
 
     def azimuth_slider_moved(self, value):
         self.ui.dsb_angleaz.setValue(value / 10)
-        self.update_array_parameters()
+        self.new_params()
 
     def elevation_slider_moved(self, value):
         self.ui.dsb_angleel.setValue(value / 10)
-        self.update_array_parameters()
+        self.new_params()
 
     def windowx_combobox_changed(self, value):
         self.windowx_change_config[value]()
-        self.update_array_parameters()
+        self.new_params()
 
     def windowy_combobox_changed(self, value):
         self.windowy_change_config[value]()
-        self.update_array_parameters()
+        self.new_params()
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
         self.polarAmpOffset = -value
-        self.update_array_parameters()
+        self.new_params()
 
     def polar_min_amp_slider_moved(self, value):
         self.ui.spinBox_polarMinAmp.setValue(value)
         self.polarAmpOffset = -value
-        self.update_array_parameters()
+        self.new_params()
 
-    def update_array_parameters(self):
+    def new_params(self):
         self.array_config['sizex'] = self.ui.sb_sizex.value()
         self.array_config['sizey'] = self.ui.sb_sizey.value()
         self.array_config['spacingx'] = self.ui.dsb_spacingx.value()
@@ -394,10 +380,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
     def hold_figure(self):
         self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
-        if self.plotType is 'Cartesian':
-            self.update_array_parameters('Cartesian_Hold')
-        elif self.plotType is 'Polar':
-            self.update_array_parameters('Polar_Hold')
+        self.new_params()
         self.ui.clearButton.setEnabled(True)
         self.holdEnabled = True
 
@@ -462,7 +445,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             item.viewRange()[0][1],
             num=1801,
             endpoint=True)
-        self.update_array_parameters()
+        self.new_params()
 
     def cartesian_plot_toggled(self, checked):
         if checked and self.plotType is not 'Cartesian':
@@ -479,7 +462,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
             self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
             self.plotType = 'Cartesian'
-            self.update_array_parameters()
+            self.new_params()
             self.cartesianView.setXRange(-90, 90)
             self.cartesianView.setYRange(-80, 0)
 
@@ -498,7 +481,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
             self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
             self.plotType = 'Polar'
-            self.update_array_parameters()
+            self.new_params()
 
     def show_cartesian_plot(self):
         self.canvas2d.addItem(self.cartesianView)
