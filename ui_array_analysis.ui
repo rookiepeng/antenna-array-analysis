@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1026</width>
+    <width>1161</width>
     <height>718</height>
    </rect>
   </property>
@@ -677,7 +677,7 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="hs_angletheta">
+                 <widget class="QSlider" name="hs_angleaz">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -701,6 +701,13 @@
                   </property>
                   <property name="tickInterval">
                    <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="line_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
                  </widget>
                 </item>
@@ -739,7 +746,7 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QSlider" name="hs_anglephi">
+                 <widget class="QSlider" name="hs_angleel">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -795,16 +802,9 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QRadioButton" name="rb_cartesian">
-                  <property name="text">
-                   <string>Cartesian</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="rb_polar">
-                  <property name="text">
-                   <string>Polar</string>
+                 <widget class="Line" name="line">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
                  </widget>
                 </item>
@@ -962,7 +962,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1026</width>
+     <width>1161</width>
      <height>26</height>
     </rect>
    </property>

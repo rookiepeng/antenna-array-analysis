@@ -106,37 +106,33 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.show()
 
     def init_ui(self):
-        self.windowx_config(0)
-        self.windowy_config(0)
-
-        self.ui.clearButton.setEnabled(False)
-
-        self.ui.cb_windowx.addItems(self.window_list)
-        self.ui.cb_windowy.addItems(self.window_list)
-
         self.ui.cb_plottype.addItems(self.plot_list)
 
+        """Array config"""
         self.ui.sb_sizex.valueChanged.connect(self.new_params)
         self.ui.sb_sizey.valueChanged.connect(self.new_params)
         self.ui.dsb_spacingx.valueChanged.connect(self.new_params)
         self.ui.dsb_spacingy.valueChanged.connect(self.new_params)
+
+        """Windows"""
+        self.ui.cb_windowx.addItems(self.window_list)
+        self.ui.cb_windowy.addItems(self.window_list)
+        self.windowx_config(0)
+        self.windowy_config(0)
+        self.ui.cb_windowx.currentIndexChanged.connect(self.windowx_config)
+        self.ui.cb_windowx.currentIndexChanged.connect(self.new_params)
+        self.ui.cb_windowy.currentIndexChanged.connect(self.windowy_config)
+        self.ui.cb_windowy.currentIndexChanged.connect(self.new_params)
         self.ui.sb_sidelobex.valueChanged.connect(self.new_params)
         self.ui.sb_sidelobey.valueChanged.connect(self.new_params)
         self.ui.sb_adjsidelobex.valueChanged.connect(self.new_params)
         self.ui.sb_adjsidelobey.valueChanged.connect(self.new_params)
-        self.ui.dsb_angleaz.valueChanged.connect(self.azimuth_value_changed)
-        self.ui.hs_angletheta.valueChanged.connect(self.azimuth_slider_moved)
 
-        self.ui.dsb_angleel.valueChanged.connect(
-            self.elevation_value_changed)
-        self.ui.hs_anglephi.valueChanged.connect(
-            self.elevation_slider_moved)
-
-        self.ui.cb_windowx.currentIndexChanged.connect(self.windowx_config)
-        self.ui.cb_windowx.currentIndexChanged.connect(self.new_params)
-
-        self.ui.cb_windowy.currentIndexChanged.connect(self.windowy_config)
-        self.ui.cb_windowy.currentIndexChanged.connect(self.new_params)
+        """Plot config"""
+        self.ui.dsb_angleaz.valueChanged.connect(self.az_changed)
+        self.ui.hs_angleaz.valueChanged.connect(self.az_hs_moved)
+        self.ui.dsb_angleel.valueChanged.connect(self.el_changed)
+        self.ui.hs_angleel.valueChanged.connect(self.el_hs_moved)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -147,12 +143,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
+        self.ui.clearButton.setEnabled(False)
         self.ui.holdButton.clicked.connect(self.hold_figure)
         self.ui.clearButton.clicked.connect(self.clear_figure)
 
-        self.ui.rb_cartesian.toggled.connect(
-            self.cartesian_plot_toggled)
-        self.ui.rb_polar.toggled.connect(self.polar_plot_toggled)
+        # self.ui.rb_cartesian.toggled.connect(
+        #     self.cartesian_plot_toggled)
+        # self.ui.rb_polar.toggled.connect(self.polar_plot_toggled)
 
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
@@ -202,7 +199,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.canvas3d.setCameraPosition(distance=300)
         # self.surface_plot.scale(0.1, 0.1, 0.1)
 
-        ############################################
         """Cartesian view"""
         self.cartesianView = pg.PlotItem()
         self.cartesianPlot = pg.PlotDataItem()
@@ -278,19 +274,19 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         # self.show_cartesian_plot()
         # self.show_3d_plot()
 
-    def azimuth_value_changed(self, value):
-        self.ui.hs_angletheta.setValue(value * 10)
+    def az_changed(self, value):
+        self.ui.hs_angleaz.setValue(value * 10)
         self.new_params()
 
-    def elevation_value_changed(self, value):
-        self.ui.hs_anglephi.setValue(value * 10)
+    def el_changed(self, value):
+        self.ui.hs_angleel.setValue(value * 10)
         self.new_params()
 
-    def azimuth_slider_moved(self, value):
+    def az_hs_moved(self, value):
         self.ui.dsb_angleaz.setValue(value / 10)
         self.new_params()
 
-    def elevation_slider_moved(self, value):
+    def el_hs_moved(self, value):
         self.ui.dsb_angleel.setValue(value / 10)
         self.new_params()
 
