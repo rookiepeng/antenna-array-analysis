@@ -64,13 +64,17 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         super().__init__()
         super(QtWidgets.QMainWindow, self).__init__()
 
-        """Load UI"""
-        self.ui = uic.loadUi('ui_array_analysis.ui', self)
-
         """Constants"""
         self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
         self.plot_list = ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar',
                           'Array layout']
+
+        """Load UI"""
+        self.ui = uic.loadUi('ui_array_analysis.ui', self)
+
+        """Init UI"""
+        self.init_figure()
+        self.init_ui()
 
         """Antenna array configuration"""
         self.array_config = dict()
@@ -82,72 +86,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                                                endpoint=False))/np.pi*180
         self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
 
-        """Figure"""
-        self.canvas2d = pg.GraphicsLayoutWidget()
-        self.canvas3d = gl.GLViewWidget()
-
-        self.layout_figure.addWidget(self.canvas3d)
-        # self.layout_figure.addWidget(self.canvas2d)
-
-        self.cmap = cm.get_cmap('jet')
-        self.minZ = -100
-        self.maxZ = 0
-
         self.pattern = np.zeros(np.shape(self.azimuth))
 
         self.plotType = 'Cartesian'  # 'Cartesian' or 'Polar'
-        self.polarAmpOffset = 60
 
         self.holdAngle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.holdPattern = np.zeros(np.shape(self.azimuth))
         self.holdEnabled = False
-
-        self.cartesianView = pg.PlotItem()
-        self.cartesianPlot = pg.PlotDataItem()
-        self.cartesianPlotHold = pg.PlotDataItem()
-
-        self.polarView = pg.PlotItem()
-        self.polarPlot = pg.PlotDataItem()
-        self.polarPlotHold = pg.PlotDataItem()
-        self.circleList = []
-        self.circleLabel = []
-
-        self.surface_plot = gl.GLSurfacePlotItem(computeNormals=False)
-        self.surface_plot.translate(0, 0, 100)
-
-        self.axis = gl.GLAxisItem()
-        self.canvas3d.addItem(self.axis)
-        self.axis.setSize(x=150, y=150, z=150)
-
-        self.xzgrid = gl.GLGridItem()
-        self.yzgrid = gl.GLGridItem()
-        self.xygrid = gl.GLGridItem()
-        self.canvas3d.addItem(self.xzgrid)
-        self.canvas3d.addItem(self.yzgrid)
-        self.canvas3d.addItem(self.xygrid)
-        self.xzgrid.setSize(x=180, y=100, z=0)
-        self.xzgrid.setSpacing(x=10, y=10, z=10)
-        self.yzgrid.setSize(x=100, y=180, z=0)
-        self.yzgrid.setSpacing(x=10, y=10, z=10)
-        self.xygrid.setSize(x=180, y=180, z=0)
-        self.xygrid.setSpacing(x=10, y=10, z=10)
-
-        # rotate x and y grids to face the correct direction
-        self.xzgrid.rotate(90, 1, 0, 0)
-        self.xzgrid.translate(0, -90, 50)
-        self.yzgrid.rotate(90, 0, 1, 0)
-        self.yzgrid.translate(-90, 0, 50)
-        # self.xygrid.translate(0, 0, -50)
-
-        self.canvas3d.addItem(self.surface_plot)
-        self.canvas3d.setCameraPosition(distance=300)
-        # self.surface_plot.scale(0.1, 0.1, 0.1)
-
-        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
-        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
-
-        self.init_figure()
-        self.init_ui()
 
         self.calpattern = CalPattern()
         self.calpattern_thread = QThread()
@@ -212,8 +157,57 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
     def init_figure(self):
+        self.canvas2d = pg.GraphicsLayoutWidget()
+        self.canvas3d = gl.GLViewWidget()
+
+        self.layout_figure.addWidget(self.canvas3d)
+        # self.layout_figure.addWidget(self.canvas2d)
+
+        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
+        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
+
+        """Surface view"""
+        self.cmap = cm.get_cmap('jet')
+        self.minZ = -100
+        self.maxZ = 0
+
+        self.surface_plot = gl.GLSurfacePlotItem(computeNormals=False)
+        self.surface_plot.translate(0, 0, 100)
+
+        self.axis = gl.GLAxisItem()
+        self.canvas3d.addItem(self.axis)
+        self.axis.setSize(x=150, y=150, z=150)
+
+        self.xzgrid = gl.GLGridItem()
+        self.yzgrid = gl.GLGridItem()
+        self.xygrid = gl.GLGridItem()
+        self.canvas3d.addItem(self.xzgrid)
+        self.canvas3d.addItem(self.yzgrid)
+        self.canvas3d.addItem(self.xygrid)
+        self.xzgrid.setSize(x=180, y=100, z=0)
+        self.xzgrid.setSpacing(x=10, y=10, z=10)
+        self.yzgrid.setSize(x=100, y=180, z=0)
+        self.yzgrid.setSpacing(x=10, y=10, z=10)
+        self.xygrid.setSize(x=180, y=180, z=0)
+        self.xygrid.setSpacing(x=10, y=10, z=10)
+
+        # rotate x and y grids to face the correct direction
+        self.xzgrid.rotate(90, 1, 0, 0)
+        self.xzgrid.translate(0, -90, 50)
+        self.yzgrid.rotate(90, 0, 1, 0)
+        self.yzgrid.translate(-90, 0, 50)
+        # self.xygrid.translate(0, 0, -50)
+
+        self.canvas3d.addItem(self.surface_plot)
+        self.canvas3d.setCameraPosition(distance=300)
+        # self.surface_plot.scale(0.1, 0.1, 0.1)
+
         ############################################
-        # Cartesian View
+        """Cartesian view"""
+        self.cartesianView = pg.PlotItem()
+        self.cartesianPlot = pg.PlotDataItem()
+        self.cartesianPlotHold = pg.PlotDataItem()
+
         self.cartesianPlot.setPen(self.penActive)
         self.cartesianPlotHold.setPen(self.penHold)
         self.cartesianView.addItem(self.cartesianPlot)
@@ -227,8 +221,15 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.cartesianView.setLimits(
             xMin=-90, xMax=90, yMin=-110, yMax=1, minXRange=0.1, minYRange=0.1)
 
-        ############################################
-        # Polar View
+        """Polar view"""
+        self.polarView = pg.PlotItem()
+        self.polarPlot = pg.PlotDataItem()
+        self.polarPlotHold = pg.PlotDataItem()
+        self.circleList = []
+        self.circleLabel = []
+
+        self.polarAmpOffset = 60
+
         self.polarPlot.setPen(self.penActive)
         self.polarPlotHold.setPen(self.penHold)
         self.polarView.addItem(self.polarPlot)
