@@ -73,8 +73,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
         """Init UI"""
-        self.init_figure()
         self.init_ui()
+        self.init_figure()
 
         """Antenna array configuration"""
         self.array_config = dict()
@@ -106,8 +106,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.show()
 
     def init_ui(self):
-        self.ui.cb_plottype.addItems(self.plot_list)
-
         """Array config"""
         self.ui.sb_sizex.valueChanged.connect(self.new_params)
         self.ui.sb_sizey.valueChanged.connect(self.new_params)
@@ -128,11 +126,15 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.sb_adjsidelobex.valueChanged.connect(self.new_params)
         self.ui.sb_adjsidelobey.valueChanged.connect(self.new_params)
 
-        """Plot config"""
+        """Steering"""
         self.ui.dsb_angleaz.valueChanged.connect(self.az_changed)
         self.ui.hs_angleaz.valueChanged.connect(self.az_hs_moved)
         self.ui.dsb_angleel.valueChanged.connect(self.el_changed)
         self.ui.hs_angleel.valueChanged.connect(self.el_hs_moved)
+
+        """Plot"""
+        self.ui.cb_plottype.addItems(self.plot_list)
+        self.ui.cb_plottype.currentIndexChanged.connect(self.plot_type_changed)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -154,14 +156,18 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
     def init_figure(self):
-        self.canvas2d = pg.GraphicsLayoutWidget()
+        """Init figures"""
+        self.canvas2d_cartesian = pg.GraphicsLayoutWidget()
+        self.canvas2d_polar = pg.GraphicsLayoutWidget()
         self.canvas3d = gl.GLViewWidget()
+        self.canvas3d_array = gl.GLViewWidget()
 
-        self.layout_figure.addWidget(self.canvas3d)
-        # self.layout_figure.addWidget(self.canvas2d)
+        self.ui.layout_canvas.addWidget(self.canvas3d)
+        self.ui.layout_canvas.addWidget(self.canvas3d_array)
+        self.ui.layout_canvas.addWidget(self.canvas2d_cartesian)
+        self.ui.layout_canvas.addWidget(self.canvas2d_polar)
 
-        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
-        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
+        self.plot_type_changed(self.ui.cb_plottype.currentIndex())
 
         """Surface view"""
         self.cmap = cm.get_cmap('jet')
@@ -204,6 +210,11 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.cartesianPlot = pg.PlotDataItem()
         self.cartesianPlotHold = pg.PlotDataItem()
 
+        self.canvas2d_cartesian.addItem(self.cartesianView)
+
+        self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
+        self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
+
         self.cartesianPlot.setPen(self.penActive)
         self.cartesianPlotHold.setPen(self.penHold)
         self.cartesianView.addItem(self.cartesianPlot)
@@ -221,6 +232,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.polarView = pg.PlotItem()
         self.polarPlot = pg.PlotDataItem()
         self.polarPlotHold = pg.PlotDataItem()
+        self.canvas2d_polar.addItem(self.polarView)
+
         self.circleList = []
         self.circleLabel = []
 
@@ -444,6 +457,44 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.label_adjsidelobey.setVisible(False)
             self.ui.hs_adjsidelobey.setVisible(False)
 
+    def plot_type_changed(self, plot_idx):
+        if self.plot_list[plot_idx] == '3D (Az-El-Amp)':
+            self.canvas2d_cartesian.setVisible(False)
+            self.canvas2d_polar.setVisible(False)
+            self.canvas3d_array.setVisible(False)
+            self.canvas3d.setVisible(True)
+
+            self.ui.label_polarMinAmp.setVisible(False)
+            self.ui.spinBox_polarMinAmp.setVisible(False)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+        elif self.plot_list[plot_idx] == '2D Cartesian':
+            self.canvas2d_polar.setVisible(False)
+            self.canvas3d.setVisible(False)
+            self.canvas3d_array.setVisible(False)
+            self.canvas2d_cartesian.setVisible(True)
+
+            self.ui.label_polarMinAmp.setVisible(False)
+            self.ui.spinBox_polarMinAmp.setVisible(False)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+        elif self.plot_list[plot_idx] == '2D Polar':
+            self.canvas2d_cartesian.setVisible(False)
+            self.canvas3d.setVisible(False)
+            self.canvas3d_array.setVisible(False)
+            self.canvas2d_polar.setVisible(True)
+
+            self.ui.label_polarMinAmp.setVisible(True)
+            self.ui.spinBox_polarMinAmp.setVisible(True)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(True)
+        elif self.plot_list[plot_idx] == 'Array layout':
+            self.canvas2d_cartesian.setVisible(False)
+            self.canvas2d_polar.setVisible(False)
+            self.canvas3d.setVisible(False)
+            self.canvas3d_array.setVisible(True)
+
+            self.ui.label_polarMinAmp.setVisible(False)
+            self.ui.spinBox_polarMinAmp.setVisible(False)
+            self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+
     def plotview_x_range_changed(self, item):
         self.azimuth = np.linspace(
             item.viewRange()[0][0],
@@ -451,51 +502,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             num=1801,
             endpoint=True)
         self.new_params()
-
-    def cartesian_plot_toggled(self, checked):
-        if checked and self.plotType is not 'Cartesian':
-            if self.holdEnabled:
-                self.polarView.removeItem(self.polarPlotHold)
-                self.holdEnabled = False
-                self.ui.clearButton.setEnabled(False)
-
-            self.canvas2d.removeItem(self.polarView)
-            self.canvas2d.addItem(self.cartesianView)
-            self.ui.label_polarMinAmp.setVisible(False)
-            self.ui.spinBox_polarMinAmp.setVisible(False)
-            self.ui.horizontalSlider_polarMinAmp.setVisible(False)
-
-            self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
-            self.plotType = 'Cartesian'
-            self.new_params()
-            self.cartesianView.setXRange(-90, 90)
-            self.cartesianView.setYRange(-80, 0)
-
-    def polar_plot_toggled(self, checked):
-        if checked and self.plotType is not 'Polar':
-            if self.holdEnabled:
-                self.cartesianView.removeItem(self.cartesianPlotHold)
-                self.holdEnabled = False
-                self.ui.clearButton.setEnabled(False)
-
-            self.canvas2d.removeItem(self.cartesianView)
-            self.canvas2d.addItem(self.polarView)
-            self.ui.label_polarMinAmp.setVisible(True)
-            self.ui.spinBox_polarMinAmp.setVisible(True)
-            self.ui.horizontalSlider_polarMinAmp.setVisible(True)
-
-            self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
-            self.plotType = 'Polar'
-            self.new_params()
-
-    def show_cartesian_plot(self):
-        self.canvas2d.addItem(self.cartesianView)
-
-    def show_polar_plot(self):
-        self.canvas2d.addItem(self.polarView)
-
-    # def show_3d_plot(self):
-        # self.canvas2d.addItem(self.canvas3d)
 
 
 if __name__ == '__main__':
