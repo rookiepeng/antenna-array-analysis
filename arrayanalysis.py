@@ -145,13 +145,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
-        self.ui.clearButton.setEnabled(False)
-        self.ui.holdButton.clicked.connect(self.hold_figure)
-        self.ui.clearButton.clicked.connect(self.clear_figure)
-
-        # self.ui.rb_cartesian.toggled.connect(
-        #     self.cartesian_plot_toggled)
-        # self.ui.rb_polar.toggled.connect(self.polar_plot_toggled)
+        # self.ui.clearButton.setEnabled(False)
+        # self.ui.holdButton.clicked.connect(self.hold_figure)
+        # self.ui.clearButton.clicked.connect(self.clear_figure)
 
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
