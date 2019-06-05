@@ -63,10 +63,28 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         super(QtWidgets.QMainWindow, self).__init__()
+
+        """Load UI"""
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
+
+        """Constants"""
+        self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
+        self.plot_list = ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar',
+                          'Array layout']
+
+        """Antenna array configuration"""
+        self.array_config = dict()
+        self.az_nfft = 512
+        self.el_nfft = 512
+        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft,
+                                             endpoint=False))/np.pi*180
+        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft,
+                                               endpoint=False))/np.pi*180
+        self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
+
+        """Figure"""
         self.canvas2d = pg.GraphicsLayoutWidget()
         self.canvas3d = gl.GLViewWidget()
-        self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
 
         self.layout_figure.addWidget(self.canvas3d)
         # self.layout_figure.addWidget(self.canvas2d)
@@ -75,15 +93,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.minZ = -100
         self.maxZ = 0
 
-        self.array_config = dict()
-
-        self.az_nfft = 512
-        self.el_nfft = 512
-        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft,
-                                             endpoint=False))/np.pi*180
-        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft,
-                                               endpoint=False))/np.pi*180
-        self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
         self.pattern = np.zeros(np.shape(self.azimuth))
 
         self.plotType = 'Cartesian'  # 'Cartesian' or 'Polar'
@@ -137,12 +146,12 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.penActive = pg.mkPen(color=(244, 143, 177), width=1)
         self.penHold = pg.mkPen(color=(158, 158, 158), width=1)
 
-        self.init_plot_view()
+        self.init_figure()
         self.init_ui()
 
         self.calpattern = CalPattern()
         self.calpattern_thread = QThread()
-        self.calpattern.patternReady.connect(self.update_pattern)
+        self.calpattern.patternReady.connect(self.update_figure)
         self.calpattern_thread.started.connect(
             self.calpattern.cal_pattern)
         self.calpattern.moveToThread(self.calpattern_thread)
@@ -160,8 +169,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.cb_windowx.addItems(self.window_list)
         self.ui.cb_windowy.addItems(self.window_list)
 
-        self.ui.cb_plottype.addItems(
-            ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar', 'Array layout'])
+        self.ui.cb_plottype.addItems(self.plot_list)
 
         self.ui.sb_sizex.valueChanged.connect(self.new_params)
         self.ui.sb_sizey.valueChanged.connect(self.new_params)
@@ -203,7 +211,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
-    def init_plot_view(self):
+    def init_figure(self):
         ############################################
         # Cartesian View
         self.cartesianPlot.setPen(self.penActive)
@@ -320,7 +328,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.update_config(
             self.array_config, self.azimuth, self.elevation, self.plotType)
 
-    def update_pattern(self, angle, angle_phi, pattern, plot_type):
+    def update_figure(self, angle, angle_phi, pattern, plot_type):
         # print(np.shape(pattern))
         rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
         self.surface_plot.setData(
