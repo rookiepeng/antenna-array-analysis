@@ -108,12 +108,16 @@ class CalPattern(QObject):
 
                 AF_data = self.rect_array.get_pattern(
                     Nx=512,
-                    Ny=512, beam_az=self.beam_az,
-                    beam_el=self.beam_el, windowx=self.win_type[
-                        self.windowx], sllx=self.sllx,
-                    nbarx=self.nbarx, windowy=self.win_type[
-                        self.windowy], slly=self.slly,
-                    nbary=self.nbary, polar=False
+                    Ny=512,
+                    beam_az=self.beam_az,
+                    beam_el=self.beam_el,
+                    windowx=self.win_type[self.windowx],
+                    sllx=self.sllx,
+                    nbarx=self.nbarx,
+                    windowy=self.win_type[self.windowy],
+                    slly=self.slly,
+                    nbary=self.nbary,
+                    polar=False
                 )
 
                 AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
