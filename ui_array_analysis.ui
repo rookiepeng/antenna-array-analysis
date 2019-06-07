@@ -809,6 +809,137 @@
                  </widget>
                 </item>
                 <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QRadioButton" name="rb_azimuth">
+                    <property name="text">
+                     <string>Fix azimuth (°):</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="rbsb_azimuth">
+                    <property name="minimum">
+                     <double>-90.000000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>90.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QSlider" name="rbhs_azimuth">
+                  <property name="minimum">
+                   <number>-900</number>
+                  </property>
+                  <property name="maximum">
+                   <number>900</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <item>
+                   <widget class="QRadioButton" name="rb_elevation">
+                    <property name="text">
+                     <string>Fix elevation (°):</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="rbsb_elevation">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="minimum">
+                     <double>-90.000000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>90.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QSlider" name="rbhs_elevation">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="minimum">
+                   <number>-900</number>
+                  </property>
+                  <property name="maximum">
+                   <number>900</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="line_polar">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_5">
                   <item>
                    <widget class="QLabel" name="label_polarMinAmp">
@@ -883,52 +1014,6 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="holdButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>32</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/res/hold.png</normaloff>:/icons/res/hold.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="clearButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>32</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/res/clear.png</normaloff>:/icons/res/clear.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
               <spacer name="verticalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -963,7 +1048,7 @@
      <x>0</x>
      <y>0</y>
      <width>1161</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1007,12 +1092,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>216</x>
-     <y>265</y>
+     <x>218</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>110</x>
-     <y>284</y>
+     <x>151</x>
+     <y>253</y>
     </hint>
    </hints>
   </connection>
@@ -1023,12 +1108,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>215</x>
-     <y>330</y>
+     <x>218</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
-     <x>136</x>
-     <y>360</y>
+     <x>177</x>
+     <y>302</y>
     </hint>
    </hints>
   </connection>
@@ -1040,11 +1125,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>218</x>
-     <y>546</y>
+     <y>454</y>
     </hint>
     <hint type="destinationlabel">
-     <x>92</x>
-     <y>570</y>
+     <x>133</x>
+     <y>477</y>
     </hint>
    </hints>
   </connection>
@@ -1055,12 +1140,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>209</x>
-     <y>615</y>
+     <x>218</x>
+     <y>503</y>
     </hint>
     <hint type="destinationlabel">
-     <x>112</x>
-     <y>633</y>
+     <x>153</x>
+     <y>526</y>
     </hint>
    </hints>
   </connection>
@@ -1071,12 +1156,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>176</x>
-     <y>278</y>
+     <x>217</x>
+     <y>253</y>
     </hint>
     <hint type="destinationlabel">
-     <x>203</x>
-     <y>252</y>
+     <x>218</x>
+     <y>230</y>
     </hint>
    </hints>
   </connection>
@@ -1087,12 +1172,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>153</x>
-     <y>352</y>
+     <x>194</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel">
-     <x>201</x>
-     <y>324</y>
+     <x>218</x>
+     <y>279</y>
     </hint>
    </hints>
   </connection>
@@ -1103,12 +1188,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>563</y>
+     <x>171</x>
+     <y>477</y>
     </hint>
     <hint type="destinationlabel">
-     <x>201</x>
-     <y>538</y>
+     <x>218</x>
+     <y>454</y>
     </hint>
    </hints>
   </connection>
@@ -1119,12 +1204,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>156</x>
-     <y>631</y>
+     <x>197</x>
+     <y>526</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>602</y>
+     <x>218</x>
+     <y>503</y>
     </hint>
    </hints>
   </connection>

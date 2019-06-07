@@ -48,7 +48,7 @@ import antarray
 
 
 class CalPattern(QObject):
-    patternReady = pyqtSignal(np.ndarray, np.ndarray, np.ndarray, object)
+    patternReady = pyqtSignal(np.ndarray, np.ndarray, np.ndarray)
     new_data = False
 
     def __init__(self):
@@ -79,7 +79,7 @@ class CalPattern(QObject):
         self.new_data = False
         self.plot = 'Cartesian'
 
-    def update_config(self, linear_array_config, u, v, plot):
+    def update_config(self, linear_array_config):
         self.sizex = linear_array_config.get('sizex', 64)
         self.sizey = linear_array_config.get('sizey', 32)
         self.spacingx = linear_array_config['spacingx']
@@ -94,8 +94,9 @@ class CalPattern(QObject):
         self.slly = linear_array_config.get('slly', 60)
         self.nbarx = linear_array_config['nbarx']
         self.nbary = linear_array_config.get('nbary', 20)
+        self.Nx = linear_array_config.get('Nx')
+        self.Ny = linear_array_config.get('Ny')
         self.new_data = True
-        self.plot = plot
         self.rect_array.update_parameters(
             sizex=self.sizex, sizey=self.sizey, spacingx=self.spacingx,
             spacingy=self.spacingy)
@@ -107,8 +108,8 @@ class CalPattern(QObject):
                 self.new_data = False
 
                 AF_data = self.rect_array.get_pattern(
-                    Nx=512,
-                    Ny=512,
+                    Nx=self.Nx,
+                    Ny=self.Ny,
                     beam_az=self.beam_az,
                     beam_el=self.beam_el,
                     windowx=self.win_type[self.windowx],
@@ -116,12 +117,12 @@ class CalPattern(QObject):
                     nbarx=self.nbarx,
                     windowy=self.win_type[self.windowy],
                     slly=self.slly,
-                    nbary=self.nbary,
-                    polar=False
+                    nbary=self.nbary
                 )
 
                 AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
 
-                self.patternReady.emit(self.u, self.v, AF, self.plot)
+                self.patternReady.emit(
+                    AF_data['azimuth'], AF_data['elevation'], AF)
 
             sleep(0.01)

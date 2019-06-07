@@ -68,16 +68,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
         self.plot_list = ['3D (Az-El-Amp)', '2D Cartesian', '2D Polar',
                           'Array layout']
+        self.array_config = dict()
+        self.fix_azimuth = False
 
         """Load UI"""
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
-        """Init UI"""
-        self.init_ui()
-        self.init_figure()
-
         """Antenna array configuration"""
-        self.array_config = dict()
         self.az_nfft = 512
         self.el_nfft = 512
         self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft,
@@ -101,6 +98,10 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.calpattern.cal_pattern)
         self.calpattern.moveToThread(self.calpattern_thread)
         self.calpattern_thread.start()
+
+        """Init UI"""
+        self.init_ui()
+        self.init_figure()
 
         self.new_params()
         self.ui.show()
@@ -135,6 +136,15 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         """Plot"""
         self.ui.cb_plottype.addItems(self.plot_list)
         self.ui.cb_plottype.currentIndexChanged.connect(self.plot_type_changed)
+
+        self.ui.rb_azimuth.clicked.connect(self.rb_azimuth_clicked)
+
+        self.ui.rb_elevation.clicked.connect(self.rb_elevation_clicked)
+
+        self.ui.rbsb_azimuth.valueChanged.connect(self.fix_az_changed)
+        self.ui.rbhs_azimuth.valueChanged.connect(self.fix_az_hs_moved)
+        self.ui.rbsb_elevation.valueChanged.connect(self.fix_el_changed)
+        self.ui.rbhs_elevation.valueChanged.connect(self.fix_el_hs_moved)
 
         self.ui.spinBox_polarMinAmp.valueChanged.connect(
             self.polar_min_amp_value_changed)
@@ -299,6 +309,22 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.dsb_angleel.setValue(value / 10)
         self.new_params()
 
+    def fix_az_changed(self, value):
+        self.ui.rbhs_azimuth.setValue(value * 10)
+        self.new_params()
+
+    def fix_el_changed(self, value):
+        self.ui.rbhs_elevation.setValue(value * 10)
+        self.new_params()
+
+    def fix_az_hs_moved(self, value):
+        self.ui.rbsb_azimuth.setValue(value / 10)
+        self.new_params()
+
+    def fix_el_hs_moved(self, value):
+        self.ui.rbsb_elevation.setValue(value / 10)
+        self.new_params()
+
     def windowx_combobox_changed(self, value):
         self.windowx_change_config[value]()
         self.new_params()
@@ -306,6 +332,22 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
     def windowy_combobox_changed(self, value):
         self.windowy_change_config[value]()
         self.new_params()
+
+    def rb_azimuth_clicked(self):
+        self.fix_azimuth = True
+        self.ui.rbhs_azimuth.setEnabled(True)
+        self.ui.rbsb_azimuth.setEnabled(True)
+        self.ui.rb_elevation.setChecked(False)
+        self.ui.rbsb_elevation.setEnabled(False)
+        self.ui.rbhs_elevation.setEnabled(False)
+
+    def rb_elevation_clicked(self):
+        self.fix_azimuth = False
+        self.ui.rbhs_elevation.setEnabled(True)
+        self.ui.rbsb_elevation.setEnabled(True)
+        self.ui.rb_azimuth.setChecked(False)
+        self.ui.rbsb_azimuth.setEnabled(False)
+        self.ui.rbhs_azimuth.setEnabled(False)
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
@@ -330,27 +372,24 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['slly'] = self.ui.sb_sidelobey.value()
         self.array_config['nbarx'] = self.ui.sb_adjsidelobex.value()
         self.array_config['nbary'] = self.ui.sb_adjsidelobey.value()
+        self.array_config['Nx'] = self.Nx
+        self.array_config['Ny'] = self.Ny
 
-        self.calpattern.update_config(
-            self.array_config, self.azimuth, self.elevation, self.plotType)
+        self.calpattern.update_config(self.array_config)
 
-    def update_figure(self, angle, angle_phi, pattern, plot_type):
+    def update_figure(self, azimuth, elevation, pattern):
         # print(np.shape(pattern))
-        rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
-        self.surface_plot.setData(
-            x=self.azimuth, y=self.elevation, z=pattern, colors=rgba_img)
-        if plot_type is 'Cartesian':
-            # self.cartesianPlot.setData(angle, pattern)
-            self.angle = angle
-            self.pattern = pattern
-
-        elif plot_type is 'Polar':
-            self.angle = angle
-            self.pattern = pattern
+        if self.plot_list[self.plot_type_idx] == '3D (Az-El-Amp)':
+            rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
+            self.surface_plot.setData(
+                x=azimuth, y=elevation, z=pattern, colors=rgba_img)
+        elif self.plot_list[self.plot_type_idx] == '2D Cartesian':
+            self.cartesianPlot.setData(azimuth, pattern)
+        elif self.plot_list[self.plot_type_idx] == '2D Polar':
             pattern = pattern + self.polarAmpOffset
             pattern[np.where(pattern < 0)] = 0
-            x = pattern * np.sin(angle / 180 * np.pi)
-            y = pattern * np.cos(angle / 180 * np.pi)
+            x = pattern * np.sin(azimuth / 180 * np.pi)
+            y = pattern * np.cos(azimuth / 180 * np.pi)
 
             self.circleLabel[0].setPos(self.polarAmpOffset, 0)
             for circle_idx in range(0, 6):
@@ -369,28 +408,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                     self.polarAmpOffset - self.polarAmpOffset / 6 * (
                         circle_idx + 1), 0)
             self.polarPlot.setData(x, y)
-
-            pattern = self.holdPattern + self.polarAmpOffset
-            pattern[np.where(pattern < 0)] = 0
-            x = pattern * np.sin(self.holdAngle / 180 * np.pi)
-            y = pattern * np.cos(self.holdAngle / 180 * np.pi)
-            self.polarPlotHold.setData(x, y)
-
-        elif plot_type is 'Cartesian_Hold':
-            self.holdAngle = angle
-            self.holdPattern = pattern
-            self.cartesianPlotHold.setData(angle, pattern)
-            self.cartesianView.addItem(self.cartesianPlotHold)
-
-        elif plot_type is 'Polar_Hold':
-            self.holdAngle = angle
-            self.holdPattern = pattern
-            pattern = pattern + self.polarAmpOffset
-            pattern[np.where(pattern < 0)] = 0
-            x = pattern * np.sin(angle / 180 * np.pi)
-            y = pattern * np.cos(angle / 180 * np.pi)
-            self.polarPlotHold.setData(x, y)
-            self.polarView.addItem(self.polarPlotHold)
 
     def hold_figure(self):
         self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
@@ -454,42 +471,102 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.hs_adjsidelobey.setVisible(False)
 
     def plot_type_changed(self, plot_idx):
+        self.plot_type_idx = plot_idx
         if self.plot_list[plot_idx] == '3D (Az-El-Amp)':
             self.canvas2d_cartesian.setVisible(False)
             self.canvas2d_polar.setVisible(False)
             self.canvas3d_array.setVisible(False)
             self.canvas3d.setVisible(True)
 
+            self.ui.rb_azimuth.setEnabled(False)
+            self.ui.rbsb_azimuth.setEnabled(False)
+            self.ui.rbhs_azimuth.setEnabled(False)
+            self.ui.rb_elevation.setEnabled(False)
+            self.ui.rbsb_elevation.setEnabled(False)
+            self.ui.rbhs_elevation.setEnabled(False)
+
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+            self.Nx = 512
+            self.Ny = 512
         elif self.plot_list[plot_idx] == '2D Cartesian':
             self.canvas2d_polar.setVisible(False)
             self.canvas3d.setVisible(False)
             self.canvas3d_array.setVisible(False)
             self.canvas2d_cartesian.setVisible(True)
 
+            if self.fix_azimuth:
+                self.ui.rb_azimuth.setChecked(True)
+                self.ui.rb_azimuth.setEnabled(True)
+                self.ui.rbsb_azimuth.setEnabled(True)
+                self.ui.rbhs_azimuth.setEnabled(True)
+                self.ui.rb_elevation.setEnabled(True)
+                self.ui.rb_elevation.setChecked(False)
+                self.ui.rbsb_elevation.setEnabled(False)
+                self.ui.rbhs_elevation.setEnabled(False)
+            else:
+                self.ui.rb_azimuth.setChecked(False)
+                self.ui.rb_azimuth.setEnabled(True)
+                self.ui.rbsb_azimuth.setEnabled(False)
+                self.ui.rbhs_azimuth.setEnabled(False)
+                self.ui.rb_elevation.setEnabled(True)
+                self.ui.rb_elevation.setChecked(True)
+                self.ui.rbsb_elevation.setEnabled(True)
+                self.ui.rbhs_elevation.setEnabled(True)
+
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+            self.Nx = 4096
+            self.Ny = 1
         elif self.plot_list[plot_idx] == '2D Polar':
             self.canvas2d_cartesian.setVisible(False)
             self.canvas3d.setVisible(False)
             self.canvas3d_array.setVisible(False)
             self.canvas2d_polar.setVisible(True)
 
+            if self.fix_azimuth:
+                self.ui.rb_azimuth.setChecked(True)
+                self.ui.rb_azimuth.setEnabled(True)
+                self.ui.rbsb_azimuth.setEnabled(True)
+                self.ui.rbhs_azimuth.setEnabled(True)
+                self.ui.rb_elevation.setEnabled(True)
+                self.ui.rb_elevation.setChecked(False)
+                self.ui.rbsb_elevation.setEnabled(False)
+                self.ui.rbhs_elevation.setEnabled(False)
+            else:
+                self.ui.rb_azimuth.setChecked(False)
+                self.ui.rb_azimuth.setEnabled(True)
+                self.ui.rbsb_azimuth.setEnabled(False)
+                self.ui.rbhs_azimuth.setEnabled(False)
+                self.ui.rb_elevation.setEnabled(True)
+                self.ui.rb_elevation.setChecked(True)
+                self.ui.rbsb_elevation.setEnabled(True)
+                self.ui.rbhs_elevation.setEnabled(True)
+
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
+            self.Nx = 4096
+            self.Ny = 1
         elif self.plot_list[plot_idx] == 'Array layout':
             self.canvas2d_cartesian.setVisible(False)
             self.canvas2d_polar.setVisible(False)
             self.canvas3d.setVisible(False)
             self.canvas3d_array.setVisible(True)
 
+            self.ui.rb_azimuth.setEnabled(False)
+            self.ui.rbsb_azimuth.setEnabled(False)
+            self.ui.rbhs_azimuth.setEnabled(False)
+            self.ui.rb_elevation.setEnabled(False)
+            self.ui.rbsb_elevation.setEnabled(False)
+            self.ui.rbhs_elevation.setEnabled(False)
+
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
+        self.new_params()
 
     def plotview_x_range_changed(self, item):
         self.azimuth = np.linspace(
