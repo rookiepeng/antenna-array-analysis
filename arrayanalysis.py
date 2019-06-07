@@ -345,6 +345,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rbhs_elevation.setEnabled(False)
         self.Nx = 1
         self.Ny = 4096
+        self.cartesianView.setLabel(axis='bottom', text='Elevation', units='°')
         self.new_params()
 
     def rb_elevation_clicked(self):
@@ -356,6 +357,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rbhs_azimuth.setEnabled(False)
         self.Nx = 4096
         self.Ny = 1
+        self.cartesianView.setLabel(axis='bottom', text='Azimuth', units='°')
         self.new_params()
 
     def polar_min_amp_value_changed(self, value):
@@ -526,6 +528,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rbhs_elevation.setEnabled(False)
                 self.Nx = 1
                 self.Ny = 4096
+                self.cartesianView.setLabel(
+                    axis='bottom', text='Elevation', units='°')
             else:
                 self.ui.rb_azimuth.setChecked(False)
                 self.ui.rb_azimuth.setEnabled(True)
@@ -537,6 +541,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rbhs_elevation.setEnabled(True)
                 self.Nx = 4096
                 self.Ny = 1
+                self.cartesianView.setLabel(
+                    axis='bottom', text='Azimuth', units='°')
 
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
