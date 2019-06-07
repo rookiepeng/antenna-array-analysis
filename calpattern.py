@@ -86,8 +86,6 @@ class CalPattern(QObject):
         self.spacingy = linear_array_config.get('spacingy', 0.5)
         self.beam_az = linear_array_config['beam_az']
         self.beam_el = linear_array_config.get('beam_el', 0)
-        # self.u = u
-        # self.v = v
         self.windowx = linear_array_config['windowx']
         self.windowy = linear_array_config.get('windowy', 0)
         self.sllx = linear_array_config['sllx']
@@ -96,6 +94,8 @@ class CalPattern(QObject):
         self.nbary = linear_array_config.get('nbary', 20)
         self.Nx = linear_array_config.get('Nx')
         self.Ny = linear_array_config.get('Ny')
+        self.plot_az = linear_array_config.get('plot_az')
+        self.plot_el = linear_array_config.get('plot_el')
         self.new_data = True
         self.rect_array.update_parameters(
             sizex=self.sizex, sizey=self.sizey, spacingx=self.spacingx,
@@ -117,7 +117,9 @@ class CalPattern(QObject):
                     nbarx=self.nbarx,
                     windowy=self.win_type[self.windowy],
                     slly=self.slly,
-                    nbary=self.nbary
+                    nbary=self.nbary,
+                    plot_az=self.plot_az,
+                    plot_el=self.plot_el
                 )
 
                 AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)

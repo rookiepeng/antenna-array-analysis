@@ -99,6 +99,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.moveToThread(self.calpattern_thread)
         self.calpattern_thread.start()
 
+        self.plot_az = 0
+        self.plot_el = 0
+
         """Init UI"""
         self.init_ui()
         self.init_figure()
@@ -340,6 +343,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rb_elevation.setChecked(False)
         self.ui.rbsb_elevation.setEnabled(False)
         self.ui.rbhs_elevation.setEnabled(False)
+        self.Nx = 1
+        self.Ny = 4096
+        self.new_params()
 
     def rb_elevation_clicked(self):
         self.fix_azimuth = False
@@ -348,6 +354,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rb_azimuth.setChecked(False)
         self.ui.rbsb_azimuth.setEnabled(False)
         self.ui.rbhs_azimuth.setEnabled(False)
+        self.Nx = 4096
+        self.Ny = 1
+        self.new_params()
 
     def polar_min_amp_value_changed(self, value):
         self.ui.horizontalSlider_polarMinAmp.setValue(value)
@@ -374,6 +383,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['nbary'] = self.ui.sb_adjsidelobey.value()
         self.array_config['Nx'] = self.Nx
         self.array_config['Ny'] = self.Ny
+        self.array_config['plot_az'] = self.ui.rbsb_azimuth.value()
+        self.array_config['plot_el'] = self.ui.rbsb_elevation.value()
 
         self.calpattern.update_config(self.array_config)
 
@@ -384,12 +395,19 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.surface_plot.setData(
                 x=azimuth, y=elevation, z=pattern, colors=rgba_img)
         elif self.plot_list[self.plot_type_idx] == '2D Cartesian':
-            self.cartesianPlot.setData(azimuth, pattern)
+            if self.fix_azimuth:
+                self.cartesianPlot.setData(elevation, pattern)
+            else:
+                self.cartesianPlot.setData(azimuth, pattern)
         elif self.plot_list[self.plot_type_idx] == '2D Polar':
             pattern = pattern + self.polarAmpOffset
             pattern[np.where(pattern < 0)] = 0
-            x = pattern * np.sin(azimuth / 180 * np.pi)
-            y = pattern * np.cos(azimuth / 180 * np.pi)
+            if self.fix_azimuth:
+                x = pattern * np.sin(elevation / 180 * np.pi)
+                y = pattern * np.cos(elevation / 180 * np.pi)
+            else:
+                x = pattern * np.sin(azimuth / 180 * np.pi)
+                y = pattern * np.cos(azimuth / 180 * np.pi)
 
             self.circleLabel[0].setPos(self.polarAmpOffset, 0)
             for circle_idx in range(0, 6):
@@ -490,6 +508,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
             self.Nx = 512
             self.Ny = 512
+            self.new_params()
         elif self.plot_list[plot_idx] == '2D Cartesian':
             self.canvas2d_polar.setVisible(False)
             self.canvas3d.setVisible(False)
@@ -505,6 +524,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(False)
                 self.ui.rbsb_elevation.setEnabled(False)
                 self.ui.rbhs_elevation.setEnabled(False)
+                self.Nx = 1
+                self.Ny = 4096
             else:
                 self.ui.rb_azimuth.setChecked(False)
                 self.ui.rb_azimuth.setEnabled(True)
@@ -514,12 +535,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(True)
                 self.ui.rbsb_elevation.setEnabled(True)
                 self.ui.rbhs_elevation.setEnabled(True)
+                self.Nx = 4096
+                self.Ny = 1
 
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
-            self.Nx = 4096
-            self.Ny = 1
+            self.new_params()
         elif self.plot_list[plot_idx] == '2D Polar':
             self.canvas2d_cartesian.setVisible(False)
             self.canvas3d.setVisible(False)
@@ -535,6 +557,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(False)
                 self.ui.rbsb_elevation.setEnabled(False)
                 self.ui.rbhs_elevation.setEnabled(False)
+                self.Nx = 1
+                self.Ny = 4096
             else:
                 self.ui.rb_azimuth.setChecked(False)
                 self.ui.rb_azimuth.setEnabled(True)
@@ -544,12 +568,13 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(True)
                 self.ui.rbsb_elevation.setEnabled(True)
                 self.ui.rbhs_elevation.setEnabled(True)
+                self.Nx = 4096
+                self.Ny = 1
 
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)
             self.ui.horizontalSlider_polarMinAmp.setVisible(True)
-            self.Nx = 4096
-            self.Ny = 1
+            self.new_params()
         elif self.plot_list[plot_idx] == 'Array layout':
             self.canvas2d_cartesian.setVisible(False)
             self.canvas2d_polar.setVisible(False)
