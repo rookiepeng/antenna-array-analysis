@@ -158,10 +158,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
-        # self.ui.clearButton.setEnabled(False)
-        # self.ui.holdButton.clicked.connect(self.hold_figure)
-        # self.ui.clearButton.clicked.connect(self.clear_figure)
-
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
     def init_figure(self):
@@ -391,7 +387,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.update_config(self.array_config)
 
     def update_figure(self, azimuth, elevation, pattern):
-        # print(np.shape(pattern))
         if self.plot_list[self.plot_type_idx] == '3D (Az-El-Amp)':
             rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
             self.surface_plot.setData(
@@ -428,21 +423,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                     self.polarAmpOffset - self.polarAmpOffset / 6 * (
                         circle_idx + 1), 0)
             self.polarPlot.setData(x, y)
-
-    def hold_figure(self):
-        self.azimuth = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.new_params()
-        self.ui.clearButton.setEnabled(True)
-        self.holdEnabled = True
-
-    def clear_figure(self):
-        if self.plotType is 'Cartesian':
-            self.cartesianView.removeItem(self.cartesianPlotHold)
-        elif self.plotType is 'Polar':
-            self.polarView.removeItem(self.polarPlotHold)
-
-        self.ui.clearButton.setEnabled(False)
-        self.holdEnabled = False
 
     def windowx_config(self, window_idx):
         if self.window_list[window_idx] is 'Chebyshev':
