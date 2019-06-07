@@ -108,8 +108,8 @@ class CalPattern(QObject):
                 self.new_data = False
 
                 AF_data = self.rect_array.get_pattern(
-                    Nx=self.Nx,
-                    Ny=self.Ny,
+                    nfft_az=self.Nx,
+                    nfft_el=self.Ny,
                     beam_az=self.beam_az,
                     beam_el=self.beam_el,
                     windowx=self.win_type[self.windowx],
