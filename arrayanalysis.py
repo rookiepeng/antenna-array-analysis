@@ -75,22 +75,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('ui_array_analysis.ui', self)
 
         """Antenna array configuration"""
-        self.az_nfft = 512
-        self.el_nfft = 512
-        self.azimuth = np.arcsin(np.linspace(-1, 1, num=self.az_nfft,
-                                             endpoint=False))/np.pi*180
-        self.elevation = np.arcsin(np.linspace(-1, 1, num=self.el_nfft,
-                                               endpoint=False))/np.pi*180
-        self.angle = np.linspace(-90, 90, num=1801, endpoint=True)
-
-        self.pattern = np.zeros(np.shape(self.azimuth))
-
-        self.plotType = 'Cartesian'  # 'Cartesian' or 'Polar'
-
-        self.holdAngle = np.linspace(-90, 90, num=1801, endpoint=True)
-        self.holdPattern = np.zeros(np.shape(self.azimuth))
-        self.holdEnabled = False
-
         self.calpattern = CalPattern()
         self.calpattern_thread = QThread()
         self.calpattern.patternReady.connect(self.update_figure)
@@ -339,8 +323,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rb_elevation.setChecked(False)
         self.ui.rbsb_elevation.setEnabled(False)
         self.ui.rbhs_elevation.setEnabled(False)
-        self.Nx = 1
-        self.Ny = 4096
+        self.nfft_az = 1
+        self.nfft_el = 4096
         self.cartesianView.setLabel(axis='bottom', text='Elevation', units='°')
         self.new_params()
 
@@ -351,8 +335,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.rb_azimuth.setChecked(False)
         self.ui.rbsb_azimuth.setEnabled(False)
         self.ui.rbhs_azimuth.setEnabled(False)
-        self.Nx = 4096
-        self.Ny = 1
+        self.nfft_az = 4096
+        self.nfft_el = 1
         self.cartesianView.setLabel(axis='bottom', text='Azimuth', units='°')
         self.new_params()
 
@@ -379,8 +363,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['slly'] = self.ui.sb_sidelobey.value()
         self.array_config['nbarx'] = self.ui.sb_adjsidelobex.value()
         self.array_config['nbary'] = self.ui.sb_adjsidelobey.value()
-        self.array_config['Nx'] = self.Nx
-        self.array_config['Ny'] = self.Ny
+        self.array_config['nfft_az'] = self.nfft_az
+        self.array_config['nfft_el'] = self.nfft_el
         self.array_config['plot_az'] = self.ui.rbsb_azimuth.value()
         self.array_config['plot_el'] = self.ui.rbsb_elevation.value()
 
@@ -488,8 +472,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
-            self.Nx = 512
-            self.Ny = 512
+            self.nfft_az = 512
+            self.nfft_el = 512
             self.new_params()
         elif self.plot_list[plot_idx] == '2D Cartesian':
             self.canvas2d_polar.setVisible(False)
@@ -506,8 +490,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(False)
                 self.ui.rbsb_elevation.setEnabled(False)
                 self.ui.rbhs_elevation.setEnabled(False)
-                self.Nx = 1
-                self.Ny = 4096
+                self.nfft_az = 1
+                self.nfft_el = 4096
                 self.cartesianView.setLabel(
                     axis='bottom', text='Elevation', units='°')
             else:
@@ -519,8 +503,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(True)
                 self.ui.rbsb_elevation.setEnabled(True)
                 self.ui.rbhs_elevation.setEnabled(True)
-                self.Nx = 4096
-                self.Ny = 1
+                self.nfft_az = 4096
+                self.nfft_el = 1
                 self.cartesianView.setLabel(
                     axis='bottom', text='Azimuth', units='°')
 
@@ -543,8 +527,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(False)
                 self.ui.rbsb_elevation.setEnabled(False)
                 self.ui.rbhs_elevation.setEnabled(False)
-                self.Nx = 1
-                self.Ny = 4096
+                self.nfft_az = 1
+                self.nfft_el = 4096
             else:
                 self.ui.rb_azimuth.setChecked(False)
                 self.ui.rb_azimuth.setEnabled(True)
@@ -554,8 +538,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                 self.ui.rb_elevation.setChecked(True)
                 self.ui.rbsb_elevation.setEnabled(True)
                 self.ui.rbhs_elevation.setEnabled(True)
-                self.Nx = 4096
-                self.Ny = 1
+                self.nfft_az = 4096
+                self.nfft_el = 1
 
             self.ui.label_polarMinAmp.setVisible(True)
             self.ui.spinBox_polarMinAmp.setVisible(True)

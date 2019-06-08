@@ -92,8 +92,8 @@ class CalPattern(QObject):
         self.slly = linear_array_config.get('slly', 60)
         self.nbarx = linear_array_config['nbarx']
         self.nbary = linear_array_config.get('nbary', 20)
-        self.Nx = linear_array_config.get('Nx')
-        self.Ny = linear_array_config.get('Ny')
+        self.nfft_az = linear_array_config.get('nfft_az')
+        self.nfft_el = linear_array_config.get('nfft_el')
         self.plot_az = linear_array_config.get('plot_az')
         self.plot_el = linear_array_config.get('plot_el')
         self.new_data = True
@@ -108,8 +108,8 @@ class CalPattern(QObject):
                 self.new_data = False
 
                 AF_data = self.rect_array.get_pattern(
-                    nfft_az=self.Nx,
-                    nfft_el=self.Ny,
+                    nfft_az=self.nfft_az,
+                    nfft_el=self.nfft_el,
                     beam_az=self.beam_az,
                     beam_el=self.beam_el,
                     windowx=self.win_type[self.windowx],
