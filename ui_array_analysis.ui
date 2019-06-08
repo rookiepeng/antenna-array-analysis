@@ -355,7 +355,7 @@
                   <item>
                    <widget class="QSpinBox" name="sb_sizey">
                     <property name="minimum">
-                     <number>32</number>
+                     <number>1</number>
                     </property>
                     <property name="maximum">
                      <number>1024</number>
@@ -1086,7 +1086,7 @@
      <x>0</x>
      <y>0</y>
      <width>1161</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
