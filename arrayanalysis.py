@@ -188,11 +188,9 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.xzgrid.translate(0, -90, 50)
         self.yzgrid.rotate(90, 0, 1, 0)
         self.yzgrid.translate(-90, 0, 50)
-        # self.xygrid.translate(0, 0, -50)
 
         self.canvas3d.addItem(self.surface_plot)
         self.canvas3d.setCameraPosition(distance=300)
-        # self.surface_plot.scale(0.1, 0.1, 0.1)
 
         """Cartesian view"""
         self.cartesianView = pg.PlotItem()
@@ -267,14 +265,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.polarView.addLine(y=0, pen=0.3).setAngle(45)
         self.polarView.addLine(y=0, pen=0.3).setAngle(-45)
         self.polarView.setMouseEnabled(x=False, y=False)
-
-        # self.canvas3d.addItem(self.surface_plot)
-
-        ############################################
-        self.cartesianView.sigXRangeChanged.connect(
-            self.plotview_x_range_changed)
-        # self.show_cartesian_plot()
-        # self.show_3d_plot()
 
     def az_changed(self, value):
         self.ui.hs_angleaz.setValue(value * 10)
@@ -561,14 +551,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.label_polarMinAmp.setVisible(False)
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
-        self.new_params()
-
-    def plotview_x_range_changed(self, item):
-        self.azimuth = np.linspace(
-            item.viewRange()[0][0],
-            item.viewRange()[0][1],
-            num=1801,
-            endpoint=True)
         self.new_params()
 
 
