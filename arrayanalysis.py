@@ -198,6 +198,15 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.canvas3d_array.addItem(self.array_view)
         self.array_view.addItem(self.array_plot)
 
+        self.array_view.setAspectLocked()
+        self.array_view.setLabel(axis='bottom', text='Horizontal x', units='λ')
+        self.array_view.setLabel(
+            axis='left', text='Vertical y', units='λ')
+        self.array_view.showGrid(x=True, y=True)
+
+        self.array_plot.setPen(pg.mkPen(color=(244, 143, 177, 120), width=1))
+        self.array_plot.setBrush(pg.mkBrush(244, 143, 177, 200))
+
         """Cartesian view"""
         self.cartesianView = pg.PlotItem()
         self.cartesianPlot = pg.PlotDataItem()
@@ -404,7 +413,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                         circle_idx + 1), 0)
             self.polarPlot.setData(x, y)
         elif self.plot_list[self.plot_type_idx] == 'Array layout':
-            self.array_plot.setData(x=x, y=y, size=10)
+            self.array_plot.setData(x=x, y=y, size=6)
 
     def windowx_config(self, window_idx):
         if self.window_list[window_idx] is 'Chebyshev':
