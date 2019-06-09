@@ -149,7 +149,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.canvas2d_cartesian = pg.GraphicsLayoutWidget()
         self.canvas2d_polar = pg.GraphicsLayoutWidget()
         self.canvas3d = gl.GLViewWidget()
-        self.canvas3d_array = gl.GLViewWidget()
+        self.canvas3d_array = pg.GraphicsLayoutWidget()
 
         self.ui.layout_canvas.addWidget(self.canvas3d)
         self.ui.layout_canvas.addWidget(self.canvas3d_array)
@@ -191,6 +191,12 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         self.canvas3d.addItem(self.surface_plot)
         self.canvas3d.setCameraPosition(distance=300)
+
+        """Array view"""
+        self.array_view = pg.PlotItem()
+        self.array_plot = pg.ScatterPlotItem()
+        self.canvas3d_array.addItem(self.array_view)
+        self.array_view.addItem(self.array_plot)
 
         """Cartesian view"""
         self.cartesianView = pg.PlotItem()
@@ -360,7 +366,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         self.calpattern.update_config(self.array_config)
 
-    def update_figure(self, azimuth, elevation, pattern):
+    def update_figure(self, azimuth, elevation, pattern, x, y, weight):
         if self.plot_list[self.plot_type_idx] == '3D (Az-El-Amp)':
             rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
             self.surface_plot.setData(
@@ -397,6 +403,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
                     self.polarAmpOffset - self.polarAmpOffset / 6 * (
                         circle_idx + 1), 0)
             self.polarPlot.setData(x, y)
+        elif self.plot_list[self.plot_type_idx] == 'Array layout':
+            self.array_plot.setData(x=x, y=y, size=10)
 
     def windowx_config(self, window_idx):
         if self.window_list[window_idx] is 'Chebyshev':

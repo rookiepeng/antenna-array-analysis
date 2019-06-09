@@ -48,7 +48,8 @@ import antarray
 
 
 class CalPattern(QObject):
-    patternReady = pyqtSignal(np.ndarray, np.ndarray, np.ndarray)
+    patternReady = pyqtSignal(np.ndarray, np.ndarray,
+                              np.ndarray, np.ndarray, np.ndarray, np.ndarray)
     new_data = False
 
     def __init__(self):
@@ -124,7 +125,11 @@ class CalPattern(QObject):
 
                 AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
 
+                x = AF_data['x'].ravel()
+                y = AF_data['y'].ravel()
+                weight = AF_data['weight'].ravel()
+
                 self.patternReady.emit(
-                    AF_data['azimuth'], AF_data['elevation'], AF)
+                    AF_data['azimuth'], AF_data['elevation'], AF, x, y, weight)
 
             sleep(0.01)
