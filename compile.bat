@@ -1,0 +1,1 @@
+pyinstaller --noconsole arrayanalysis.py
