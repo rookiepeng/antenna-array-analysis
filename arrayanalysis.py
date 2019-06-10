@@ -83,9 +83,6 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.moveToThread(self.calpattern_thread)
         self.calpattern_thread.start()
 
-        self.plot_az = 0
-        self.plot_el = 0
-
         """Init UI"""
         self.init_ui()
         self.init_figure()
