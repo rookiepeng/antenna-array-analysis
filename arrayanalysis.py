@@ -361,8 +361,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.array_config['beam_el'] = self.ui.dsb_angleel.value()
         self.array_config['windowx'] = self.ui.cb_windowx.currentIndex()
         self.array_config['windowy'] = self.ui.cb_windowy.currentIndex()
-        self.array_config['sllx'] = self.ui.sb_sidelobex.value()
-        self.array_config['slly'] = self.ui.sb_sidelobey.value()
+        self.array_config['sllx'] = -self.ui.sb_sidelobex.value()
+        self.array_config['slly'] = -self.ui.sb_sidelobey.value()
         self.array_config['nbarx'] = self.ui.sb_adjsidelobex.value()
         self.array_config['nbary'] = self.ui.sb_adjsidelobey.value()
         self.array_config['nfft_az'] = self.nfft_az
