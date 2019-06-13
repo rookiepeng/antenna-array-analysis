@@ -139,6 +139,20 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
+        self.ui.tb_array.setColumnCount(4)
+        self.ui.tb_array.setRowCount(3)
+        self.table_header = self.ui.tb_array.horizontalHeader()
+        self.table_header.setSectionResizeMode(
+            0, QtWidgets.QHeaderView.ResizeToContents)
+        self.table_header.setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+        self.table_header.setSectionResizeMode(
+            2, QtWidgets.QHeaderView.Stretch)
+        self.table_header.setSectionResizeMode(
+            3, QtWidgets.QHeaderView.Stretch)
+
+        self.ui.tb_array.setHorizontalHeaderLabels(['x', 'y', 'Amp', 'Phs'])
+
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
     def init_figure(self):
