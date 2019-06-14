@@ -140,18 +140,27 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
         self.ui.tb_array.setColumnCount(4)
-        self.ui.tb_array.setRowCount(3)
+        # self.ui.tb_array.setRowCount(1)
         self.table_header = self.ui.tb_array.horizontalHeader()
         self.table_header.setSectionResizeMode(
-            0, QtWidgets.QHeaderView.ResizeToContents)
+            0, QtWidgets.QHeaderView.Stretch)
         self.table_header.setSectionResizeMode(
-            1, QtWidgets.QHeaderView.ResizeToContents)
+            1, QtWidgets.QHeaderView.Stretch)
         self.table_header.setSectionResizeMode(
             2, QtWidgets.QHeaderView.Stretch)
         self.table_header.setSectionResizeMode(
             3, QtWidgets.QHeaderView.Stretch)
+        # Stretch
 
         self.ui.tb_array.setHorizontalHeaderLabels(['x', 'y', 'Amp', 'Phs'])
+
+        rowPosition = self.ui.tb_array.rowCount()
+        self.ui.tb_array.insertRow(rowPosition)
+
+        self.ui.tb_array.setItem(rowPosition, 0, QtGui.QTableWidgetItem("0"))
+        self.ui.tb_array.setItem(rowPosition, 1, QtGui.QTableWidgetItem("0"))
+        self.ui.tb_array.setItem(rowPosition, 2, QtGui.QTableWidgetItem("1"))
+        self.ui.tb_array.setItem(rowPosition, 3, QtGui.QTableWidgetItem("0"))
 
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
 
