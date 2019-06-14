@@ -125,8 +125,8 @@ class CalPattern(QObject):
 
                 AF = 20 * np.log10(np.abs(AF_data['array_factor']) + 0.00001)
 
-                x = AF_data['x'].ravel()
-                y = AF_data['y'].ravel()
+                x = self.rect_array.x
+                y = self.rect_array.y
                 weight = AF_data['weight'].ravel()
 
                 self.patternReady.emit(
