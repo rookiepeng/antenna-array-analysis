@@ -9,7 +9,7 @@ A simple GUI tool for antenna array analysis.
 - [Download](https://github.com/rookiepeng/antenna-array-analysis/releases) the corresponded release based on your system
 - Run ```array_analysis```
 
-![](docs/aaa_v0.1.gif)
+![](docs/aaa_v1.0.gif)
 
 ## Feedback
 
