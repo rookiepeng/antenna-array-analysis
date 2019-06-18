@@ -43,6 +43,7 @@
 
 import sys
 import res_rc
+import webbrowser
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QThread
 
@@ -148,8 +149,8 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         # self.ui.actionReset_config.triggered.connect(self.reset_config)
 
-        # self.ui.actionHelp.triggered.connect(self.help)
-        # self.ui.actionAbout.triggered.connect(self.about)
+        self.ui.actionHelp.triggered.connect(self.help)
+        self.ui.actionAbout.triggered.connect(self.about)
 
     def init_figure(self):
         """Init figures"""
@@ -606,7 +607,27 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             'All Files (*);;CSV files (*.csv)')
         if fileName[0] or fileName[1]:
             np.savetxt(fileName, self.exp_pattern, fmt='%1.8e', delimiter=',',
-                       header='azimuth (degree), elevation (degree), pattern (dB)')
+                       header='azimuth (degree), elevation (degree), \
+                           pattern (dB)')
+
+    def help(self):
+        webbrowser.open(
+            'https://github.com/rookiepeng/antenna-array-analysis/issues')
+
+    def about(self):
+        msg = QtWidgets.QMessageBox()
+
+        msg.setText('<h1>Antenna Array Analysis</h1>')
+        msg.setTextFormat(QtCore.Qt.RichText)
+        msg.setInformativeText(
+            '<p>A simple GUI tool for antenna array analysis.</p><p>&nbsp;</p>\
+                <p><strong>Dr. Zhengyu Peng</strong></p><p><a \
+                    href=''https://zpeng.me'' target=''_blank'' \
+                        class=''url''>https://zpeng.me</a></p>')
+        msg.setWindowTitle("About")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+        retval = msg.exec_()
 
 
 if __name__ == '__main__':
