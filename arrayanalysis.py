@@ -139,7 +139,17 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.spinBox_polarMinAmp.setVisible(False)
         self.ui.horizontalSlider_polarMinAmp.setVisible(False)
 
+        self.ui.actionExport_array_config.triggered.connect(
+            self.export_array_config)
+        self.ui.actionExport_pattern_data.triggered.connect(
+            self.export_pattern)
+
         self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
+
+        # self.ui.actionReset_config.triggered.connect(self.reset_config)
+
+        # self.ui.actionHelp.triggered.connect(self.help)
+        # self.ui.actionAbout.triggered.connect(self.about)
 
     def init_figure(self):
         """Init figures"""
@@ -373,6 +383,20 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.calpattern.update_config(self.array_config)
 
     def update_figure(self, azimuth, elevation, pattern, x, y, weight):
+        self.exp_config = np.zeros((np.shape(x)[0], 4))
+        self.exp_config[:, 0] = x
+        self.exp_config[:, 1] = y
+        self.exp_config[:, 2] = np.abs(weight)
+        self.exp_config[:, 3] = np.angle(weight)/np.pi*180
+
+        el_grid, az_grid = np.meshgrid(elevation, azimuth)
+        el_ravel = el_grid.ravel()
+        az_ravel = az_grid.ravel()
+        self.exp_pattern = np.zeros((np.shape(el_ravel)[0], 3))
+        self.exp_pattern[:, 0] = az_ravel
+        self.exp_pattern[:, 1] = el_ravel
+        self.exp_pattern[:, 2] = pattern.ravel()
+
         if self.plot_list[self.plot_type_idx] == '3D (Az-El-Amp)':
             rgba_img = self.cmap((pattern-self.minZ)/(self.maxZ - self.minZ))
             self.surface_plot.setData(
@@ -566,6 +590,23 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.spinBox_polarMinAmp.setVisible(False)
             self.ui.horizontalSlider_polarMinAmp.setVisible(False)
         self.new_params()
+
+    def export_array_config(self):
+        fileName = QtGui.QFileDialog.getSaveFileName(
+            self, 'Export array config ...', 'array_config.csv',
+            'All Files (*);;CSV files (*.csv)')
+        if fileName[0] or fileName[1]:
+            np.savetxt(fileName, self.exp_config, fmt='%1.8e', delimiter=',',
+                       header='x (wavelength), y (wavelength), \
+                    amplitude (linear), phase (degree)')
+
+    def export_pattern(self):
+        fileName = QtGui.QFileDialog.getSaveFileName(
+            self, 'Export pattern ...', 'pattern.csv',
+            'All Files (*);;CSV files (*.csv)')
+        if fileName[0] or fileName[1]:
+            np.savetxt(fileName, self.exp_pattern, fmt='%1.8e', delimiter=',',
+                       header='azimuth (degree), elevation (degree), pattern (dB)')
 
 
 if __name__ == '__main__':

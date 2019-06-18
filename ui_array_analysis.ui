@@ -1059,7 +1059,8 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_array_configurations"/>
+    <addaction name="actionExport_array_config"/>
+    <addaction name="actionExport_pattern_data"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -1075,7 +1076,7 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionReset_standard_array"/>
+    <addaction name="actionReset_config"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1129,6 +1130,21 @@
   <action name="actionClear">
    <property name="text">
     <string>Clear custom array</string>
+   </property>
+  </action>
+  <action name="actionExport_pattern_data">
+   <property name="text">
+    <string>Export pattern data...</string>
+   </property>
+  </action>
+  <action name="actionExport_array_config">
+   <property name="text">
+    <string>Export array config...</string>
+   </property>
+  </action>
+  <action name="actionReset_config">
+   <property name="text">
+    <string>Reset config</string>
    </property>
   </action>
  </widget>
