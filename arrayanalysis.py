@@ -42,10 +42,11 @@
 """
 
 import sys
-import res_rc
 import webbrowser
-from PyQt5 import QtWidgets, uic, QtCore, QtGui
-from PyQt5.QtCore import QThread
+from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6.QtCore import QThread, QFile
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCore import Slot
 
 import numpy as np
 import matplotlib.cm as cm
@@ -55,15 +56,10 @@ from calpattern import CalPattern
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 
-# pg.setConfigOption('background', 'w')
-# pg.setConfigOption('foreground', 'k')
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-
 
 class AntArrayAnalysis(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
-        super(QtWidgets.QMainWindow, self).__init__()
+        super(AntArrayAnalysis, self).__init__()
 
         """Constants"""
         self.window_list = ['Square', 'Chebyshev', 'Taylor', 'Hamming', 'Hann']
@@ -73,7 +69,11 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.fix_azimuth = False
 
         """Load UI"""
-        self.ui = uic.loadUi('ui_array_analysis.ui', self)
+        ui_file_name = "ui_array_analysis.ui"
+        ui_file = QFile(ui_file_name)
+        loader = QUiLoader()
+        self.ui = loader.load(ui_file)
+        ui_file.close()
 
         """Antenna array configuration"""
         self.calpattern = CalPattern()
@@ -145,7 +145,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.ui.actionExport_pattern_data.triggered.connect(
             self.export_pattern)
 
-        self.ui.actionQuit.triggered.connect(QtWidgets.qApp.quit)
+        self.ui.actionQuit.triggered.connect(self.quit)
 
         # self.ui.actionReset_config.triggered.connect(self.reset_config)
 
@@ -262,7 +262,7 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.circleLabel[0].setPos(self.polarAmpOffset, 0)
         for circle_idx in range(0, 6):
             self.circleList.append(
-                QtGui.QGraphicsEllipseItem(
+                QtWidgets.QGraphicsEllipseItem(
                     -self.polarAmpOffset + self.polarAmpOffset / 6 *
                     circle_idx,
                     -self.polarAmpOffset + self.polarAmpOffset / 6 *
@@ -438,14 +438,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.array_plot.setData(x=x, y=y, size=6)
 
     def windowx_config(self, window_idx):
-        if self.window_list[window_idx] is 'Chebyshev':
+        if self.window_list[window_idx] == 'Chebyshev':
             self.ui.sb_sidelobex.setVisible(True)
             self.ui.label_sidelobex.setVisible(True)
             self.ui.hs_sidelobex.setVisible(True)
             self.ui.sb_adjsidelobex.setVisible(False)
             self.ui.label_adjsidelobex.setVisible(False)
             self.ui.hs_adjsidelobex.setVisible(False)
-        elif self.window_list[window_idx] is 'Taylor':
+        elif self.window_list[window_idx] == 'Taylor':
             self.ui.sb_sidelobex.setVisible(True)
             self.ui.label_sidelobex.setVisible(True)
             self.ui.hs_sidelobex.setVisible(True)
@@ -461,14 +461,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
             self.ui.hs_adjsidelobex.setVisible(False)
 
     def windowy_config(self, window_idx):
-        if self.window_list[window_idx] is 'Chebyshev':
+        if self.window_list[window_idx] == 'Chebyshev':
             self.ui.sb_sidelobey.setVisible(True)
             self.ui.label_sidelobey.setVisible(True)
             self.ui.hs_sidelobey.setVisible(True)
             self.ui.sb_adjsidelobey.setVisible(False)
             self.ui.label_adjsidelobey.setVisible(False)
             self.ui.hs_adjsidelobey.setVisible(False)
-        elif self.window_list[window_idx] is 'Taylor':
+        elif self.window_list[window_idx] == 'Taylor':
             self.ui.sb_sidelobey.setVisible(True)
             self.ui.label_sidelobey.setVisible(True)
             self.ui.hs_sidelobey.setVisible(True)
@@ -629,9 +629,14 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
 
         retval = msg.exec_()
 
+    @Slot()
+    def quit(_):
+        sys.exit()
+
 
 if __name__ == '__main__':
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QtWidgets.QApplication(sys.argv)
     window = AntArrayAnalysis()
-    window.show()
-    sys.exit(app.exec_())
+    # window.show()
+    sys.exit(app.exec())

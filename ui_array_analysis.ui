@@ -15,8 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normalon>:/icons/res/aaa_icon.png</normalon>
-   </iconset>
+    <normaloff>res/aaa_icon.png</normaloff>res/aaa_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1070,7 +1069,7 @@
     </property>
     <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
-    <addaction name="actionVersion_1_0_0"/>
+    <addaction name="actionVersion"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAbout"/>
@@ -1140,18 +1139,16 @@
     <string>Reset config</string>
    </property>
   </action>
-  <action name="actionVersion_1_0_0">
+  <action name="actionVersion">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Version 1.0.0</string>
+    <string>Version 2.0.0</string>
    </property>
   </action>
  </widget>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>sb_sidelobex</sender>

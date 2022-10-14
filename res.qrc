@@ -1,7 +1,0 @@
-<RCC>
-  <qresource prefix="icons">
-    <file>res/aaa_icon.png</file>
-    <file>res/clear.png</file>
-    <file>res/hold.png</file>
-  </qresource>
-</RCC>

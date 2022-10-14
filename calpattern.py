@@ -41,15 +41,15 @@
 
 """
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PySide6.QtCore import QObject, Signal, Slot
 import numpy as np
 from time import sleep
 import antarray
 
 
 class CalPattern(QObject):
-    patternReady = pyqtSignal(np.ndarray, np.ndarray,
-                              np.ndarray, np.ndarray, np.ndarray, np.ndarray)
+    patternReady = Signal(np.ndarray, np.ndarray,
+                          np.ndarray, np.ndarray, np.ndarray, np.ndarray)
     new_data = False
 
     def __init__(self):
@@ -102,7 +102,7 @@ class CalPattern(QObject):
             sizex=self.sizex, sizey=self.sizey, spacingx=self.spacingx,
             spacingy=self.spacingy)
 
-    @pyqtSlot()
+    @Slot()
     def cal_pattern(self):
         while 1:
             if self.new_data:
