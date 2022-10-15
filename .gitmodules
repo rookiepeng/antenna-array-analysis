@@ -1,0 +1,3 @@
+[submodule "antarray"]
+	path = antarray
+	url = https://github.com/rookiepeng/antarray.git
