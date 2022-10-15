@@ -4,7 +4,7 @@ A simple GUI tool for antenna array analysis.
 
 ## Usage
 
-- [Download](https://github.com/rookiepeng/antenna-array-analysis/releases) the corresponded release based on your system
+- [Download](https://github.com/rookiepeng/antenna-array-analysis/releases) the corresponding release based on your system
 - For Windows system, run ```array_analysis.exe```
 
 ![](docs/aaa_v1.0.0.gif)
@@ -12,7 +12,7 @@ A simple GUI tool for antenna array analysis.
 ## Development
 
 Dependence:
-- pyqt5
+- pyside6
 - numpy
 - scipy
 - matplotlib
