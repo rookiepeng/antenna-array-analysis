@@ -107,8 +107,6 @@ pyqtgraph/
 .vscode/
 \.idea/
 
-antarray/
-
 \.vs/
 
 *.pyproj
