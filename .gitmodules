@@ -1,3 +1,3 @@
 [submodule "antarray"]
 	path = antarray
-	url = git@github.com:rookiepeng/antarray.git
+	url = https://github.com/rookiepeng/antarray.git
