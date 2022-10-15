@@ -593,22 +593,20 @@ class AntArrayAnalysis(QtWidgets.QMainWindow):
         self.new_params()
 
     def export_array_config(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(
+        fileName = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Export array config ...', 'array_config.csv',
             'All Files (*);;CSV files (*.csv)')
-        if fileName[0] or fileName[1]:
-            np.savetxt(fileName, self.exp_config, fmt='%1.8e', delimiter=',',
-                       header='x (wavelength), y (wavelength), \
-                    amplitude (linear), phase (degree)')
+        if fileName[0]:
+            np.savetxt(fileName[0], self.exp_config, fmt='%1.8e', delimiter=',',
+                       header='x (wavelength), y (wavelength), amplitude (linear), phase (degree)')
 
     def export_pattern(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(
+        fileName = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Export pattern ...', 'pattern.csv',
             'All Files (*);;CSV files (*.csv)')
-        if fileName[0] or fileName[1]:
-            np.savetxt(fileName, self.exp_pattern, fmt='%1.8e', delimiter=',',
-                       header='azimuth (degree), elevation (degree), \
-                           pattern (dB)')
+        if fileName[0]:
+            np.savetxt(fileName[0], self.exp_pattern, fmt='%1.8e', delimiter=',',
+                       header='azimuth (degree), elevation (degree), pattern (dB)')
 
     def help(self):
         webbrowser.open(
