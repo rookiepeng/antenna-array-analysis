@@ -44,7 +44,7 @@
 from PySide6.QtCore import QObject, Signal, Slot
 import numpy as np
 from time import sleep
-import antarray
+import antarray.antarray as antarray
 
 
 class CalPattern(QObject):
