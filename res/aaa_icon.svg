@@ -151,8 +151,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="2560"
-     inkscape:window-height="1494"
+     inkscape:window-width="3840"
+     inkscape:window-height="2036"
      id="namedview4662"
      showgrid="false"
      fit-margin-top="0"
@@ -160,10 +160,10 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="1.5391908"
-     inkscape:cx="30.535526"
+     inkscape:cx="21.114991"
      inkscape:cy="122.1421"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
      inkscape:window-maximized="1"
      inkscape:current-layer="g844"
      inkscape:snap-bbox="true"
@@ -173,6 +173,15 @@
   <g
      id="g844"
      transform="translate(19.315607,19.315607)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.63078"
+       id="rect304"
+       width="450"
+       height="450"
+       x="-19.315607"
+       y="-19.315607"
+       rx="27.75559"
+       ry="27.929609" />
     <circle
        r="166.90401"
        cy="205.68439"
