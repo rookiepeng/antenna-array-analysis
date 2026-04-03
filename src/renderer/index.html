@@ -13,7 +13,7 @@
       <h2>Array Configuration</h2>
 
       <section class="config-section">
-        <h3>Horizontal (x)</h3>
+        <h3>Horizontal (y)</h3>
         <div class="control-row">
           <label for="sizex">Elements</label>
           <input type="number" id="sizex" min="1" max="1024" value="64" step="1">
@@ -45,7 +45,7 @@
       </section>
 
       <section class="config-section">
-        <h3>Vertical (y)</h3>
+        <h3>Vertical (z)</h3>
         <div class="control-row">
           <label for="sizey">Elements</label>
           <input type="number" id="sizey" min="1" max="1024" value="32" step="1">
@@ -93,7 +93,11 @@
 
     <!-- Center: Plot Area -->
     <main class="plot-area">
-      <div id="plot-container" class="plot-main"></div>
+      <div class="plot-row">
+        <div id="plot-container" class="plot-main">
+          <div id="plot-3d-inset" class="plot-inset"></div>
+        </div>
+      </div>
       <div id="layout-container" class="plot-layout"></div>
     </main>
 
@@ -105,7 +109,8 @@
         <div class="control-row">
           <label for="plot-type">Plot Type</label>
           <select id="plot-type">
-            <option value="3d" selected>3D (Az-El-Amp)</option>
+            <option value="3d" selected>3D Surface (Az-El-Amp)</option>
+            <option value="3d-polar">3D Polar Pattern</option>
             <option value="cartesian">2D Cartesian</option>
             <option value="polar">2D Polar</option>
           </select>
