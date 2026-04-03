@@ -111,3 +111,5 @@ pyqtgraph/
 *.pyproj
 
 *.sln
+/node_modules
+/src/antarray

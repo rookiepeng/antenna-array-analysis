@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
+  <title>Antenna Array Analysis</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Panel: Array Configuration -->
+    <aside class="panel panel-left">
+      <h2>Array Configuration</h2>
+
+      <section class="config-section">
+        <h3>Horizontal (x)</h3>
+        <div class="control-row">
+          <label for="sizex">Elements</label>
+          <input type="number" id="sizex" min="1" max="1024" value="64" step="1">
+        </div>
+        <div class="control-row">
+          <label for="spacingx">Spacing (λ)</label>
+          <input type="number" id="spacingx" min="0.1" max="10" value="0.5" step="0.1">
+        </div>
+        <div class="control-row">
+          <label for="windowx">Window</label>
+          <select id="windowx">
+            <option value="Square" selected>Square</option>
+            <option value="Chebyshev">Chebyshev</option>
+            <option value="Taylor">Taylor</option>
+            <option value="Hamming">Hamming</option>
+            <option value="Hann">Hann</option>
+          </select>
+        </div>
+        <div class="control-row" id="sllx-row" style="display:none">
+          <label for="sllx">Sidelobe (dB)</label>
+          <input type="number" id="sllx" min="10" max="100" value="60" step="1">
+          <input type="range" id="sllx-slider" min="10" max="100" value="60" step="1">
+        </div>
+        <div class="control-row" id="nbarx-row" style="display:none">
+          <label for="nbarx">Adj. sidelobes</label>
+          <input type="number" id="nbarx" min="2" max="100" value="4" step="1">
+          <input type="range" id="nbarx-slider" min="2" max="100" value="4" step="1">
+        </div>
+      </section>
+
+      <section class="config-section">
+        <h3>Vertical (y)</h3>
+        <div class="control-row">
+          <label for="sizey">Elements</label>
+          <input type="number" id="sizey" min="1" max="1024" value="32" step="1">
+        </div>
+        <div class="control-row">
+          <label for="spacingy">Spacing (λ)</label>
+          <input type="number" id="spacingy" min="0.1" max="10" value="0.5" step="0.1">
+        </div>
+        <div class="control-row">
+          <label for="windowy">Window</label>
+          <select id="windowy">
+            <option value="Square" selected>Square</option>
+            <option value="Chebyshev">Chebyshev</option>
+            <option value="Taylor">Taylor</option>
+            <option value="Hamming">Hamming</option>
+            <option value="Hann">Hann</option>
+          </select>
+        </div>
+        <div class="control-row" id="slly-row" style="display:none">
+          <label for="slly">Sidelobe (dB)</label>
+          <input type="number" id="slly" min="10" max="100" value="60" step="1">
+          <input type="range" id="slly-slider" min="10" max="100" value="60" step="1">
+        </div>
+        <div class="control-row" id="nbary-row" style="display:none">
+          <label for="nbary">Adj. sidelobes</label>
+          <input type="number" id="nbary" min="2" max="100" value="4" step="1">
+          <input type="range" id="nbary-slider" min="2" max="100" value="4" step="1">
+        </div>
+      </section>
+
+      <section class="config-section">
+        <h3>Beam Steering</h3>
+        <div class="control-row">
+          <label for="beam-az">Azimuth (°)</label>
+          <input type="number" id="beam-az" min="-90" max="90" value="0" step="0.1">
+          <input type="range" id="beam-az-slider" min="-900" max="900" value="0" step="1">
+        </div>
+        <div class="control-row">
+          <label for="beam-el">Elevation (°)</label>
+          <input type="number" id="beam-el" min="-90" max="90" value="0" step="0.1">
+          <input type="range" id="beam-el-slider" min="-900" max="900" value="0" step="1">
+        </div>
+      </section>
+    </aside>
+
+    <!-- Center: Plot Area -->
+    <main class="plot-area">
+      <div id="plot-container" class="plot-main"></div>
+      <div id="layout-container" class="plot-layout"></div>
+    </main>
+
+    <!-- Right Panel: Plot Configuration -->
+    <aside class="panel panel-right">
+      <h2>Plot Settings</h2>
+
+      <section class="config-section">
+        <div class="control-row">
+          <label for="plot-type">Plot Type</label>
+          <select id="plot-type">
+            <option value="3d" selected>3D (Az-El-Amp)</option>
+            <option value="cartesian">2D Cartesian</option>
+            <option value="polar">2D Polar</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="config-section" id="cut-plane-section">
+        <h3>Cut Plane</h3>
+        <div class="control-row radio-row">
+          <label>
+            <input type="radio" name="fix-plane" id="fix-elevation" value="elevation" checked>
+            Fix Elevation
+          </label>
+          <label>
+            <input type="radio" name="fix-plane" id="fix-azimuth" value="azimuth">
+            Fix Azimuth
+          </label>
+        </div>
+        <div class="control-row" id="fix-el-row">
+          <label for="plot-el">Elevation (°)</label>
+          <input type="number" id="plot-el" min="-90" max="90" value="0" step="0.1">
+          <input type="range" id="plot-el-slider" min="-900" max="900" value="0" step="1">
+        </div>
+        <div class="control-row" id="fix-az-row" style="display:none">
+          <label for="plot-az">Azimuth (°)</label>
+          <input type="number" id="plot-az" min="-90" max="90" value="0" step="0.1">
+          <input type="range" id="plot-az-slider" min="-900" max="900" value="0" step="1">
+        </div>
+      </section>
+
+      <section class="config-section" id="polar-min-section" style="display:none">
+        <h3>Polar Options</h3>
+        <div class="control-row">
+          <label for="polar-min">Min Amp (dB)</label>
+          <input type="number" id="polar-min" min="-120" max="-10" value="-60" step="1">
+          <input type="range" id="polar-min-slider" min="-120" max="-10" value="-60" step="1">
+        </div>
+      </section>
+
+      <section class="config-section">
+        <h3>Export</h3>
+        <button id="btn-export-config" class="btn">Export Array Config</button>
+        <button id="btn-export-pattern" class="btn">Export Pattern Data</button>
+      </section>
+
+      <section class="config-section about-section">
+        <p class="about-text">Antenna Array Analysis<br>
+        <a id="link-help" href="#">Help &amp; Issues</a></p>
+      </section>
+    </aside>
+  </div>
+
+  <script>
+    // Load the compiled renderer module with correct path resolution
+    require('../../dist/renderer/renderer');
+  </script>
+</body>
+</html>

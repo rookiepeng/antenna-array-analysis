@@ -1,0 +1,250 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #1e1e2e;
+  --surface: #282840;
+  --surface2: #313150;
+  --text: #e0e0f0;
+  --text-muted: #a0a0c0;
+  --accent: #f48fb1;
+  --accent-dim: #c06090;
+  --border: #3a3a5c;
+  --input-bg: #22223a;
+  --input-border: #4a4a6c;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  gap: 0;
+}
+
+/* Side Panels */
+.panel {
+  width: 260px;
+  min-width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-right {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.panel h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 4px 0 8px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.config-section {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.config-section:last-child {
+  border-bottom: none;
+}
+
+.config-section h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+/* Control rows */
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+
+.control-row label {
+  flex: 0 0 90px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.control-row input[type="number"] {
+  width: 70px;
+  padding: 3px 6px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+}
+
+.control-row input[type="number"]:focus {
+  border-color: var(--accent);
+}
+
+.control-row select {
+  flex: 1;
+  padding: 3px 6px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.control-row select:focus {
+  border-color: var(--accent);
+}
+
+.control-row input[type="range"] {
+  flex: 1;
+  min-width: 60px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--surface2);
+  border-radius: 2px;
+  outline: none;
+}
+
+.control-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+}
+
+.radio-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.radio-row label {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.radio-row input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+/* Plot area */
+.plot-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.plot-main {
+  flex: 3;
+  min-width: 0;
+  min-height: 0;
+}
+
+.plot-layout {
+  flex: 2;
+  min-width: 0;
+  min-height: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* Buttons */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  margin-bottom: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.btn:active {
+  background: var(--accent);
+}
+
+/* About */
+.about-section {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.about-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.about-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.about-text a:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar */
+.panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
