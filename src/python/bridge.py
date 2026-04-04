@@ -6,30 +6,31 @@ Reads JSON config from stdin, writes JSON result to stdout.
 import sys
 import json
 import numpy as np
+from scipy.signal import windows as sig_windows
 
-# Patch removed scipy.signal functions (deprecated/removed in scipy >= 1.11)
-from scipy import signal
-from scipy.signal import windows as _win
-for _fn in ('chebwin', 'hamming', 'hann'):
-    if not hasattr(signal, _fn):
-        setattr(signal, _fn, getattr(_win, _fn))
-
-# Add the antarray package path.
+# Add the arraybeam package path.
 # When frozen by PyInstaller (sys.frozen is set), all packages are bundled
 # inside the executable and importable directly — no path manipulation needed.
 # In development, sys.argv[1] points to the project src/ directory.
 if not getattr(sys, 'frozen', False):
     sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else '.')
 
-from antarray.antarray import RectArray
+from arraybeam import UniformRectangularArray
 
-WIN_TYPE = {
-    0: 'Square',
-    1: 'Chebyshev',
-    2: 'Taylor',
-    3: 'Hamming',
-    4: 'Hanning'
-}
+
+def _make_window(win_idx: int, size: int, sll: float, nbar: int):
+    """Return a taper window array, or None for uniform (Square)."""
+    if win_idx == 0 or size < 2:  # Square
+        return None
+    if win_idx == 1:  # Chebyshev
+        return sig_windows.chebwin(size, abs(sll))
+    if win_idx == 2:  # Taylor
+        return sig_windows.taylor(size, nbar=nbar, sll=abs(sll), norm=True)
+    if win_idx == 3:  # Hamming
+        return sig_windows.hamming(size)
+    if win_idx == 4:  # Hann
+        return sig_windows.hann(size)
+    return None
 
 
 def compute_pattern(config: dict) -> dict:
@@ -38,26 +39,22 @@ def compute_pattern(config: dict) -> dict:
     spacingx = config.get('spacingx', 0.5)
     spacingy = config.get('spacingy', 0.5)
 
-    rect_array = RectArray(sizex, sizey, spacingx, spacingy)
+    rect_array = UniformRectangularArray(sizex, sizey, spacingx, spacingy)
 
-    windowx_idx = config.get('windowx', 0)
-    windowy_idx = config.get('windowy', 0)
-    windowx = WIN_TYPE.get(windowx_idx, 'Square')
-    windowy = WIN_TYPE.get(windowy_idx, 'Square')
+    weight_x = _make_window(
+        config.get('windowx', 0), sizex,
+        config.get('sllx', 60), config.get('nbarx', 4))
+    weight_y = _make_window(
+        config.get('windowy', 0), sizey,
+        config.get('slly', 60), config.get('nbary', 4))
 
-    AF_data = rect_array.get_pattern(
+    AF_data = rect_array.get_pattern_2d(
         nfft_az=config.get('nfftAz', 512),
         nfft_el=config.get('nfftEl', 512),
         beam_az=config.get('beamAz', 0),
         beam_el=config.get('beamEl', 0),
-        windowx=windowx,
-        sllx=-abs(config.get('sllx', 60)),
-        nbarx=config.get('nbarx', 4),
-        windowy=windowy,
-        slly=-abs(config.get('slly', 60)),
-        nbary=config.get('nbary', 4),
-        plot_az=config.get('plotAz', 0),
-        plot_el=config.get('plotEl', 0),
+        weight_x=weight_x,
+        weight_y=weight_y,
     )
 
     af = AF_data['array_factor']
@@ -65,24 +62,18 @@ def compute_pattern(config: dict) -> dict:
 
     azimuth = AF_data['azimuth']
     elevation = AF_data['elevation']
-    x = rect_array.x
-    y = rect_array.y
     weight = AF_data['weight'].ravel()
 
     result = {
-        'azimuth': azimuth.tolist() if isinstance(azimuth, np.ndarray) else [float(azimuth)],
-        'elevation': elevation.tolist() if isinstance(elevation, np.ndarray) else [float(elevation)],
-        'x': x.tolist(),
-        'y': y.tolist(),
+        'azimuth': azimuth.tolist(),
+        'elevation': elevation.tolist(),
+        'x': AF_data['x'].tolist(),
+        'y': AF_data['y'].tolist(),
         'weightRe': np.real(weight).tolist(),
         'weightIm': np.imag(weight).tolist(),
+        'arrayFactor2D': af_db.tolist(),
+        'arrayFactor': af_db.ravel().tolist(),
     }
-
-    if af_db.ndim == 2:
-        result['arrayFactor2D'] = af_db.tolist()
-        result['arrayFactor'] = af_db.ravel().tolist()
-    else:
-        result['arrayFactor'] = af_db.tolist()
 
     return result
 

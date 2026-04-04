@@ -60,7 +60,7 @@ export class PythonBridge {
     } else {
       // Development: run bridge.py with the system Python interpreter.
       const projectRoot = path.join(__dirname, '..', '..');
-      this.antarrayPath = path.join(projectRoot, 'src');
+      this.antarrayPath = path.join(projectRoot, 'src', 'arraybeam');
       this.bridgePath = path.join(projectRoot, 'src', 'python', 'bridge.py');
     }
   }

@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BRIDGE_SCRIPT = ROOT / "src" / "python" / "bridge.py"
-ANTARRAY_PKG = ROOT / "src" / "antarray"
+ARRAYBEAM_PKG = ROOT / "src" / "arraybeam"
 SRC_DIR = ROOT / "src"
 DIST_DIR = ROOT / "dist"
 BUILD_DIR = ROOT / "build" / "pyinstaller"
@@ -28,8 +28,8 @@ def main() -> None:
         print(f"ERROR: bridge script not found at {BRIDGE_SCRIPT}", file=sys.stderr)
         sys.exit(1)
 
-    if not ANTARRAY_PKG.exists():
-        print(f"ERROR: antarray package not found at {ANTARRAY_PKG}", file=sys.stderr)
+    if not ARRAYBEAM_PKG.exists():
+        print(f"ERROR: arraybeam package not found at {ARRAYBEAM_PKG}", file=sys.stderr)
         sys.exit(1)
 
     cmd = [
@@ -41,15 +41,13 @@ def main() -> None:
         "--distpath", str(DIST_DIR),
         "--workpath", str(BUILD_DIR),
         "--specpath", str(ROOT / "build"),
-        # src/ is the root so PyInstaller can resolve antarray (src/antarray/)
-        # and antarray.antarray (src/antarray/antarray/) correctly.
-        f"--paths={SRC_DIR}",
-        # Explicit hidden imports matching the actual package hierarchy
-        "--hidden-import", "antarray",
-        "--hidden-import", "antarray.antarray",
-        "--hidden-import", "antarray.antarray.antennaarray",
-        "--hidden-import", "antarray.antarray.lineararray",
-        "--hidden-import", "antarray.antarray.rectarray",
+        # src/arraybeam is on the path so PyInstaller can find the package.
+        f"--paths={ARRAYBEAM_PKG}",
+        # Explicit hidden imports for arraybeam modules
+        "--hidden-import", "arraybeam",
+        "--hidden-import", "arraybeam.antenna_array",
+        "--hidden-import", "arraybeam.uniform_linear_array",
+        "--hidden-import", "arraybeam.uniform_rectangular_array",
         "--hidden-import", "numpy.core._multiarray_umath",
         # Collect all scipy/numpy sub-modules (their native extensions are
         # often missed by static analysis)
