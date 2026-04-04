@@ -8,7 +8,7 @@
     "start": "npm run build && electron .",
     "dev": "tsc && electron .",
     "pack": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder --publish never"
   },
   "author": "Zhengyu Peng",
   "license": "GPL-3.0",
