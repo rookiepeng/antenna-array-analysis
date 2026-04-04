@@ -35,6 +35,7 @@ const WINDOW_INDEX: Record<WindowType, number> = {
 let fixAzimuth = false;
 let currentResult: PatternResult | null = null;
 let plotType: string = '3d';
+let arrayColorMode: string = 'amplitude';
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let computing = false;
 let pendingCompute = false;
@@ -69,6 +70,7 @@ const plotAzInput = $('plot-az') as HTMLInputElement;
 const plotAzSlider = $('plot-az-slider') as HTMLInputElement;
 const polarMinInput = $('polar-min') as HTMLInputElement;
 const polarMinSlider = $('polar-min-slider') as HTMLInputElement;
+const arrayColorSelect = $('array-color') as HTMLSelectElement;
 const plotContainer = $('plot-container');
 const insetContainer = $('plot-3d-inset');
 const layoutContainer = $('layout-container');
@@ -120,14 +122,17 @@ function updatePlotTypeUI() {
     cutSection.style.display = 'none';
     polarSection.style.display = 'none';
     insetContainer.style.display = 'none';
+    $('inset-section').style.display = 'none';
   } else if (plotType === 'cartesian') {
     cutSection.style.display = '';
     polarSection.style.display = 'none';
     insetContainer.style.display = 'block';
+    $('inset-section').style.display = 'none';
   } else if (plotType === 'polar') {
     cutSection.style.display = '';
     polarSection.style.display = '';
     insetContainer.style.display = 'block';
+    $('inset-section').style.display = 'none';
   }
 
   updateFixPlaneUI();
@@ -224,13 +229,15 @@ function renderPlot() {
       break;
     case 'cartesian':
       renderCartesian(currentResult);
-      render3DInset(currentResult);
-      insetContainer.style.display = 'block';
+      if (insetContainer.style.display !== 'none') {
+        render3DInset(currentResult);
+      }
       break;
     case 'polar':
       renderPolar(currentResult);
-      render3DInset(currentResult);
-      insetContainer.style.display = 'block';
+      if (insetContainer.style.display !== 'none') {
+        render3DInset(currentResult);
+      }
       break;
   }
 
@@ -592,7 +599,7 @@ function render3DInset(result: PatternResult) {
       gridcolor: '#3a3a5c',
       tickfont: { size: 9 },
     },
-    margin: { l: 36, r: 4, t: 4, b: 30 },
+    margin: { l: 36, r: 4, t: 20, b: 30 },
     plot_bgcolor: '#1e1e2e',
     paper_bgcolor: '#1e1e2e',
     font: { color: '#e0e0f0', size: 9 },
@@ -604,7 +611,35 @@ function render3DInset(result: PatternResult) {
 function renderArrayLayout(result: PatternResult) {
   const weightAmp = result.weightRe.map((re, i) => Math.sqrt(re * re + result.weightIm[i] * result.weightIm[i]));
   const maxW = Math.max(...weightAmp) || 1;
-  const normWeight = weightAmp.map((w) => w / maxW);
+
+  let colorValues: number[];
+  let colorscale: [number, string][];
+  let colorbarTitle: string;
+  let cmin: number;
+  let cmax: number;
+
+  if (arrayColorMode === 'phase') {
+    colorValues = result.weightRe.map((re, i) => (Math.atan2(result.weightIm[i], re) / Math.PI) * 180);
+    colorscale = [
+      [0, '#3a3a8c'],
+      [0.25, '#80c0ff'],
+      [0.5, '#f0f0f0'],
+      [0.75, '#f48fb1'],
+      [1, '#8c1a40'],
+    ];
+    colorbarTitle = 'Phase (°)';
+    cmin = -180;
+    cmax = 180;
+  } else {
+    colorValues = weightAmp.map((w) => w / maxW);
+    colorscale = [
+      [0, '#3a3a5c'],
+      [1, '#f48fb1'],
+    ];
+    colorbarTitle = 'Amplitude';
+    cmin = 0;
+    cmax = 1;
+  }
 
   const data: Plotly.Data[] = [
     {
@@ -614,14 +649,13 @@ function renderArrayLayout(result: PatternResult) {
       mode: 'markers' as const,
       marker: {
         size: 6,
-        color: normWeight,
-        colorscale: [
-          [0, '#3a3a5c'],
-          [1, '#f48fb1'],
-        ],
+        color: colorValues,
+        colorscale: colorscale as any,
+        cmin,
+        cmax,
         showscale: true,
         colorbar: {
-          title: { text: 'Weight', side: 'right' },
+          title: { text: colorbarTitle, side: 'right' },
         },
       },
       name: 'Elements',
@@ -747,6 +781,12 @@ function init() {
   $('btn-export-config').addEventListener('click', exportArrayConfig);
   $('btn-export-pattern').addEventListener('click', exportPattern);
 
+  // Array color mode
+  arrayColorSelect.addEventListener('change', () => {
+    arrayColorMode = arrayColorSelect.value;
+    if (currentResult) renderArrayLayout(currentResult);
+  });
+
   // Help link
   $('link-help').addEventListener('click', (e) => {
     e.preventDefault();
@@ -754,6 +794,45 @@ function init() {
       'https://github.com/rookiepeng/antenna-array-analysis/issues'
     );
   });
+
+  // Inset close / show
+  $('inset-close').addEventListener('click', (e: Event) => {
+    e.stopPropagation();
+    insetContainer.style.display = 'none';
+    $('inset-section').style.display = '';
+  });
+
+  $('btn-show-inset').addEventListener('click', () => {
+    insetContainer.style.display = 'block';
+    $('inset-section').style.display = 'none';
+    if (currentResult) render3DInset(currentResult);
+  });
+
+  // Inset drag
+  const dragHandle = $('inset-drag-handle');
+  let dragging = false;
+  let dragStartX = 0, dragStartY = 0;
+  let dragStartLeft = 0, dragStartTop = 0;
+
+  dragHandle.addEventListener('mousedown', (e: MouseEvent) => {
+    dragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    dragStartLeft = insetContainer.offsetLeft;
+    dragStartTop = insetContainer.offsetTop;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e: MouseEvent) => {
+    if (!dragging) return;
+    const parent = insetContainer.parentElement!;
+    const maxLeft = parent.clientWidth - insetContainer.offsetWidth;
+    const maxTop = parent.clientHeight - insetContainer.offsetHeight;
+    insetContainer.style.left = Math.max(0, Math.min(dragStartLeft + e.clientX - dragStartX, maxLeft)) + 'px';
+    insetContainer.style.top  = Math.max(0, Math.min(dragStartTop  + e.clientY - dragStartY, maxTop))  + 'px';
+  });
+
+  document.addEventListener('mouseup', () => { dragging = false; });
 
   // Resize handling
   window.addEventListener('resize', () => {

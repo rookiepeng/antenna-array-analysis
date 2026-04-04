@@ -95,7 +95,12 @@
     <main class="plot-area">
       <div class="plot-row">
         <div id="plot-container" class="plot-main">
-          <div id="plot-3d-inset" class="plot-inset"></div>
+          <div id="plot-3d-inset" class="plot-inset">
+            <div id="inset-drag-handle" class="inset-drag-handle">
+              <span>&#8942;&#8942; drag</span>
+              <button id="inset-close" class="inset-close" title="Close inset">&times;</button>
+            </div>
+          </div>
         </div>
       </div>
       <div id="layout-container" class="plot-layout"></div>
@@ -148,6 +153,22 @@
           <input type="number" id="polar-min" min="-120" max="-10" value="-60" step="1">
           <input type="range" id="polar-min-slider" min="-120" max="-10" value="-60" step="1">
         </div>
+      </section>
+
+      <section class="config-section">
+        <h3>Array Layout</h3>
+        <div class="control-row">
+          <label for="array-color">Color</label>
+          <select id="array-color">
+            <option value="amplitude" selected>Weight Amplitude</option>
+            <option value="phase">Weight Phase</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="config-section" id="inset-section" style="display:none">
+        <h3>Inset Plot</h3>
+        <button id="btn-show-inset" class="btn">Show Inset</button>
       </section>
 
       <section class="config-section">

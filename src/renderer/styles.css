@@ -202,6 +202,45 @@ html, body {
   background: var(--bg);
 }
 
+.inset-drag-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: rgba(50, 50, 80, 0.9);
+  border-radius: 3px 3px 0 0;
+  cursor: grab;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  user-select: none;
+}
+
+.inset-drag-handle:active {
+  cursor: grabbing;
+}
+
+.inset-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.inset-close:hover {
+  color: var(--accent);
+}
+
 .plot-layout {
   flex: 2;
   min-width: 0;
