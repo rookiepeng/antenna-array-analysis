@@ -1,0 +1,3 @@
+[submodule "src/arraybeam"]
+	path = src/arraybeam
+	url = git@github.com:rookiepeng/arraybeam.git
