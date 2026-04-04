@@ -14,8 +14,12 @@ for _fn in ('chebwin', 'hamming', 'hann'):
     if not hasattr(signal, _fn):
         setattr(signal, _fn, getattr(_win, _fn))
 
-# Add the antarray package path
-sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else '.')
+# Add the antarray package path.
+# When frozen by PyInstaller (sys.frozen is set), all packages are bundled
+# inside the executable and importable directly — no path manipulation needed.
+# In development, sys.argv[1] points to the project src/ directory.
+if not getattr(sys, 'frozen', False):
+    sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else '.')
 
 from antarray.antarray import RectArray
 

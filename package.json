@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && electron .",
-    "dev": "tsc && electron ."
+    "dev": "tsc && electron .",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder"
   },
   "author": "Zhengyu Peng",
   "license": "GPL-3.0",
@@ -14,9 +16,36 @@
     "@types/node": "^20.11.0",
     "@types/plotly.js": "^3.0.10",
     "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "electron-builder-squirrel-windows": "^24.13.3",
     "typescript": "^5.3.3"
   },
   "dependencies": {
     "plotly.js-dist-min": "^2.28.0"
+  },
+  "build": {
+    "appId": "com.rookiepeng.antenna-array-analysis",
+    "productName": "Antenna Array Analysis",
+    "files": [
+      "dist/**/*",
+      "src/renderer/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/bridge",
+        "to": "bridge"
+      }
+    ],
+    "win": {
+      "target": "squirrel",
+      "icon": "res/aaa_icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "res/aaa_icon.icns"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

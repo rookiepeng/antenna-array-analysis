@@ -5,6 +5,7 @@
 
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
+import { app } from 'electron';
 
 export interface ComputeConfig {
   sizex: number;
@@ -49,18 +50,35 @@ export class PythonBridge {
   private stopped: boolean = false;
 
   constructor() {
-    // Paths relative to the project root
-    const projectRoot = path.join(__dirname, '..', '..');
-    this.antarrayPath = path.join(projectRoot, 'src');
-    this.bridgePath = path.join(projectRoot, 'src', 'python', 'bridge.py');
+    if (app.isPackaged) {
+      // In the packaged app, electron-builder places extra resources in
+      // process.resourcesPath.  The bridge executable is a self-contained
+      // PyInstaller binary — no separate Python interpreter needed.
+      const exe = process.platform === 'win32' ? 'bridge.exe' : 'bridge';
+      this.bridgePath = path.join(process.resourcesPath, 'bridge', exe);
+      this.antarrayPath = '';  // bundled inside the executable, not used
+    } else {
+      // Development: run bridge.py with the system Python interpreter.
+      const projectRoot = path.join(__dirname, '..', '..');
+      this.antarrayPath = path.join(projectRoot, 'src');
+      this.bridgePath = path.join(projectRoot, 'src', 'python', 'bridge.py');
+    }
   }
 
   start(): void {
     if (this.proc) return;
 
-    this.proc = spawn('python', [this.bridgePath, this.antarrayPath], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+    if (app.isPackaged) {
+      // Packaged: bridge is a PyInstaller executable — spawn it directly.
+      this.proc = spawn(this.bridgePath, [], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+    } else {
+      // Development: run the .py script with Python.
+      this.proc = spawn('python', [this.bridgePath, this.antarrayPath], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+    }
 
     this.proc.stdout!.on('data', (data: Buffer) => {
       this.buffer += data.toString();
