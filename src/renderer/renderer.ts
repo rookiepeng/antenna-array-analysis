@@ -39,6 +39,7 @@ let arrayColorMode: string = 'amplitude';
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let computing = false;
 let pendingCompute = false;
+let firstRenderDone = false;
 
 // ---- DOM Elements ----
 const $ = (id: string) => document.getElementById(id)!;
@@ -242,6 +243,15 @@ function renderPlot() {
   }
 
   renderArrayLayout(currentResult);
+
+  if (!firstRenderDone) {
+    firstRenderDone = true;
+    const overlay = document.getElementById('startup-overlay');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+    }
+  }
 }
 
 function render3DPolar(result: PatternResult) {

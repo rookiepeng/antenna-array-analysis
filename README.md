@@ -56,8 +56,3 @@ To rebuild TypeScript only:
 ```bash
 npm run build
 ```
-
-## Feedback
-
-Please submit bug reports and any suggestions [here](https://github.com/rookiepeng/antenna-array-analysis/issues).
-
