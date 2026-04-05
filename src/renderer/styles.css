@@ -283,6 +283,59 @@ html, body {
   margin-top: auto;
 }
 
+/* Custom array */
+.custom-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.custom-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  user-select: text;
+}
+
+.custom-textarea:focus {
+  border-color: var(--accent);
+}
+
+.custom-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.custom-actions .btn {
+  flex: 1;
+}
+
+.btn-accent {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.btn-accent:hover {
+  background: var(--accent);
+}
+
+.custom-error {
+  font-size: 11px;
+  color: #ff6b6b;
+  margin-top: 4px;
+  min-height: 0;
+}
+
 /* Export dropdown */
 .export-dropdown {
   position: relative;

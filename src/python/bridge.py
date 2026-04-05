@@ -15,7 +15,7 @@ from scipy.signal import windows as sig_windows
 if not getattr(sys, 'frozen', False):
     sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else '.')
 
-from arraybeam import UniformRectangularArray
+from arraybeam import UniformRectangularArray, AntennaArray
 
 
 def _make_window(win_idx: int, size: int, sll: float, nbar: int):
@@ -34,6 +34,54 @@ def _make_window(win_idx: int, size: int, sll: float, nbar: int):
 
 
 def compute_pattern(config: dict) -> dict:
+    mode = config.get('mode', 'uniform')
+
+    if mode == 'custom':
+        return _compute_custom(config)
+    else:
+        return _compute_uniform(config)
+
+
+def _compute_custom(config: dict) -> dict:
+    custom_y = np.array(config['customY'], dtype=float)
+    custom_z = np.array(config['customZ'], dtype=float)
+    custom_amp = np.array(config['customAmp'], dtype=float)
+    custom_phase = np.array(config['customPhase'], dtype=float)
+
+    weight = custom_amp * np.exp(1j * np.radians(custom_phase))
+    weight = weight / (np.sum(np.abs(weight)) + 1e-30)
+
+    nfft_az = config.get('nfftAz', 512)
+    nfft_el = config.get('nfftEl', 512)
+
+    azimuth = np.linspace(-90, 90, nfft_az)
+    elevation = np.linspace(-90, 90, nfft_el)
+
+    arr = AntennaArray(x=custom_y, y=custom_z)
+    AF_data = arr.get_pattern(azimuth, elevation, weight=weight)
+
+    af = AF_data['array_factor']
+    af_abs = np.abs(af)
+    af_max = np.max(af_abs)
+    if af_max > 0:
+        af_abs = af_abs / af_max
+    af_db = 20 * np.log10(af_abs + 1e-10)
+
+    result = {
+        'azimuth': azimuth.tolist(),
+        'elevation': elevation.tolist(),
+        'x': custom_y.tolist(),
+        'y': custom_z.tolist(),
+        'weightRe': np.real(weight).tolist(),
+        'weightIm': np.imag(weight).tolist(),
+        'arrayFactor2D': af_db.tolist(),
+        'arrayFactor': af_db.ravel().tolist(),
+    }
+
+    return result
+
+
+def _compute_uniform(config: dict) -> dict:
     sizex = config.get('sizex', 64)
     sizey = config.get('sizey', 32)
     spacingx = config.get('spacingx', 0.5)

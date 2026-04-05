@@ -13,6 +13,21 @@
       <h2>Array Configuration</h2>
 
       <section class="config-section">
+        <h3>Array Mode</h3>
+        <div class="control-row radio-row">
+          <label>
+            <input type="radio" name="array-mode" id="mode-uniform" value="uniform" checked>
+            Uniform Rectangular
+          </label>
+          <label>
+            <input type="radio" name="array-mode" id="mode-custom" value="custom">
+            Custom Array
+          </label>
+        </div>
+      </section>
+
+      <div id="uniform-config">
+      <section class="config-section">
         <h3>Horizontal (y)</h3>
         <div class="control-row">
           <label for="sizex">Elements</label>
@@ -89,6 +104,27 @@
           <input type="range" id="beam-el-slider" min="-900" max="900" value="0" step="1">
         </div>
       </section>
+      </div>
+
+      <div id="custom-config" style="display:none">
+      <section class="config-section">
+        <h3>Element Table</h3>
+        <p class="custom-hint">CSV: y(λ), z(λ), amplitude, phase(°)</p>
+        <textarea id="custom-elements" class="custom-textarea" rows="12" spellcheck="false">0, 0, 1, 0
+0.5, 0, 1, 0
+1.0, 0, 1, 0
+1.5, 0, 1, 0
+2.0, 0, 1, 0
+2.5, 0, 1, 0
+3.0, 0, 1, 0
+3.5, 0, 1, 0</textarea>
+        <div class="custom-actions">
+          <button id="btn-import-csv" class="btn">Import CSV</button>
+          <button id="btn-apply-custom" class="btn btn-accent">Apply</button>
+        </div>
+        <p id="custom-error" class="custom-error"></p>
+      </section>
+      </div>
 
       <section class="config-section export-section">
         <div class="export-dropdown">

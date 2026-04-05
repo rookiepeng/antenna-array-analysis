@@ -8,22 +8,27 @@ import * as path from 'path';
 import { app } from 'electron';
 
 export interface ComputeConfig {
-  sizex: number;
-  sizey: number;
-  spacingx: number;
-  spacingy: number;
-  beamAz: number;
-  beamEl: number;
-  windowx: number;
-  windowy: number;
-  sllx: number;
-  slly: number;
-  nbarx: number;
-  nbary: number;
+  mode?: 'uniform' | 'custom';
+  sizex?: number;
+  sizey?: number;
+  spacingx?: number;
+  spacingy?: number;
+  beamAz?: number;
+  beamEl?: number;
+  windowx?: number;
+  windowy?: number;
+  sllx?: number;
+  slly?: number;
+  nbarx?: number;
+  nbary?: number;
   nfftAz: number;
   nfftEl: number;
   plotAz: number;
   plotEl: number;
+  customY?: number[];
+  customZ?: number[];
+  customAmp?: number[];
+  customPhase?: number[];
 }
 
 export interface ComputeResult {

@@ -40,6 +40,7 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let computing = false;
 let pendingCompute = false;
 let firstRenderDone = false;
+let arrayMode: 'uniform' | 'custom' = 'uniform';
 
 // ---- DOM Elements ----
 const $ = (id: string) => document.getElementById(id)!;
@@ -75,6 +76,51 @@ const arrayColorSelect = $('array-color') as HTMLSelectElement;
 const plotContainer = $('plot-container');
 const insetContainer = $('plot-3d-inset');
 const layoutContainer = $('layout-container');
+const modeUniformRadio = $('mode-uniform') as HTMLInputElement;
+const modeCustomRadio = $('mode-custom') as HTMLInputElement;
+const uniformConfigDiv = $('uniform-config');
+const customConfigDiv = $('custom-config');
+const customElementsTextarea = $('custom-elements') as HTMLTextAreaElement;
+const customErrorP = $('custom-error');
+
+// ---- Custom array helpers ----
+interface CustomElement {
+  y: number;
+  z: number;
+  amp: number;
+  phase: number;
+}
+
+function parseCustomElements(): CustomElement[] | null {
+  const text = customElementsTextarea.value.trim();
+  if (!text) { customErrorP.textContent = 'Table is empty'; return null; }
+  const lines = text.split('\n');
+  const elements: CustomElement[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line.startsWith('#')) continue;
+    const parts = line.split(',').map(s => s.trim());
+    if (parts.length < 2) {
+      customErrorP.textContent = `Line ${i + 1}: need at least y, z`;
+      return null;
+    }
+    const y = parseFloat(parts[0]);
+    const z = parseFloat(parts[1]);
+    const amp = parts.length > 2 ? parseFloat(parts[2]) : 1;
+    const phase = parts.length > 3 ? parseFloat(parts[3]) : 0;
+    if ([y, z, amp, phase].some(isNaN)) {
+      customErrorP.textContent = `Line ${i + 1}: invalid number`;
+      return null;
+    }
+    elements.push({ y, z, amp, phase });
+  }
+  if (elements.length === 0) {
+    customErrorP.textContent = 'No elements defined';
+    return null;
+  }
+  customErrorP.textContent = '';
+  return elements;
+}
 
 // ---- Sync helpers ----
 function syncSliderToInput(slider: HTMLInputElement, input: HTMLInputElement, scale: number = 1) {
@@ -161,24 +207,38 @@ function getConfig() {
   const nfftAz = 512;
   const nfftEl = 512;
 
-  return {
-    sizex: parseInt(sizexInput.value) || 64,
-    sizey: parseInt(sizeyInput.value) || 32,
-    spacingx: parseFloat(spacingxInput.value) || 0.5,
-    spacingy: parseFloat(spacingyInput.value) || 0.5,
-    beamAz: parseFloat(beamAzInput.value) || 0,
-    beamEl: parseFloat(beamElInput.value) || 0,
-    windowx: WINDOW_INDEX[windowxSelect.value as WindowType] ?? 0,
-    windowy: WINDOW_INDEX[windowySelect.value as WindowType] ?? 0,
-    sllx: parseInt(sllxInput.value) || 60,
-    slly: parseInt(sllyInput.value) || 60,
-    nbarx: parseInt(nbarxInput.value) || 4,
-    nbary: parseInt(nbaryInput.value) || 4,
+  const base: Record<string, any> = {
     nfftAz,
     nfftEl,
     plotAz: parseFloat(plotAzInput.value) || 0,
     plotEl: parseFloat(plotElInput.value) || 0,
   };
+
+  if (arrayMode === 'custom') {
+    const elems = parseCustomElements();
+    if (!elems) return null;
+    base.mode = 'custom';
+    base.customY = elems.map(e => e.y);
+    base.customZ = elems.map(e => e.z);
+    base.customAmp = elems.map(e => e.amp);
+    base.customPhase = elems.map(e => e.phase);
+  } else {
+    base.mode = 'uniform';
+    base.sizex = parseInt(sizexInput.value) || 64;
+    base.sizey = parseInt(sizeyInput.value) || 32;
+    base.spacingx = parseFloat(spacingxInput.value) || 0.5;
+    base.spacingy = parseFloat(spacingyInput.value) || 0.5;
+    base.beamAz = parseFloat(beamAzInput.value) || 0;
+    base.beamEl = parseFloat(beamElInput.value) || 0;
+    base.windowx = WINDOW_INDEX[windowxSelect.value as WindowType] ?? 0;
+    base.windowy = WINDOW_INDEX[windowySelect.value as WindowType] ?? 0;
+    base.sllx = parseInt(sllxInput.value) || 60;
+    base.slly = parseInt(sllyInput.value) || 60;
+    base.nbarx = parseInt(nbarxInput.value) || 4;
+    base.nbary = parseInt(nbaryInput.value) || 4;
+  }
+
+  return base;
 }
 
 // ---- Compute & Plot ----
@@ -194,9 +254,11 @@ function computeAndPlot() {
     return;
   }
 
+  const config = getConfig();
+  if (!config) return;
+
   computing = true;
   pendingCompute = false;
-  const config = getConfig();
 
   ipcRenderer.invoke('compute-pattern', config)
     .then((result: PatternResult) => {
@@ -866,6 +928,42 @@ function init() {
   updatePlotTypeUI();
   updateWindowControls('x', windowxSelect.value);
   updateWindowControls('y', windowySelect.value);
+
+  // Array mode toggle
+  modeUniformRadio.addEventListener('change', () => {
+    arrayMode = 'uniform';
+    uniformConfigDiv.style.display = '';
+    customConfigDiv.style.display = 'none';
+    scheduleUpdate();
+  });
+  modeCustomRadio.addEventListener('change', () => {
+    arrayMode = 'custom';
+    uniformConfigDiv.style.display = 'none';
+    customConfigDiv.style.display = '';
+  });
+
+  // Custom array apply
+  $('btn-apply-custom').addEventListener('click', () => {
+    scheduleUpdate();
+  });
+
+  // Custom array CSV import
+  $('btn-import-csv').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.txt';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        customElementsTextarea.value = reader.result as string;
+        customErrorP.textContent = '';
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  });
 
   // Initial compute
   computeAndPlot();
