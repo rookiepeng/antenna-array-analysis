@@ -290,24 +290,86 @@ html, body {
   margin-bottom: 6px;
 }
 
-.custom-textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 8px;
-  background: var(--input-bg);
+.element-table-wrap {
+  max-height: 320px;
+  overflow-y: auto;
   border: 1px solid var(--input-border);
   border-radius: 4px;
-  color: var(--text);
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  resize: vertical;
-  outline: none;
-  user-select: text;
 }
 
-.custom-textarea:focus {
+.element-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.element-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.element-table th {
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+.element-table td {
+  padding: 1px 2px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.element-table td:first-child {
+  color: var(--text-muted);
+  font-size: 10px;
+  width: 24px;
+}
+
+.element-table input[type="number"] {
+  width: 100%;
+  padding: 4px 2px;
+  background: var(--input-bg);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 12px;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.element-table input[type="number"]::-webkit-inner-spin-button,
+.element-table input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.element-table input[type="number"]:focus {
   border-color: var(--accent);
+  background: var(--bg);
+}
+
+.element-table .btn-remove-row {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.element-table .btn-remove-row:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
 }
 
 .custom-actions {

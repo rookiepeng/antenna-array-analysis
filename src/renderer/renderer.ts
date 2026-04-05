@@ -80,7 +80,7 @@ const modeUniformRadio = $('mode-uniform') as HTMLInputElement;
 const modeCustomRadio = $('mode-custom') as HTMLInputElement;
 const uniformConfigDiv = $('uniform-config');
 const customConfigDiv = $('custom-config');
-const customElementsTextarea = $('custom-elements') as HTMLTextAreaElement;
+const elementTbody = $('element-tbody') as HTMLTableSectionElement;
 const customErrorP = $('custom-error');
 
 // ---- Custom array helpers ----
@@ -91,32 +91,64 @@ interface CustomElement {
   phase: number;
 }
 
+const DEFAULT_ELEMENTS: CustomElement[] = [
+  { y: 0, z: 0, amp: 1, phase: 0 },
+  { y: 0.5, z: 0, amp: 1, phase: 0 },
+  { y: 1.0, z: 0, amp: 1, phase: 0 },
+  { y: 1.5, z: 0, amp: 1, phase: 0 },
+  { y: 2.0, z: 0, amp: 1, phase: 0 },
+  { y: 2.5, z: 0, amp: 1, phase: 0 },
+  { y: 3.0, z: 0, amp: 1, phase: 0 },
+  { y: 3.5, z: 0, amp: 1, phase: 0 },
+];
+
+function addTableRow(elem?: CustomElement) {
+  const e = elem || { y: 0, z: 0, amp: 1, phase: 0 };
+  const row = elementTbody.insertRow();
+  const idx = elementTbody.rows.length;
+  row.innerHTML =
+    `<td class="row-num">${idx}</td>` +
+    `<td><input type="number" class="el-y" value="${e.y}" step="0.1"></td>` +
+    `<td><input type="number" class="el-z" value="${e.z}" step="0.1"></td>` +
+    `<td><input type="number" class="el-amp" value="${e.amp}" step="0.1" min="0"></td>` +
+    `<td><input type="number" class="el-phase" value="${e.phase}" step="1"></td>` +
+    `<td><button class="btn-remove-row" title="Remove">&times;</button></td>`;
+  row.querySelector('.btn-remove-row')!.addEventListener('click', () => {
+    row.remove();
+    renumberRows();
+  });
+}
+
+function renumberRows() {
+  const rows = elementTbody.rows;
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].cells[0].textContent = String(i + 1);
+  }
+}
+
+function populateTable(elements: CustomElement[]) {
+  elementTbody.innerHTML = '';
+  elements.forEach(e => addTableRow(e));
+}
+
 function parseCustomElements(): CustomElement[] | null {
-  const text = customElementsTextarea.value.trim();
-  if (!text) { customErrorP.textContent = 'Table is empty'; return null; }
-  const lines = text.split('\n');
+  const rows = elementTbody.rows;
+  if (rows.length === 0) {
+    customErrorP.textContent = 'Table is empty';
+    return null;
+  }
   const elements: CustomElement[] = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line || line.startsWith('#')) continue;
-    const parts = line.split(',').map(s => s.trim());
-    if (parts.length < 2) {
-      customErrorP.textContent = `Line ${i + 1}: need at least y, z`;
-      return null;
-    }
-    const y = parseFloat(parts[0]);
-    const z = parseFloat(parts[1]);
-    const amp = parts.length > 2 ? parseFloat(parts[2]) : 1;
-    const phase = parts.length > 3 ? parseFloat(parts[3]) : 0;
+  for (let i = 0; i < rows.length; i++) {
+    const inputs = rows[i].querySelectorAll('input[type="number"]');
+    const y = parseFloat((inputs[0] as HTMLInputElement).value);
+    const z = parseFloat((inputs[1] as HTMLInputElement).value);
+    const amp = parseFloat((inputs[2] as HTMLInputElement).value);
+    const phase = parseFloat((inputs[3] as HTMLInputElement).value);
     if ([y, z, amp, phase].some(isNaN)) {
-      customErrorP.textContent = `Line ${i + 1}: invalid number`;
+      customErrorP.textContent = `Row ${i + 1}: invalid number`;
       return null;
     }
     elements.push({ y, z, amp, phase });
-  }
-  if (elements.length === 0) {
-    customErrorP.textContent = 'No elements defined';
-    return null;
   }
   customErrorP.textContent = '';
   return elements;
@@ -947,6 +979,11 @@ function init() {
     scheduleUpdate();
   });
 
+  // Custom array add row
+  $('btn-add-row').addEventListener('click', () => {
+    addTableRow();
+  });
+
   // Custom array CSV import
   $('btn-import-csv').addEventListener('click', () => {
     const input = document.createElement('input');
@@ -957,13 +994,34 @@ function init() {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        customElementsTextarea.value = reader.result as string;
-        customErrorP.textContent = '';
+        const text = (reader.result as string).trim();
+        const elements: CustomElement[] = [];
+        for (const line of text.split('\n')) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#')) continue;
+          const parts = trimmed.split(',').map(s => s.trim());
+          if (parts.length < 2) continue;
+          const y = parseFloat(parts[0]);
+          const z = parseFloat(parts[1]);
+          const amp = parts.length > 2 ? parseFloat(parts[2]) : 1;
+          const phase = parts.length > 3 ? parseFloat(parts[3]) : 0;
+          if ([y, z, amp, phase].some(isNaN)) continue;
+          elements.push({ y, z, amp, phase });
+        }
+        if (elements.length > 0) {
+          populateTable(elements);
+          customErrorP.textContent = '';
+        } else {
+          customErrorP.textContent = 'No valid rows found in file';
+        }
       };
       reader.readAsText(file);
     };
     input.click();
   });
+
+  // Populate default table rows
+  populateTable(DEFAULT_ELEMENTS);
 
   // Initial compute
   computeAndPlot();

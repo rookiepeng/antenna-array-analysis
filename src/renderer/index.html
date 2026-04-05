@@ -109,16 +109,23 @@
       <div id="custom-config" style="display:none">
       <section class="config-section">
         <h3>Element Table</h3>
-        <p class="custom-hint">CSV: y(λ), z(λ), amplitude, phase(°)</p>
-        <textarea id="custom-elements" class="custom-textarea" rows="12" spellcheck="false">0, 0, 1, 0
-0.5, 0, 1, 0
-1.0, 0, 1, 0
-1.5, 0, 1, 0
-2.0, 0, 1, 0
-2.5, 0, 1, 0
-3.0, 0, 1, 0
-3.5, 0, 1, 0</textarea>
+        <div class="element-table-wrap">
+          <table id="element-table" class="element-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>y (λ)</th>
+                <th>z (λ)</th>
+                <th>Amp</th>
+                <th>Phase (°)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="element-tbody"></tbody>
+          </table>
+        </div>
         <div class="custom-actions">
+          <button id="btn-add-row" class="btn">+ Row</button>
           <button id="btn-import-csv" class="btn">Import CSV</button>
           <button id="btn-apply-custom" class="btn btn-accent">Apply</button>
         </div>
