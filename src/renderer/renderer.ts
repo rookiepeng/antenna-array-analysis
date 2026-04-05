@@ -291,17 +291,14 @@ function render3DPolar(result: PatternResult) {
   }
 
   // Axis reference lines: x=boresight, y=horizontal, z=vertical
-  function axisLine(x1: number, y1: number, z1: number, label: string, color: string): Plotly.Data {
+  function axisLine(x1: number, y1: number, z1: number, color: string): Plotly.Data {
     return {
       type: 'scatter3d' as const,
       x: [0, x1],
       y: [0, y1],
       z: [0, z1],
-      mode: 'lines+text' as const,
+      mode: 'lines' as const,
       line: { color, width: 5 },
-      text: ['', label],
-      textposition: 'top center' as const,
-      textfont: { size: 12, color },
       showlegend: false,
       hoverinfo: 'skip' as const,
     } as unknown as Plotly.Data;
@@ -359,34 +356,39 @@ function render3DPolar(result: PatternResult) {
         z: { highlight: false } as any,
       },
     } as Plotly.Data,
-    axisLine(1.35, 0, 0, 'x (boresight)', '#80c0ff'),
-    axisLine(0, 1.35, 0, 'y (horizontal)', '#80ffb0'),
-    axisLine(0, 0, 1.35, 'z (vertical)', '#ffb080'),
+    axisLine(1.35, 0, 0, '#80c0ff'),
+    axisLine(0, 1.35, 0, '#80ffb0'),
+    axisLine(0, 0, 1.35, '#ffb080'),
   ];
 
   const layout: Partial<Plotly.Layout> = {
     scene: {
       xaxis: {
-        title: { text: 'x (boresight)' },
+        title: { text: '' },
         showgrid: false,
         zeroline: false,
         showticklabels: false,
-        range: [-1.1, 1.1] as any,
+        range: [-1.6, 1.6] as any,
       },
       yaxis: {
-        title: { text: 'y (horizontal)' },
+        title: { text: '' },
         showgrid: false,
         zeroline: false,
         showticklabels: false,
-        range: [-1.1, 1.1] as any,
+        range: [-1.6, 1.6] as any,
       },
       zaxis: {
-        title: { text: 'z (vertical)' },
+        title: { text: '' },
         showgrid: false,
         zeroline: false,
         showticklabels: false,
-        range: [-1.1, 1.1] as any,
+        range: [-1.6, 1.6] as any,
       },
+      annotations: [
+        { x: 1.55, y: 0, z: 0, text: 'x', showarrow: false, font: { color: '#80c0ff', size: 12 } },
+        { x: 0, y: 1.55, z: 0, text: 'y', showarrow: false, font: { color: '#80ffb0', size: 12 } },
+        { x: 0, y: 0, z: 1.55, text: 'z', showarrow: false, font: { color: '#ffb080', size: 12 } },
+      ] as any,
       aspectmode: 'cube' as const,
       bgcolor: '#1e1e2e',
       camera: {
