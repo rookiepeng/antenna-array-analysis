@@ -81,7 +81,7 @@ html, body {
 /* Control rows */
 .control-row {
   display: grid;
-  grid-template-columns: 90px 1fr;
+  grid-template-columns: 80px 1fr;
   column-gap: 6px;
   row-gap: 6px;
   margin-bottom: 10px;
