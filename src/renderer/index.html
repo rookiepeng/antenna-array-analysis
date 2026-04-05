@@ -89,6 +89,16 @@
           <input type="range" id="beam-el-slider" min="-900" max="900" value="0" step="1">
         </div>
       </section>
+
+      <section class="config-section export-section">
+        <div class="export-dropdown">
+          <button id="btn-export" class="btn btn-export-toggle">Export &#9662;</button>
+          <div id="export-menu" class="export-menu" style="display:none">
+            <button id="btn-export-config" class="export-menu-item">Array Config (.csv)</button>
+            <button id="btn-export-pattern" class="export-menu-item">Pattern Data (.csv)</button>
+          </div>
+        </div>
+      </section>
     </aside>
 
     <!-- Center: Plot Area -->
@@ -169,12 +179,6 @@
       <section class="config-section" id="inset-section" style="display:none">
         <h3>Inset Plot</h3>
         <button id="btn-show-inset" class="btn">Show Inset</button>
-      </section>
-
-      <section class="config-section">
-        <h3>Export</h3>
-        <button id="btn-export-config" class="btn">Export Array Config</button>
-        <button id="btn-export-pattern" class="btn">Export Pattern Data</button>
       </section>
 
       <section class="config-section about-section">

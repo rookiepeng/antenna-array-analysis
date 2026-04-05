@@ -43,7 +43,7 @@ html, body {
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .panel-right {
@@ -61,7 +61,7 @@ html, body {
 }
 
 .config-section {
-  padding: 6px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -75,27 +75,27 @@ html, body {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 
 /* Control rows */
 .control-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  column-gap: 6px;
+  row-gap: 6px;
+  margin-bottom: 10px;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 5px;
-  flex-wrap: wrap;
 }
 
 .control-row label {
-  flex: 0 0 90px;
   font-size: 12px;
   color: var(--text-muted);
 }
 
 .control-row input[type="number"] {
   width: 70px;
-  padding: 3px 6px;
+  padding: 4px 4px;
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 4px;
@@ -109,8 +109,7 @@ html, body {
 }
 
 .control-row select {
-  flex: 1;
-  padding: 3px 6px;
+  padding: 4px 4px;
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 4px;
@@ -118,6 +117,7 @@ html, body {
   font-size: 12px;
   outline: none;
   cursor: pointer;
+  width: 100%;
 }
 
 .control-row select:focus {
@@ -125,8 +125,8 @@ html, body {
 }
 
 .control-row input[type="range"] {
-  flex: 1;
-  min-width: 60px;
+  grid-column: 1 / -1;
+  width: 100%;
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
@@ -138,8 +138,8 @@ html, body {
 .control-row input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
@@ -147,6 +147,7 @@ html, body {
 }
 
 .radio-row {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
@@ -276,6 +277,54 @@ html, body {
 .about-section {
   margin-top: auto;
   padding-top: 12px;
+}
+
+.export-section {
+  margin-top: auto;
+}
+
+/* Export dropdown */
+.export-dropdown {
+  position: relative;
+}
+
+.btn-export-toggle::after {
+  content: '';
+}
+
+.export-menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.export-menu-item {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.export-menu-item:last-child {
+  border-bottom: none;
+}
+
+.export-menu-item:hover {
+  background: var(--accent-dim);
+  color: var(--text);
 }
 
 .about-text {

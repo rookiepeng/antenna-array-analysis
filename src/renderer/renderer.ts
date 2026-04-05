@@ -787,9 +787,16 @@ function init() {
     scheduleUpdate();
   });
 
-  // Export buttons
-  $('btn-export-config').addEventListener('click', exportArrayConfig);
-  $('btn-export-pattern').addEventListener('click', exportPattern);
+  // Export dropdown
+  const exportBtn = $('btn-export');
+  const exportMenu = $('export-menu');
+  exportBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportMenu.style.display = exportMenu.style.display === 'none' ? '' : 'none';
+  });
+  document.addEventListener('click', () => { exportMenu.style.display = 'none'; });
+  $('btn-export-config').addEventListener('click', () => { exportMenu.style.display = 'none'; exportArrayConfig(); });
+  $('btn-export-pattern').addEventListener('click', () => { exportMenu.style.display = 'none'; exportPattern(); });
 
   // Array color mode
   arrayColorSelect.addEventListener('change', () => {
