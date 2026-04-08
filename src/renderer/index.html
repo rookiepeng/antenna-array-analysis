@@ -12,19 +12,10 @@
     <aside class="panel panel-left">
       <h2>Array Configuration</h2>
 
-      <section class="config-section">
-        <h3>Array Mode</h3>
-        <div class="control-row radio-row">
-          <label>
-            <input type="radio" name="array-mode" id="mode-uniform" value="uniform" checked>
-            Uniform Rectangular
-          </label>
-          <label>
-            <input type="radio" name="array-mode" id="mode-custom" value="custom">
-            Custom Array
-          </label>
-        </div>
-      </section>
+      <div class="tabs-container">
+        <button id="tab-uniform" class="tab-btn active">Uniform Rectangular</button>
+        <button id="tab-custom" class="tab-btn">Custom Array</button>
+      </div>
 
       <div id="uniform-config">
       <section class="config-section">
@@ -109,6 +100,9 @@
       <div id="custom-config" style="display:none">
       <section class="config-section">
         <h3>Element Table</h3>
+        <div id="custom-unsynced-banner" class="banner banner-warning" style="display:none">
+          Plots not updated. Click Apply to update.
+        </div>
         <div class="element-table-wrap">
           <table id="element-table" class="element-table">
             <thead>

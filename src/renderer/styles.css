@@ -167,6 +167,41 @@ html, body {
   accent-color: var(--accent);
 }
 
+/* Tabs */
+.tabs-container {
+  display: flex;
+  gap: 2px;
+  background: var(--surface2);
+  padding: 2px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Plot area */
 .plot-area {
   flex: 1;
@@ -262,6 +297,22 @@ html, body {
   font-size: 12px;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
+}
+
+/* Banner */
+.banner {
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.banner-warning {
+  background: rgba(255, 171, 64, 0.15);
+  color: #ffab40;
+  border: 1px solid rgba(255, 171, 64, 0.3);
 }
 
 .btn:hover {
@@ -373,13 +424,18 @@ html, body {
 }
 
 .custom-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-top: 8px;
 }
 
 .custom-actions .btn {
-  flex: 1;
+  margin-bottom: 0;
+}
+
+#btn-apply-custom {
+  grid-column: 1 / -1;
 }
 
 .btn-accent {

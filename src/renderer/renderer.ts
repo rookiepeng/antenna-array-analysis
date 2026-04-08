@@ -76,10 +76,11 @@ const arrayColorSelect = $('array-color') as HTMLSelectElement;
 const plotContainer = $('plot-container');
 const insetContainer = $('plot-3d-inset');
 const layoutContainer = $('layout-container');
-const modeUniformRadio = $('mode-uniform') as HTMLInputElement;
-const modeCustomRadio = $('mode-custom') as HTMLInputElement;
+const tabUniform = $('tab-uniform') as HTMLButtonElement;
+const tabCustom = $('tab-custom') as HTMLButtonElement;
 const uniformConfigDiv = $('uniform-config');
 const customConfigDiv = $('custom-config');
+const customUnsyncedBanner = $('custom-unsynced-banner');
 const elementTbody = $('element-tbody') as HTMLTableSectionElement;
 const customErrorP = $('custom-error');
 
@@ -113,10 +114,27 @@ function addTableRow(elem?: CustomElement) {
     `<td><input type="number" class="el-amp" value="${e.amp}" step="0.1" min="0"></td>` +
     `<td><input type="number" class="el-phase" value="${e.phase}" step="1"></td>` +
     `<td><button class="btn-remove-row" title="Remove">&times;</button></td>`;
+  
+  // Custom array inputs dirty state
+  row.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', showCustomUnsyncedBanner);
+  });
+
   row.querySelector('.btn-remove-row')!.addEventListener('click', () => {
     row.remove();
     renumberRows();
+    showCustomUnsyncedBanner();
   });
+}
+
+function showCustomUnsyncedBanner() {
+  if (arrayMode === 'custom') {
+    customUnsyncedBanner.style.display = 'block';
+  }
+}
+
+function hideCustomUnsyncedBanner() {
+  customUnsyncedBanner.style.display = 'none';
 }
 
 function renumberRows() {
@@ -274,6 +292,11 @@ function getConfig() {
 }
 
 // ---- Compute & Plot ----
+function applyCustomAndCompute() {
+  hideCustomUnsyncedBanner();
+  scheduleUpdate();
+}
+
 function scheduleUpdate() {
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(computeAndPlot, 50);
@@ -962,26 +985,33 @@ function init() {
   updateWindowControls('y', windowySelect.value);
 
   // Array mode toggle
-  modeUniformRadio.addEventListener('change', () => {
+  tabUniform.addEventListener('click', () => {
+    if (arrayMode === 'uniform') return;
     arrayMode = 'uniform';
+    tabUniform.classList.add('active');
+    tabCustom.classList.remove('active');
     uniformConfigDiv.style.display = '';
     customConfigDiv.style.display = 'none';
     scheduleUpdate();
   });
-  modeCustomRadio.addEventListener('change', () => {
+  tabCustom.addEventListener('click', () => {
+    if (arrayMode === 'custom') return;
     arrayMode = 'custom';
+    tabCustom.classList.add('active');
+    tabUniform.classList.remove('active');
     uniformConfigDiv.style.display = 'none';
     customConfigDiv.style.display = '';
+    // Apply when switching to custom mode
+    applyCustomAndCompute();
   });
 
   // Custom array apply
-  $('btn-apply-custom').addEventListener('click', () => {
-    scheduleUpdate();
-  });
+  $('btn-apply-custom').addEventListener('click', applyCustomAndCompute);
 
   // Custom array add row
   $('btn-add-row').addEventListener('click', () => {
     addTableRow();
+    showCustomUnsyncedBanner();
   });
 
   // Custom array CSV import
@@ -1011,6 +1041,7 @@ function init() {
         if (elements.length > 0) {
           populateTable(elements);
           customErrorP.textContent = '';
+          showCustomUnsyncedBanner();
         } else {
           customErrorP.textContent = 'No valid rows found in file';
         }
