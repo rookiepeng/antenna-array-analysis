@@ -127,6 +127,45 @@
       </section>
       </div>
 
+      <section class="config-section" id="element-pattern-section">
+        <div class="section-header-row">
+          <h3>Element Pattern</h3>
+          <button id="element-pattern-enabled" class="toggle-btn" aria-pressed="false">Off</button>
+        </div>
+        <div id="element-pattern-body" style="display:none">
+          <div class="sub-section">
+            <h4>Azimuth Pattern</h4>
+            <div class="pattern-table-wrap">
+              <table class="element-table pattern-table">
+                <thead>
+                  <tr><th>Angle (°)</th><th>Gain (dB)</th><th></th></tr>
+                </thead>
+                <tbody id="az-pattern-tbody"></tbody>
+              </table>
+            </div>
+            <div class="pattern-actions">
+              <button id="btn-add-az-pattern" class="btn btn-sm">+ Row</button>
+              <button id="btn-import-az-pattern" class="btn btn-sm">Import CSV</button>
+            </div>
+          </div>
+          <div class="sub-section">
+            <h4>Elevation Pattern</h4>
+            <div class="pattern-table-wrap">
+              <table class="element-table pattern-table">
+                <thead>
+                  <tr><th>Angle (°)</th><th>Gain (dB)</th><th></th></tr>
+                </thead>
+                <tbody id="el-pattern-tbody"></tbody>
+              </table>
+            </div>
+            <div class="pattern-actions">
+              <button id="btn-add-el-pattern" class="btn btn-sm">+ Row</button>
+              <button id="btn-import-el-pattern" class="btn btn-sm">Import CSV</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="config-section export-section">
         <div class="export-dropdown">
           <button id="btn-export" class="btn btn-export-toggle">Export &#9662;</button>

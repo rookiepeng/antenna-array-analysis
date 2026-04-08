@@ -83,6 +83,10 @@ const customConfigDiv = $('custom-config');
 const customUnsyncedBanner = $('custom-unsynced-banner');
 const elementTbody = $('element-tbody') as HTMLTableSectionElement;
 const customErrorP = $('custom-error');
+const elementPatternEnabled = $('element-pattern-enabled') as HTMLButtonElement;
+const elementPatternBody = $('element-pattern-body');
+const azPatternTbody = $('az-pattern-tbody') as HTMLTableSectionElement;
+const elPatternTbody = $('el-pattern-tbody') as HTMLTableSectionElement;
 
 // ---- Custom array helpers ----
 interface CustomElement {
@@ -170,6 +174,91 @@ function parseCustomElements(): CustomElement[] | null {
   }
   customErrorP.textContent = '';
   return elements;
+}
+
+// ---- Element pattern helpers ----
+interface PatternPoint {
+  angle: number;
+  gain: number;
+}
+
+const DEFAULT_AZ_PATTERN: PatternPoint[] = [
+  { angle: -90, gain: -20 },
+  { angle: 0, gain: 0 },
+  { angle: 90, gain: -20 },
+];
+
+const DEFAULT_EL_PATTERN: PatternPoint[] = [
+  { angle: -90, gain: -20 },
+  { angle: 0, gain: 0 },
+  { angle: 90, gain: -20 },
+];
+
+function addPatternRow(tbody: HTMLTableSectionElement, point?: PatternPoint) {
+  const p = point || { angle: 0, gain: 0 };
+  const row = tbody.insertRow();
+  row.innerHTML =
+    `<td><input type="number" class="pat-angle" value="${p.angle}" step="1"></td>` +
+    `<td><input type="number" class="pat-gain" value="${p.gain}" step="0.1"></td>` +
+    `<td><button class="btn-remove-row" title="Remove">&times;</button></td>`;
+  row.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => scheduleUpdate());
+  });
+  row.querySelector('.btn-remove-row')!.addEventListener('click', () => {
+    row.remove();
+    scheduleUpdate();
+  });
+}
+
+function populatePatternTable(tbody: HTMLTableSectionElement, points: PatternPoint[]) {
+  tbody.innerHTML = '';
+  points.forEach(p => addPatternRow(tbody, p));
+}
+
+function parsePatternTable(tbody: HTMLTableSectionElement): PatternPoint[] | null {
+  const rows = tbody.rows;
+  if (rows.length === 0) return null;
+  const points: PatternPoint[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    const inputs = rows[i].querySelectorAll('input[type="number"]');
+    const angle = parseFloat((inputs[0] as HTMLInputElement).value);
+    const gain = parseFloat((inputs[1] as HTMLInputElement).value);
+    if (isNaN(angle) || isNaN(gain)) return null;
+    points.push({ angle, gain });
+  }
+  points.sort((a, b) => a.angle - b.angle);
+  return points;
+}
+
+function importPatternCSV(tbody: HTMLTableSectionElement) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.csv,.txt';
+  input.onchange = () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = (reader.result as string).trim();
+      const points: PatternPoint[] = [];
+      for (const line of text.split('\n')) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const parts = trimmed.split(',').map(s => s.trim());
+        if (parts.length < 2) continue;
+        const angle = parseFloat(parts[0]);
+        const gain = parseFloat(parts[1]);
+        if (isNaN(angle) || isNaN(gain)) continue;
+        points.push({ angle, gain });
+      }
+      if (points.length > 0) {
+        populatePatternTable(tbody, points);
+        scheduleUpdate();
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 // ---- Sync helpers ----
@@ -286,6 +375,20 @@ function getConfig() {
     base.slly = parseInt(sllyInput.value) || 60;
     base.nbarx = parseInt(nbarxInput.value) || 4;
     base.nbary = parseInt(nbaryInput.value) || 4;
+  }
+
+  // Element radiation pattern
+  if (elementPatternEnabled.classList.contains('active')) {
+    const azPat = parsePatternTable(azPatternTbody);
+    if (azPat && azPat.length >= 2) {
+      base.elementPatternAzAngles = azPat.map(p => p.angle);
+      base.elementPatternAzGains = azPat.map(p => p.gain);
+    }
+    const elPat = parsePatternTable(elPatternTbody);
+    if (elPat && elPat.length >= 2) {
+      base.elementPatternElAngles = elPat.map(p => p.angle);
+      base.elementPatternElGains = elPat.map(p => p.gain);
+    }
   }
 
   return base;
@@ -1053,6 +1156,25 @@ function init() {
 
   // Populate default table rows
   populateTable(DEFAULT_ELEMENTS);
+
+  // Element pattern toggle
+  elementPatternEnabled.addEventListener('click', () => {
+    const isActive = elementPatternEnabled.classList.toggle('active');
+    elementPatternEnabled.setAttribute('aria-pressed', String(isActive));
+    elementPatternEnabled.textContent = isActive ? 'On' : 'Off';
+    elementPatternBody.style.display = isActive ? '' : 'none';
+    scheduleUpdate();
+  });
+
+  // Element pattern table buttons
+  $('btn-add-az-pattern').addEventListener('click', () => addPatternRow(azPatternTbody));
+  $('btn-add-el-pattern').addEventListener('click', () => addPatternRow(elPatternTbody));
+  $('btn-import-az-pattern').addEventListener('click', () => importPatternCSV(azPatternTbody));
+  $('btn-import-el-pattern').addEventListener('click', () => importPatternCSV(elPatternTbody));
+
+  // Populate default element patterns
+  populatePatternTable(azPatternTbody, DEFAULT_AZ_PATTERN);
+  populatePatternTable(elPatternTbody, DEFAULT_EL_PATTERN);
 
   // Initial compute
   computeAndPlot();

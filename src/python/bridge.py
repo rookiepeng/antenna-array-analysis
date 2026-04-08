@@ -7,6 +7,7 @@ import sys
 import json
 import numpy as np
 from scipy.signal import windows as sig_windows
+from scipy.interpolate import interp1d
 
 # Add the arraybeam package path.
 # When frozen by PyInstaller (sys.frozen is set), all packages are bundled
@@ -37,9 +38,52 @@ def compute_pattern(config: dict) -> dict:
     mode = config.get('mode', 'uniform')
 
     if mode == 'custom':
-        return _compute_custom(config)
+        result = _compute_custom(config)
     else:
-        return _compute_uniform(config)
+        result = _compute_uniform(config)
+
+    # Apply element radiation pattern if provided
+    result = _apply_element_pattern(config, result)
+
+    return result
+
+
+def _interpolate_pattern(angles, gains, target_angles):
+    """Interpolate a 1-D element pattern onto target angles (dB)."""
+    order = np.argsort(angles)
+    angles = np.array(angles)[order]
+    gains = np.array(gains)[order]
+    f = interp1d(angles, gains, kind='linear', bounds_error=False,
+                 fill_value=(gains[0], gains[-1]))
+    return f(target_angles)
+
+
+def _apply_element_pattern(config: dict, result: dict) -> dict:
+    """Multiply the array factor by interpolated element patterns."""
+    az_angles = config.get('elementPatternAzAngles')
+    az_gains = config.get('elementPatternAzGains')
+    el_angles = config.get('elementPatternElAngles')
+    el_gains = config.get('elementPatternElGains')
+
+    if az_angles is None and el_angles is None:
+        return result
+
+    af2d = np.array(result['arrayFactor2D'])  # shape: (nAz, nEl), dB
+    azimuth = np.array(result['azimuth'])
+    elevation = np.array(result['elevation'])
+
+    if az_angles is not None and len(az_angles) >= 2:
+        ep_az = _interpolate_pattern(az_angles, az_gains, azimuth)  # (nAz,)
+        af2d = af2d + ep_az[:, np.newaxis]  # add dB
+
+    if el_angles is not None and len(el_angles) >= 2:
+        ep_el = _interpolate_pattern(el_angles, el_gains, elevation)  # (nEl,)
+        af2d = af2d + ep_el[np.newaxis, :]  # add dB
+
+    result['arrayFactor2D'] = af2d.tolist()
+    result['arrayFactor'] = af2d.ravel().tolist()
+
+    return result
 
 
 def _compute_custom(config: dict) -> dict:
