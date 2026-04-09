@@ -15,9 +15,9 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/plotly.js": "^3.0.10",
-    "electron": "^28.1.0",
-    "electron-builder": "^24.9.1",
-    "electron-builder-squirrel-windows": "^24.13.3",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
+    "electron-builder-squirrel-windows": "^26.8.1",
     "typescript": "^5.3.3"
   },
   "dependencies": {
