@@ -79,6 +79,7 @@ const tabCustom = $('tab-custom') as HTMLButtonElement;
 const uniformConfigDiv = $('uniform-config');
 const customConfigDiv = $('custom-config');
 const customUnsyncedBanner = $('custom-unsynced-banner');
+const largeArrayBanner = $('large-array-banner');
 const elementTbody = $('element-tbody') as HTMLTableSectionElement;
 const customErrorP = $('custom-error');
 const elementPatternEnabled = $('element-pattern-enabled') as HTMLButtonElement;
@@ -141,6 +142,14 @@ function showCustomUnsyncedBanner() {
 
 function hideCustomUnsyncedBanner() {
   customUnsyncedBanner.style.display = 'none';
+}
+
+function updateLargeArrayBanner() {
+  const sizex = parseInt(sizexInput.value) || 1;
+  const sizey = parseInt(sizeyInput.value) || 1;
+  // nfft is capped at 2048 = 8 * 256, so warn when any dimension exceeds 256
+  const isLarge = arrayMode === 'uniform' && (sizex > 1024 || sizey > 1024);
+  largeArrayBanner.style.display = isLarge ? 'block' : 'none';
 }
 
 function renumberRows() {
@@ -358,9 +367,10 @@ function getConfig() {
     const elems = parseCustomElements();
     if (!elems) return null;
     const nElem = elems.length;
+    const MIN_NFFT = 512;
     const MAX_NFFT = 2048;
-    base.nfftAz = Math.min(nextPow2(8 * nElem), MAX_NFFT);
-    base.nfftEl = Math.min(nextPow2(8 * nElem), MAX_NFFT);
+    base.nfftAz = Math.max(Math.min(nextPow2(8 * nElem), MAX_NFFT), MIN_NFFT);
+    base.nfftEl = Math.max(Math.min(nextPow2(8 * nElem), MAX_NFFT), MIN_NFFT);
     base.mode = 'custom';
     base.customY = elems.map(e => e.y);
     base.customZ = elems.map(e => e.z);
@@ -369,9 +379,10 @@ function getConfig() {
   } else {
     const sizex = parseInt(sizexInput.value) || 64;
     const sizey = parseInt(sizeyInput.value) || 32;
+    const MIN_NFFT = 512;
     const MAX_NFFT = 2048;
-    base.nfftAz = Math.min(nextPow2(8 * sizex), MAX_NFFT);
-    base.nfftEl = Math.min(nextPow2(8 * sizey), MAX_NFFT);
+    base.nfftAz = Math.max(Math.min(nextPow2(8 * sizex), MAX_NFFT), MIN_NFFT);
+    base.nfftEl = Math.max(Math.min(nextPow2(8 * sizey), MAX_NFFT), MIN_NFFT);
     base.mode = 'uniform';
     base.sizex = sizex;
     base.sizey = sizey;
@@ -1141,7 +1152,7 @@ function exportPattern() {
 function init() {
   // Array config
   [sizexInput, sizeyInput, spacingxInput, spacingyInput].forEach((el) =>
-    el.addEventListener('input', scheduleUpdate)
+    el.addEventListener('input', () => { updateLargeArrayBanner(); scheduleUpdate(); })
   );
 
   // Window selects
@@ -1286,6 +1297,7 @@ function init() {
     tabCustom.classList.remove('active');
     uniformConfigDiv.style.display = '';
     customConfigDiv.style.display = 'none';
+    updateLargeArrayBanner();
     scheduleUpdate();
   });
   tabCustom.addEventListener('click', () => {
@@ -1295,6 +1307,7 @@ function init() {
     tabUniform.classList.remove('active');
     uniformConfigDiv.style.display = 'none';
     customConfigDiv.style.display = '';
+    updateLargeArrayBanner();
     // Apply when switching to custom mode
     applyCustomAndCompute();
   });
@@ -1374,6 +1387,7 @@ function init() {
   updateWindowControls('x', windowxSelect.value);
   updateWindowControls('y', windowySelect.value);
   updatePlotTypeUI();
+  updateLargeArrayBanner();
 
   // Initial compute
   computeAndPlot();
