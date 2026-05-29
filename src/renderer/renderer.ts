@@ -10,8 +10,7 @@ const Plotly: typeof PlotlyType = require('plotly.js-dist-min');
 
 // ---- Types ----
 interface PatternResult {
-  arrayFactor: number[];
-  arrayFactor2D?: number[][];
+  arrayFactor2D: number[][];
   x: number[];
   y: number[];
   weightRe: number[];
@@ -580,6 +579,16 @@ function hideComputingBadge() {
   if (el) el.style.display = 'none';
 }
 
+function dismissStartupOverlay() {
+  if (firstRenderDone) return;
+  firstRenderDone = true;
+  const overlay = document.getElementById('startup-overlay');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+  }
+}
+
 function computeAndPlot() {
   const config = getConfig();
   if (!config) return;
@@ -592,7 +601,9 @@ function computeAndPlot() {
   ipcRenderer.invoke('compute-pattern', config)
     .then((result: PatternResult) => {
       if (myId !== computeId) return; // superseded by a newer request
+      if ((result as any).superseded) { hideComputingBadge(); return; }
       hideComputingBadge();
+      dismissStartupOverlay();
       if (result.error) {
         console.error('Python compute error:', result.error);
       } else {
@@ -603,6 +614,7 @@ function computeAndPlot() {
     .catch((err: Error) => {
       if (myId !== computeId) return; // superseded
       hideComputingBadge();
+      dismissStartupOverlay();
       if (err.message !== 'superseded') {
         console.error('IPC error:', err.message);
       }
@@ -636,15 +648,6 @@ function renderPlot() {
   }
 
   renderArrayLayout(currentResult);
-
-  if (!firstRenderDone) {
-    firstRenderDone = true;
-    const overlay = document.getElementById('startup-overlay');
-    if (overlay) {
-      overlay.classList.add('hidden');
-      overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
-    }
-  }
 }
 
 function render3DPolar(result: PatternResult) {
@@ -830,10 +833,6 @@ function render3D(result: PatternResult) {
 }
 
 function extractCut(result: PatternResult): { angles: number[]; pattern: number[] } {
-  if (!result.arrayFactor2D) {
-    return { angles: result.azimuth, pattern: result.arrayFactor };
-  }
-
   if (fixAzimuth) {
     // Fix azimuth → sweep elevation
     const targetAz = parseFloat(plotAzInput.value) || 0;
@@ -1126,22 +1125,12 @@ function exportArrayConfig() {
 function exportPattern() {
   if (!currentResult) return;
   const lines = ['azimuth (degree),elevation (degree),pattern (dB)'];
-  const { azimuth, elevation, arrayFactor, arrayFactor2D } = currentResult;
+  const { azimuth, elevation, arrayFactor2D } = currentResult;
 
-  if (arrayFactor2D) {
-    for (let ai = 0; ai < azimuth.length; ai++) {
-      for (let ei = 0; ei < elevation.length; ei++) {
-        lines.push(
-          `${azimuth[ai].toExponential(8)},${elevation[ei].toExponential(8)},${arrayFactor2D[ai][ei].toExponential(8)}`
-        );
-      }
-    }
-  } else {
-    for (let i = 0; i < arrayFactor.length; i++) {
-      const az = azimuth.length > 1 ? azimuth[i] : azimuth[0];
-      const el = elevation.length > 1 ? elevation[i] : elevation[0];
+  for (let ai = 0; ai < azimuth.length; ai++) {
+    for (let ei = 0; ei < elevation.length; ei++) {
       lines.push(
-        `${az.toExponential(8)},${el.toExponential(8)},${arrayFactor[i].toExponential(8)}`
+        `${azimuth[ai].toExponential(8)},${elevation[ei].toExponential(8)},${arrayFactor2D[ai][ei].toExponential(8)}`
       );
     }
   }

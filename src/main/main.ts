@@ -29,7 +29,15 @@ function createWindow(): void {
 
 // IPC handler for pattern computation
 ipcMain.handle('compute-pattern', async (_event, config: ComputeConfig) => {
-  return pythonBridge.compute(config);
+  try {
+    return await pythonBridge.compute(config);
+  } catch (err: unknown) {
+    // 'superseded' is a normal cancellation signal, not an error worth logging.
+    if (err instanceof Error && err.message === 'superseded') {
+      return { superseded: true };
+    }
+    throw err;
+  }
 });
 
 app.whenReady().then(() => {

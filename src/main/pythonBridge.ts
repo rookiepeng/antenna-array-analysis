@@ -34,8 +34,7 @@ export interface ComputeConfig {
 export interface ComputeResult {
   azimuth: number[];
   elevation: number[];
-  arrayFactor: number[];
-  arrayFactor2D?: number[][];
+  arrayFactor2D: number[][];
   x: number[];
   y: number[];
   weightRe: number[];

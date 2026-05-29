@@ -119,7 +119,6 @@ def _compute_custom(config: dict) -> dict:
         'weightRe': np.real(weight).tolist(),
         'weightIm': np.imag(weight).tolist(),
         'arrayFactor2D': af_db.tolist(),
-        'arrayFactor': af_db.ravel().tolist(),
     }
 
     return result
@@ -164,7 +163,6 @@ def _compute_uniform(config: dict) -> dict:
         'weightRe': np.real(weight).tolist(),
         'weightIm': np.imag(weight).tolist(),
         'arrayFactor2D': af_db.tolist(),
-        'arrayFactor': af_db.ravel().tolist(),
     }
 
     return result
