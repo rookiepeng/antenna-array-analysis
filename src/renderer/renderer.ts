@@ -1198,12 +1198,19 @@ function init() {
     saveState();
   });
 
-  // Help link
-  $('link-help').addEventListener('click', (e) => {
+  // About dialog
+  const aboutDialog = $('about-dialog');
+  $('btn-about').addEventListener('click', () => {
+    aboutDialog.style.display = 'flex';
+  });
+  const closeAbout = () => { aboutDialog.style.display = 'none'; };
+  $('btn-about-close').addEventListener('click', closeAbout);
+  aboutDialog.addEventListener('click', (e) => {
+    if (e.target === aboutDialog) closeAbout();
+  });
+  $('link-about-help').addEventListener('click', (e) => {
     e.preventDefault();
-    shell.openExternal(
-      'https://github.com/rookiepeng/antenna-array-analysis/issues'
-    );
+    shell.openExternal('https://github.com/rookiepeng/antenna-array-analysis/issues');
   });
 
   // Inset close / show

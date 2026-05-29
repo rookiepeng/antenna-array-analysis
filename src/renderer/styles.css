@@ -580,6 +580,121 @@ html, body {
   text-decoration: underline;
 }
 
+/* About button (bottom of right sidebar) */
+.btn-about {
+  margin-top: auto;
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 8px 4px 4px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0.55;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.btn-about-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn-about:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* About dialog overlay */
+.about-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-dialog-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 32px;
+  min-width: 320px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.about-dialog-box h2 {
+  font-size: 16px;
+  color: var(--accent);
+  margin-bottom: 0;
+}
+
+.about-version {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: -6px;
+}
+
+.about-dialog-box p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.about-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.about-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.about-table td:first-child {
+  color: var(--text-muted);
+  width: 40%;
+  font-weight: 600;
+}
+
+.about-table tr:last-child td {
+  border-bottom: none;
+}
+
+.about-links {
+  text-align: center;
+}
+
+.about-links a {
+  color: var(--accent);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.about-links a:hover {
+  text-decoration: underline;
+}
+
+.btn-about-close {
+  align-self: center;
+  margin-top: 4px;
+  padding: 6px 28px;
+  font-size: 13px;
+}
+
 /* Scrollbar */
 .panel::-webkit-scrollbar {
   width: 6px;

@@ -257,11 +257,26 @@
         <button id="btn-show-inset" class="btn">Show Inset</button>
       </section>
 
-      <section class="config-section about-section">
-        <p class="about-text">Antenna Array Analysis<br>
-        <a id="link-help" href="#">Help &amp; Issues</a></p>
-      </section>
+      <button id="btn-about" class="btn-about" title="About"><span class="btn-about-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Antenna Array Analysis</button>
     </aside>
+  </div>
+
+  <!-- About dialog -->
+  <div id="about-dialog" class="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title" style="display:none">
+    <div class="about-dialog-box">
+      <h2 id="about-title">Antenna Array Analysis</h2>
+      <p class="about-version">Version 1.0.0</p>
+      <p>A GUI tool for visualizing and computing antenna array beam patterns.</p>
+      <table class="about-table">
+        <tr><td>Author</td><td>Dr. Zhengyu Peng</td></tr>
+        <tr><td>License</td><td>GPL-3.0</td></tr>
+        <tr><td>Python backend</td><td>arraybeam</td></tr>
+      </table>
+      <div class="about-links">
+        <a id="link-about-help" href="#">Help &amp; Issues</a>
+      </div>
+      <button id="btn-about-close" class="btn btn-about-close">Close</button>
+    </div>
   </div>
 
   <div id="startup-overlay" class="startup-overlay">
