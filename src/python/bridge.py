@@ -4,8 +4,13 @@ Reads JSON config from stdin, writes JSON result to stdout.
 """
 
 import sys
-import json
 import numpy as np
+try:
+    import orjson as _json_lib
+    _ORJSON = True
+except ImportError:
+    import json as _json_lib  # type: ignore
+    _ORJSON = False
 from scipy.signal import windows as sig_windows
 from scipy.interpolate import interp1d
 
@@ -80,8 +85,8 @@ def _apply_element_pattern(config: dict, result: dict) -> dict:
         ep_el = _interpolate_pattern(el_angles, el_gains, elevation)  # (nEl,)
         af2d = af2d + ep_el[np.newaxis, :]  # add dB
 
-    result['arrayFactor2D'] = af2d.tolist()
-    result['arrayFactor'] = af2d.ravel().tolist()
+    result['arrayFactor2D'] = af2d.astype(np.float32)
+    result['arrayFactor'] = af2d.ravel().astype(np.float32)
 
     return result
 
@@ -109,16 +114,16 @@ def _compute_custom(config: dict) -> dict:
     af_max = np.max(af_abs)
     if af_max > 0:
         af_abs = af_abs / af_max
-    af_db = 20 * np.log10(af_abs + 1e-10)
+    af_db = (20 * np.log10(af_abs + 1e-10)).astype(np.float32)
 
     result = {
-        'azimuth': azimuth.tolist(),
-        'elevation': elevation.tolist(),
-        'x': custom_y.tolist(),
-        'y': custom_z.tolist(),
-        'weightRe': np.real(weight).tolist(),
-        'weightIm': np.imag(weight).tolist(),
-        'arrayFactor2D': af_db.tolist(),
+        'azimuth': azimuth,
+        'elevation': elevation,
+        'x': custom_y,
+        'y': custom_z,
+        'weightRe': np.real(weight),
+        'weightIm': np.imag(weight),
+        'arrayFactor2D': af_db,
     }
 
     return result
@@ -149,20 +154,20 @@ def _compute_uniform(config: dict) -> dict:
     )
 
     af = AF_data['array_factor']
-    af_db = 20 * np.log10(np.abs(af) + 0.00001)
+    af_db = (20 * np.log10(np.abs(af) + 0.00001)).astype(np.float32)
 
     azimuth = AF_data['azimuth']
     elevation = AF_data['elevation']
     weight = AF_data['weight'].ravel()
 
     result = {
-        'azimuth': azimuth.tolist(),
-        'elevation': elevation.tolist(),
-        'x': AF_data['x'].tolist(),
-        'y': AF_data['y'].tolist(),
-        'weightRe': np.real(weight).tolist(),
-        'weightIm': np.imag(weight).tolist(),
-        'arrayFactor2D': af_db.tolist(),
+        'azimuth': azimuth,
+        'elevation': elevation,
+        'x': AF_data['x'],
+        'y': AF_data['y'],
+        'weightRe': np.real(weight),
+        'weightIm': np.imag(weight),
+        'arrayFactor2D': af_db,
     }
 
     return result
@@ -174,15 +179,32 @@ def main():
         if not line:
             continue
         try:
-            config = json.loads(line)
+            config = _json_lib.loads(line)
             result = compute_pattern(config)
-            out = json.dumps(result)
-            sys.stdout.write(out + '\n')
-            sys.stdout.flush()
+            if _ORJSON:
+                # orjson requires C-contiguous arrays; some come back Fortran-order
+                result = {k: np.ascontiguousarray(v) if isinstance(v, np.ndarray) else v
+                          for k, v in result.items()}
+                out = _json_lib.dumps(result, option=_json_lib.OPT_SERIALIZE_NUMPY) + b'\n'  # type: ignore
+                sys.stdout.buffer.write(out)
+                sys.stdout.buffer.flush()
+            else:
+                # Convert numpy arrays to lists for stdlib json
+                def _to_serializable(obj):
+                    if isinstance(obj, np.ndarray):
+                        return obj.tolist()
+                    if isinstance(obj, dict):
+                        return {k: _to_serializable(v) for k, v in obj.items()}
+                    return obj
+                sys.stdout.write(_json_lib.dumps(_to_serializable(result)) + '\n')
+                sys.stdout.flush()
         except Exception as e:
-            err = json.dumps({'error': str(e)})
-            sys.stdout.write(err + '\n')
-            sys.stdout.flush()
+            if _ORJSON:
+                sys.stdout.buffer.write(_json_lib.dumps({'error': str(e)}) + b'\n')  # type: ignore
+                sys.stdout.buffer.flush()
+            else:
+                sys.stdout.write(_json_lib.dumps({'error': str(e)}) + '\n')
+                sys.stdout.flush()
 
 
 if __name__ == '__main__':
