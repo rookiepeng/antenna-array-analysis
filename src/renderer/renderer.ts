@@ -121,13 +121,17 @@ function addTableRow(elem?: CustomElement) {
   
   // Custom array inputs dirty state
   row.querySelectorAll('input').forEach(input => {
-    input.addEventListener('input', showCustomUnsyncedBanner);
+    input.addEventListener('input', () => {
+      showCustomUnsyncedBanner();
+      saveState();
+    });
   });
 
   row.querySelector('.btn-remove-row')!.addEventListener('click', () => {
     row.remove();
     renumberRows();
     showCustomUnsyncedBanner();
+    saveState();
   });
 }
 
@@ -400,7 +404,161 @@ function applyCustomAndCompute() {
   scheduleUpdate();
 }
 
+// ---- Persistence ----
+const STATE_KEY = 'antennaArrayState';
+const STATE_VERSION = 2; // increment when saved schema changes
+
+function readCustomElementsForSave(): CustomElement[] {
+  const rows = elementTbody.rows;
+  const elements: CustomElement[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    const inputs = rows[i].querySelectorAll('input[type="number"]');
+    const y   = parseFloat((inputs[0] as HTMLInputElement).value);
+    const z   = parseFloat((inputs[1] as HTMLInputElement).value);
+    const amp = parseFloat((inputs[2] as HTMLInputElement).value);
+    const ph  = parseFloat((inputs[3] as HTMLInputElement).value);
+    elements.push({
+      y:     isNaN(y)   ? 0 : y,
+      z:     isNaN(z)   ? 0 : z,
+      amp:   isNaN(amp) ? 1 : amp,
+      phase: isNaN(ph)  ? 0 : ph,
+    });
+  }
+  return elements;
+}
+
+function readPatternTableForSave(tbody: HTMLTableSectionElement): PatternPoint[] {
+  const rows = tbody.rows;
+  const points: PatternPoint[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    const inputs = rows[i].querySelectorAll('input[type="number"]');
+    points.push({
+      angle: parseFloat((inputs[0] as HTMLInputElement).value) || 0,
+      gain: parseFloat((inputs[1] as HTMLInputElement).value) || 0,
+    });
+  }
+  return points;
+}
+
+function saveState() {
+  try {
+    const state = {
+      version: STATE_VERSION,
+      arrayMode,
+      sizex: sizexInput.value,
+      sizey: sizeyInput.value,
+      spacingx: spacingxInput.value,
+      spacingy: spacingyInput.value,
+      windowx: windowxSelect.value,
+      windowy: windowySelect.value,
+      sllx: sllxInput.value,
+      slly: sllyInput.value,
+      nbarx: nbarxInput.value,
+      nbary: nbaryInput.value,
+      beamAz: beamAzInput.value,
+      beamEl: beamElInput.value,
+      plotType,
+      fixAzimuth,
+      plotEl: plotElInput.value,
+      plotAz: plotAzInput.value,
+      polarMin: polarMinInput.value,
+      arrayColorMode,
+      customElements: readCustomElementsForSave(),
+      elementPatternActive: elementPatternEnabled.classList.contains('active'),
+      azPattern: readPatternTableForSave(azPatternTbody),
+      elPattern: readPatternTableForSave(elPatternTbody),
+      insetLeft: insetContainer.style.left,
+      insetTop: insetContainer.style.top,
+      insetVisible: insetContainer.style.display !== 'none',
+    };
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+  } catch { /* storage unavailable */ }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    // Discard state saved by an older schema version
+    if (s.version !== STATE_VERSION) {
+      localStorage.removeItem(STATE_KEY);
+      return;
+    }
+
+    // Uniform config
+    if (s.sizex != null) sizexInput.value = s.sizex;
+    if (s.sizey != null) sizeyInput.value = s.sizey;
+    if (s.spacingx != null) spacingxInput.value = s.spacingx;
+    if (s.spacingy != null) spacingyInput.value = s.spacingy;
+    if (s.windowx != null) windowxSelect.value = s.windowx;
+    if (s.windowy != null) windowySelect.value = s.windowy;
+    if (s.sllx != null) { sllxInput.value = s.sllx; sllxSlider.value = s.sllx; }
+    if (s.slly != null) { sllyInput.value = s.slly; sllySlider.value = s.slly; }
+    if (s.nbarx != null) { nbarxInput.value = s.nbarx; nbarxSlider.value = s.nbarx; }
+    if (s.nbary != null) { nbaryInput.value = s.nbary; nbarySlider.value = s.nbary; }
+    if (s.beamAz != null) {
+      beamAzInput.value = s.beamAz;
+      beamAzSlider.value = String(Math.round(parseFloat(s.beamAz) * 10));
+    }
+    if (s.beamEl != null) {
+      beamElInput.value = s.beamEl;
+      beamElSlider.value = String(Math.round(parseFloat(s.beamEl) * 10));
+    }
+
+    // Plot controls
+    if (s.plotType != null) { plotType = s.plotType; plotTypeSelect.value = s.plotType; }
+    if (s.fixAzimuth != null) fixAzimuth = s.fixAzimuth;
+    if (s.plotEl != null) {
+      plotElInput.value = s.plotEl;
+      plotElSlider.value = String(Math.round(parseFloat(s.plotEl) * 10));
+    }
+    if (s.plotAz != null) {
+      plotAzInput.value = s.plotAz;
+      plotAzSlider.value = String(Math.round(parseFloat(s.plotAz) * 10));
+    }
+    if (s.polarMin != null) { polarMinInput.value = s.polarMin; polarMinSlider.value = s.polarMin; }
+
+    // Array color
+    if (s.arrayColorMode != null) { arrayColorMode = s.arrayColorMode; arrayColorSelect.value = s.arrayColorMode; }
+
+    // Custom elements table (overrides defaults already populated)
+    if (Array.isArray(s.customElements) && s.customElements.length > 0) {
+      populateTable(s.customElements);
+    }
+
+    // Array mode
+    if (s.arrayMode === 'custom') {
+      arrayMode = 'custom';
+      tabCustom.classList.add('active');
+      tabUniform.classList.remove('active');
+      uniformConfigDiv.style.display = 'none';
+      customConfigDiv.style.display = '';
+    }
+
+    // Element pattern
+    if (s.elementPatternActive) {
+      elementPatternEnabled.classList.add('active');
+      elementPatternEnabled.setAttribute('aria-pressed', 'true');
+      elementPatternEnabled.textContent = 'On';
+      elementPatternBody.style.display = '';
+    }
+    if (Array.isArray(s.azPattern) && s.azPattern.length > 0) populatePatternTable(azPatternTbody, s.azPattern);
+    if (Array.isArray(s.elPattern) && s.elPattern.length > 0) populatePatternTable(elPatternTbody, s.elPattern);
+
+    // Inset position
+    if (s.insetLeft) insetContainer.style.left = s.insetLeft;
+    if (s.insetTop) insetContainer.style.top = s.insetTop;
+    // Inset visibility (for cartesian/polar where inset is shown by default)
+    if (!s.insetVisible && (plotType === 'cartesian' || plotType === 'polar')) {
+      insetContainer.style.display = 'none';
+      $('inset-section').style.display = '';
+    }
+  } catch { /* corrupted state, use defaults */ }
+}
+
 function scheduleUpdate() {
+  saveState();
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(computeAndPlot, 50);
 }
@@ -767,12 +925,19 @@ function renderPolar(result: PatternResult) {
 function render3DInset(result: PatternResult) {
   if (!result.arrayFactor2D) return;
 
+  // Transpose arrayFactor2D from [az][el] to [el][az] so x=Az, y=El
+  const nAz = result.azimuth.length;
+  const nEl = result.elevation.length;
+  const transposed: number[][] = Array.from({ length: nEl }, (_, ei) =>
+    Array.from({ length: nAz }, (_, ai) => result.arrayFactor2D![ai][ei])
+  );
+
   const traces: Plotly.Data[] = [
     {
       type: 'heatmap' as const,
-      z: result.arrayFactor2D,
-      x: result.elevation,
-      y: result.azimuth,
+      z: transposed,
+      x: result.azimuth,
+      y: result.elevation,
       colorscale: 'Jet',
       zmin: -60,
       zmax: 0,
@@ -791,12 +956,15 @@ function render3DInset(result: PatternResult) {
       if (d < minDist) { minDist = d; azIdx = i; }
     }
     const cutAz = result.azimuth[azIdx];
+    const elMin = result.elevation[0];
+    const elMax = result.elevation[result.elevation.length - 1];
+    const elPad = (elMax - elMin) * 0.1;
     traces.push({
       type: 'scatter' as const,
-      x: [result.elevation[0], result.elevation[result.elevation.length - 1]],
-      y: [cutAz, cutAz],
+      x: [cutAz, cutAz],
+      y: [elMin - elPad, elMax + elPad],
       mode: 'lines' as const,
-      line: { color: '#f48fb1', width: 2, dash: 'dash' },
+      line: { color: '#ffffff', width: 2, dash: 'dash' },
       showlegend: false,
       hoverinfo: 'skip' as const,
     });
@@ -809,12 +977,15 @@ function render3DInset(result: PatternResult) {
       if (d < minDist) { minDist = d; elIdx = i; }
     }
     const cutEl = result.elevation[elIdx];
+    const azMin = result.azimuth[0];
+    const azMax = result.azimuth[result.azimuth.length - 1];
+    const azPad = (azMax - azMin) * 0.1;
     traces.push({
       type: 'scatter' as const,
-      x: [cutEl, cutEl],
-      y: [result.azimuth[0], result.azimuth[result.azimuth.length - 1]],
+      x: [azMin - azPad, azMax + azPad],
+      y: [cutEl, cutEl],
       mode: 'lines' as const,
-      line: { color: '#f48fb1', width: 2, dash: 'dash' },
+      line: { color: '#ffffff', width: 2, dash: 'dash' },
       showlegend: false,
       hoverinfo: 'skip' as const,
     });
@@ -822,12 +993,12 @@ function render3DInset(result: PatternResult) {
 
   const layout: Partial<Plotly.Layout> = {
     xaxis: {
-      title: { text: 'El (°)', standoff: 2 },
+      title: { text: 'Az (°)', standoff: 2 },
       gridcolor: '#3a3a5c',
       tickfont: { size: 9 },
     },
     yaxis: {
-      title: { text: 'Az (°)', standoff: 2 },
+      title: { text: 'El (°)', standoff: 2 },
       gridcolor: '#3a3a5c',
       tickfont: { size: 9 },
     },
@@ -1024,6 +1195,7 @@ function init() {
   arrayColorSelect.addEventListener('change', () => {
     arrayColorMode = arrayColorSelect.value;
     if (currentResult) renderArrayLayout(currentResult);
+    saveState();
   });
 
   // Help link
@@ -1039,12 +1211,14 @@ function init() {
     e.stopPropagation();
     insetContainer.style.display = 'none';
     $('inset-section').style.display = '';
+    saveState();
   });
 
   $('btn-show-inset').addEventListener('click', () => {
     insetContainer.style.display = 'block';
     $('inset-section').style.display = 'none';
     if (currentResult) render3DInset(currentResult);
+    saveState();
   });
 
   // Inset drag
@@ -1071,7 +1245,10 @@ function init() {
     insetContainer.style.top  = Math.max(0, Math.min(dragStartTop  + e.clientY - dragStartY, maxTop))  + 'px';
   });
 
-  document.addEventListener('mouseup', () => { dragging = false; });
+  document.addEventListener('mouseup', () => {
+    if (dragging) { dragging = false; saveState(); }
+    else { dragging = false; }
+  });
 
   // Resize handling
   window.addEventListener('resize', () => {
@@ -1115,6 +1292,7 @@ function init() {
   $('btn-add-row').addEventListener('click', () => {
     addTableRow();
     showCustomUnsyncedBanner();
+    saveState();
   });
 
   // Custom array CSV import
@@ -1145,6 +1323,7 @@ function init() {
           populateTable(elements);
           customErrorP.textContent = '';
           showCustomUnsyncedBanner();
+          saveState();
         } else {
           customErrorP.textContent = 'No valid rows found in file';
         }
@@ -1175,6 +1354,12 @@ function init() {
   // Populate default element patterns
   populatePatternTable(azPatternTbody, DEFAULT_AZ_PATTERN);
   populatePatternTable(elPatternTbody, DEFAULT_EL_PATTERN);
+
+  // Restore previous session state (overrides defaults above)
+  loadState();
+  updateWindowControls('x', windowxSelect.value);
+  updateWindowControls('y', windowySelect.value);
+  updatePlotTypeUI();
 
   // Initial compute
   computeAndPlot();
