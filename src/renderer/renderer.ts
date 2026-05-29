@@ -37,8 +37,7 @@ let currentResult: PatternResult | null = null;
 let plotType: string = '3d';
 let arrayColorMode: string = 'amplitude';
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-let computing = false;
-let pendingCompute = false;
+let computeId = 0;   // incremented per request; stale results are discarded
 let firstRenderDone = false;
 let arrayMode: 'uniform' | 'custom' = 'uniform';
 
@@ -360,8 +359,9 @@ function getConfig() {
     const elems = parseCustomElements();
     if (!elems) return null;
     const nElem = elems.length;
-    base.nfftAz = nextPow2(8 * nElem);
-    base.nfftEl = nextPow2(8 * nElem);
+    const MAX_NFFT = 2048;
+    base.nfftAz = Math.min(nextPow2(8 * nElem), MAX_NFFT);
+    base.nfftEl = Math.min(nextPow2(8 * nElem), MAX_NFFT);
     base.mode = 'custom';
     base.customY = elems.map(e => e.y);
     base.customZ = elems.map(e => e.z);
@@ -370,8 +370,9 @@ function getConfig() {
   } else {
     const sizex = parseInt(sizexInput.value) || 64;
     const sizey = parseInt(sizeyInput.value) || 32;
-    base.nfftAz = nextPow2(8 * sizex);
-    base.nfftEl = nextPow2(8 * sizey);
+    const MAX_NFFT = 2048;
+    base.nfftAz = Math.min(nextPow2(8 * sizex), MAX_NFFT);
+    base.nfftEl = Math.min(nextPow2(8 * sizey), MAX_NFFT);
     base.mode = 'uniform';
     base.sizex = sizex;
     base.sizey = sizey;
@@ -569,34 +570,42 @@ function scheduleUpdate() {
   debounceTimer = setTimeout(computeAndPlot, 50);
 }
 
-function computeAndPlot() {
-  if (computing) {
-    // A computation is in-flight; mark dirty so we re-run when it resolves
-    pendingCompute = true;
-    return;
-  }
+function showComputingBadge() {
+  const el = document.getElementById('computing-badge');
+  if (el) el.style.display = '';
+}
 
+function hideComputingBadge() {
+  const el = document.getElementById('computing-badge');
+  if (el) el.style.display = 'none';
+}
+
+function computeAndPlot() {
   const config = getConfig();
   if (!config) return;
 
-  computing = true;
-  pendingCompute = false;
+  const myId = ++computeId;
+  // Only show overlay for larger computations that are perceptibly slow.
+  const isLarge = (config.nfftAz ?? 512) * (config.nfftEl ?? 512) > 512 * 512;
+  if (isLarge) showComputingBadge();
 
   ipcRenderer.invoke('compute-pattern', config)
     .then((result: PatternResult) => {
-      computing = false;
+      if (myId !== computeId) return; // superseded by a newer request
+      hideComputingBadge();
       if (result.error) {
         console.error('Python compute error:', result.error);
       } else {
         currentResult = result;
         renderPlot();
       }
-      if (pendingCompute) computeAndPlot();
     })
     .catch((err: Error) => {
-      computing = false;
-      console.error('IPC error:', err.message);
-      if (pendingCompute) scheduleUpdate();
+      if (myId !== computeId) return; // superseded
+      hideComputingBadge();
+      if (err.message !== 'superseded') {
+        console.error('IPC error:', err.message);
+      }
     });
 }
 

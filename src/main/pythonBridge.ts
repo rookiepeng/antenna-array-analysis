@@ -45,11 +45,12 @@ export interface ComputeResult {
 
 type PendingResolve = (result: ComputeResult) => void;
 type PendingReject = (err: Error) => void;
+type QueueItem = { resolve: PendingResolve; reject: PendingReject };
 
 export class PythonBridge {
   private proc: ChildProcess | null = null;
   private buffer: string = '';
-  private pending: { resolve: PendingResolve; reject: PendingReject } | null = null;
+  private queue: QueueItem[] = [];
   private antarrayPath: string;
   private bridgePath: string;
   private stopped: boolean = false;
@@ -92,19 +93,13 @@ export class PythonBridge {
 
       for (const line of lines) {
         if (!line.trim()) continue;
+        const item = this.queue.shift();
+        if (!item) continue;
         try {
           const result: ComputeResult = JSON.parse(line);
-          if (this.pending) {
-            const { resolve } = this.pending;
-            this.pending = null;
-            resolve(result);
-          }
+          item.resolve(result);
         } catch (e) {
-          if (this.pending) {
-            const { reject } = this.pending;
-            this.pending = null;
-            reject(new Error(`Failed to parse Python output: ${line}`));
-          }
+          item.reject(new Error(`Failed to parse Python output: ${line}`));
         }
       }
     });
@@ -116,11 +111,10 @@ export class PythonBridge {
     this.proc.on('exit', (code) => {
       console.error('Python process exited with code', code);
       this.proc = null;
-      if (this.pending) {
-        const { reject } = this.pending;
-        this.pending = null;
-        reject(new Error(`Python process exited with code ${code}`));
+      for (const item of this.queue) {
+        item.reject(new Error(`Python process exited with code ${code}`));
       }
+      this.queue = [];
       // Auto-restart after a short delay (unless stop() was called)
       if (!this.stopped) {
         setTimeout(() => this.start(), 500);
@@ -130,21 +124,28 @@ export class PythonBridge {
 
   compute(config: ComputeConfig): Promise<ComputeResult> {
     return new Promise((resolve, reject) => {
+      // Cancel any in-flight computation: kill Python so it stops immediately,
+      // reject superseded promises, then restart fresh for the new request.
+      if (this.queue.length > 0) {
+        for (const item of this.queue) {
+          item.reject(new Error('superseded'));
+        }
+        this.queue = [];
+        if (this.proc) {
+          this.proc.removeAllListeners();
+          this.proc.kill();
+          this.proc = null;
+        }
+        this.start(); // restart Python immediately
+      }
+
       if (!this.proc || !this.proc.stdin) {
         reject(new Error('Python process not started'));
         return;
       }
 
-      // If there's already a pending request, cancel it — don't write it to
-      // stdin (the Python side hasn't seen it yet) and reject the promise.
-      if (this.pending) {
-        this.pending.reject(new Error('Superseded by new request'));
-        this.pending = null;
-      }
-
-      this.pending = { resolve, reject };
-      const json = JSON.stringify(config) + '\n';
-      this.proc.stdin.write(json);
+      this.queue.push({ resolve, reject });
+      this.proc.stdin.write(JSON.stringify(config) + '\n');
     });
   }
 
