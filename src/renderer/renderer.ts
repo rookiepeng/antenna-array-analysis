@@ -346,13 +346,12 @@ function updateFixPlaneUI() {
 }
 
 // ---- Build config ----
-function getConfig() {
-  const nfftAz = 512;
-  const nfftEl = 512;
+function nextPow2(n: number): number {
+  return Math.pow(2, Math.ceil(Math.log2(Math.max(n, 1))));
+}
 
+function getConfig() {
   const base: Record<string, any> = {
-    nfftAz,
-    nfftEl,
     plotAz: parseFloat(plotAzInput.value) || 0,
     plotEl: parseFloat(plotElInput.value) || 0,
   };
@@ -360,15 +359,22 @@ function getConfig() {
   if (arrayMode === 'custom') {
     const elems = parseCustomElements();
     if (!elems) return null;
+    const nElem = elems.length;
+    base.nfftAz = nextPow2(8 * nElem);
+    base.nfftEl = nextPow2(8 * nElem);
     base.mode = 'custom';
     base.customY = elems.map(e => e.y);
     base.customZ = elems.map(e => e.z);
     base.customAmp = elems.map(e => e.amp);
     base.customPhase = elems.map(e => e.phase);
   } else {
+    const sizex = parseInt(sizexInput.value) || 64;
+    const sizey = parseInt(sizeyInput.value) || 32;
+    base.nfftAz = nextPow2(8 * sizex);
+    base.nfftEl = nextPow2(8 * sizey);
     base.mode = 'uniform';
-    base.sizex = parseInt(sizexInput.value) || 64;
-    base.sizey = parseInt(sizeyInput.value) || 32;
+    base.sizex = sizex;
+    base.sizey = sizey;
     base.spacingx = parseFloat(spacingxInput.value) || 0.5;
     base.spacingy = parseFloat(spacingyInput.value) || 0.5;
     base.beamAz = parseFloat(beamAzInput.value) || 0;
@@ -1199,6 +1205,9 @@ function init() {
   });
 
   // About dialog
+  const pkg = require('../../package.json');
+  const aboutVersionEl = document.getElementById('about-version');
+  if (aboutVersionEl) aboutVersionEl.textContent = `Version ${pkg.version}`;
   const aboutDialog = $('about-dialog');
   $('btn-about').addEventListener('click', () => {
     aboutDialog.style.display = 'flex';
