@@ -13,11 +13,13 @@
   "author": "Zhengyu Peng",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.0",
     "@types/node": "^25.9.1",
     "@types/plotly.js": "^3.0.10",
     "electron": "^42.3.0",
     "electron-builder": "^26.8.1",
     "electron-builder-squirrel-windows": "^26.8.1",
+    "gif-encoder-2": "^1.0.5",
     "typescript": "^6.0.3"
   },
   "dependencies": {
@@ -36,6 +38,9 @@
         "to": "bridge"
       }
     ],
+    "squirrelWindows": {
+      "loadingGif": "res/install-spinner.gif"
+    },
     "win": {
       "target": "squirrel",
       "icon": "res/aaa_icon.ico"
