@@ -4,6 +4,8 @@ A GUI tool for antenna array analysis, built with Electron, TypeScript, and Plot
 
 <img src="./res/aaa_icon.svg" alt="logo" width="200"/>
 
+![Demo](./res/aaa_demo.gif)
+
 ## Features
 
 **Array modes**
