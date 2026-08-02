@@ -29,7 +29,7 @@ A GUI tool for antenna array analysis, built with Electron, TypeScript, and Plot
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18+)
+- [Node.js](https://nodejs.org/) (v26+)
 - [Python](https://www.python.org/) (v3.9+)
 
 ## Getting Started
