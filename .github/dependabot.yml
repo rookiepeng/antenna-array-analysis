@@ -1,0 +1,49 @@
+version: 2
+
+updates:
+  # GitHub Actions used by the build workflows
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "ci"
+
+  # Electron / TypeScript app dependencies
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - javascript
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore(dev)"
+      include: scope
+
+  # Python bridge dependencies
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - python
+    commit-message:
+      prefix: "chore"
+      include: scope
+
+  # arraybeam submodule
+  - package-ecosystem: gitsubmodule
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - submodules
+    commit-message:
+      prefix: "chore"
