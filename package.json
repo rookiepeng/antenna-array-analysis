@@ -23,7 +23,7 @@
     "electron-builder": "^26.8.1",
     "electron-builder-squirrel-windows": "^26.8.1",
     "gif-encoder-2": "^1.0.5",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "plotly.js-dist-min": "^3.5.1"
