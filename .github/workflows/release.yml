@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    uses: ./.github/workflows/build_windows.yml
+
+  macos:
+    uses: ./.github/workflows/build_macos.yml
+
+  linux:
+    uses: ./.github/workflows/build_linux.yml
+
+  release:
+    needs: [windows, macos, linux]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Windows installer
+      uses: actions/download-artifact@v7
+      with:
+        name: antenna-array-analysis-windows
+        path: release
+
+    - name: Download macOS DMG
+      uses: actions/download-artifact@v7
+      with:
+        name: antenna-array-analysis-macos
+        path: release
+
+    - name: Download Linux AppImage
+      uses: actions/download-artifact@v7
+      with:
+        name: antenna-array-analysis-ubuntu-24.04
+        path: release
+
+    - name: List release files
+      run: ls -lh release
+
+    - name: Publish release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TAG: ${{ github.ref_name }}
+      run: |
+        # Tags such as v3.1.0-beta.1 are published as pre-releases
+        if [[ "$TAG" == *-* ]]; then
+          prerelease=--prerelease
+        else
+          prerelease=
+        fi
+        gh release create "$TAG" release/* \
+          --repo "$GITHUB_REPOSITORY" \
+          --title "$TAG" \
+          --generate-notes \
+          $prerelease

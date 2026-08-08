@@ -2,7 +2,10 @@ name: Build Linux
 
 on:
   push:
+    branches:
+      - '**'
   pull_request:
+  workflow_call:
   workflow_dispatch:
 
 jobs:
