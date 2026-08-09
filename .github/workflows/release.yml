@@ -24,19 +24,19 @@ jobs:
 
     steps:
     - name: Download Windows installer
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: antenna-array-analysis-windows
         path: release
 
     - name: Download macOS DMG
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: antenna-array-analysis-macos
         path: release
 
     - name: Download Linux AppImage
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: antenna-array-analysis-ubuntu-24.04
         path: release
