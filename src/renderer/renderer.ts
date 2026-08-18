@@ -1228,7 +1228,7 @@ function init() {
   });
   $('link-about-help').addEventListener('click', (e) => {
     e.preventDefault();
-    shell.openExternal('https://github.com/rookiepeng/antenna-array-analysis/issues');
+    shell.openExternal('https://github.com/rookiepeng/beamscope/issues');
   });
 
   // Inset close / show

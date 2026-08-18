@@ -1,7 +1,7 @@
 {
-  "name": "antenna-array-analysis",
+  "name": "beamscope",
   "version": "3.0.0",
-  "description": "A GUI tool for antenna array analysis",
+  "description": "A GUI tool for visualizing and computing antenna array beam patterns",
   "main": "dist/main/main.js",
   "scripts": {
     "build": "tsc",
@@ -29,8 +29,8 @@
     "plotly.js-dist-min": "^3.7.0"
   },
   "build": {
-    "appId": "com.rookiepeng.antenna-array-analysis",
-    "productName": "Antenna Array Analysis",
+    "appId": "com.rookiepeng.beamscope",
+    "productName": "BeamScope",
     "files": [
       "dist/**/*",
       "src/renderer/**/*"
@@ -46,11 +46,11 @@
     },
     "win": {
       "target": "squirrel",
-      "icon": "res/aaa_icon.ico"
+      "icon": "res/beamscope_icon.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "res/aaa_icon.icns"
+      "icon": "res/beamscope_icon.icns"
     },
     "linux": {
       "target": "AppImage"

@@ -26,19 +26,19 @@ jobs:
     - name: Download Windows installer
       uses: actions/download-artifact@v8
       with:
-        name: antenna-array-analysis-windows
+        name: beamscope-windows
         path: release
 
     - name: Download macOS DMG
       uses: actions/download-artifact@v8
       with:
-        name: antenna-array-analysis-macos
+        name: beamscope-macos
         path: release
 
     - name: Download Linux AppImage
       uses: actions/download-artifact@v8
       with:
-        name: antenna-array-analysis-ubuntu-24.04
+        name: beamscope-ubuntu-24.04
         path: release
 
     - name: List release files

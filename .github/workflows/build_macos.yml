@@ -48,5 +48,5 @@ jobs:
       uses: actions/upload-artifact@v7
       if: success()
       with:
-        name: antenna-array-analysis-macos
+        name: beamscope-macos
         path: dist/*.dmg

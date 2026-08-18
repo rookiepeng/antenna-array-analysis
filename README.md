@@ -1,10 +1,10 @@
-# Antenna Array Analysis
+# BeamScope
 
-A GUI tool for antenna array analysis, built with Electron, TypeScript, and Plotly.js. Pattern calculations are powered by a bundled Python backend using the [`arraybeam`](https://github.com/rookiepeng/arraybeam) library (included as a git submodule under `src/arraybeam/`).
+BeamScope is a GUI tool for visualizing and computing antenna array beam patterns, built with Electron, TypeScript, and Plotly.js. Pattern calculations are powered by a bundled Python backend using the [`arraybeam`](https://github.com/rookiepeng/arraybeam) library (included as a git submodule under `src/arraybeam/`).
 
-<img src="./res/aaa_icon.svg" alt="logo" width="200"/>
+<img src="./res/beamscope_icon.svg" alt="logo" width="200"/>
 
-![Demo](./res/aaa_demo.gif)
+![Demo](./res/beamscope_demo.gif)
 
 ## Features
 
@@ -37,7 +37,7 @@ A GUI tool for antenna array analysis, built with Electron, TypeScript, and Plot
 1. Clone the repository with submodules:
 
    ```bash
-   git clone --recurse-submodules https://github.com/rookiepeng/antenna-array-analysis.git
+   git clone --recurse-submodules https://github.com/rookiepeng/beamscope.git
    ```
 
    If you already cloned without `--recurse-submodules`, initialise the submodule with:

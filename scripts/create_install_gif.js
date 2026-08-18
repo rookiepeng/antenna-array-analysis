@@ -28,7 +28,7 @@ async function main() {
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   // Load the app icon
-  const iconPath = path.join(__dirname, '..', 'res', 'aaa_icon.png');
+  const iconPath = path.join(__dirname, '..', 'res', 'beamscope_icon.png');
   const icon = await loadImage(iconPath);
 
   const encoder = new GIFEncoder(WIDTH, HEIGHT, 'neuquant', true);
@@ -73,7 +73,7 @@ async function main() {
     ctx.fillStyle = '#ffffff';
     ctx.font = '600 24px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Antenna Array Analysis', WIDTH / 2, 290);
+    ctx.fillText('BeamScope', WIDTH / 2, 290);
 
     // Progress bar track
     const barWidth = 300;

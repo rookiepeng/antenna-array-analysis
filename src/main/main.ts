@@ -67,7 +67,7 @@ function createWindow(): void {
     height: 850,
     minWidth: 900,
     minHeight: 600,
-    title: 'Antenna Array Analysis',
+    title: 'BeamScope',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
