@@ -15,5 +15,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/compute", "src/antarray", "src/python"]
+  "exclude": ["node_modules", "dist", "src/compute", "src/arraybeam", "src/python"]
 }

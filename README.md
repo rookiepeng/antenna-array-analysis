@@ -1,6 +1,6 @@
 # BeamScope
 
-BeamScope is a GUI tool for visualizing and computing antenna array beam patterns, built with Electron, TypeScript, and Plotly.js. Pattern calculations are powered by a bundled Python backend using the [`arraybeam`](https://github.com/rookiepeng/arraybeam) library (included as a git submodule under `src/arraybeam/`).
+BeamScope is a GUI tool for visualizing and computing antenna array beam patterns, built with Electron, TypeScript, and Plotly.js. Pattern calculations are powered by a bundled Python backend using the [`arraybeam`](https://github.com/rookiepeng/arraybeam) library (v2.x, included as a git submodule under `src/arraybeam/`).
 
 <img src="./res/beamscope_icon.svg" alt="logo" width="200"/>
 
@@ -45,6 +45,9 @@ BeamScope is a GUI tool for visualizing and computing antenna array beam pattern
    ```bash
    git submodule update --init
    ```
+
+   Run the same command after pulling changes that bump the submodule, so
+   `src/arraybeam/` matches the commit the app is built against.
 
 2. Install Node.js dependencies:
 

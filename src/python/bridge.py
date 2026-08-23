@@ -1,6 +1,11 @@
 """
 Python bridge for antenna array pattern calculation.
 Reads JSON config from stdin, writes JSON result to stdout.
+
+Requires the arraybeam 2.x API (src/arraybeam submodule): the array factor
+uses the fixed sign convention AF(u, v) = sum_i w_i * exp(-j*2*pi*(x_i*u +
+y_i*v)) with weights normalised to sum(|w|) == 1, and AntennaArray.get_pattern
+takes `weight` / `taper` as keyword-only arguments.
 """
 
 import sys
@@ -17,7 +22,8 @@ from scipy.interpolate import interp1d
 # Add the arraybeam package path.
 # When frozen by PyInstaller (sys.frozen is set), all packages are bundled
 # inside the executable and importable directly — no path manipulation needed.
-# In development, sys.argv[1] points to the project src/ directory.
+# In development, sys.argv[1] points to src/arraybeam — the submodule root,
+# which is the directory *containing* the arraybeam package.
 if not getattr(sys, 'frozen', False):
     sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else '.')
 
@@ -107,6 +113,8 @@ def _compute_custom(config: dict) -> dict:
     elevation = np.linspace(-90, 90, nfft_el)
 
     arr = AntennaArray(x=custom_y, y=custom_z)
+    # `weight` is taken verbatim (no renormalisation) and validated against
+    # the element count, so a mismatched CSV import surfaces as a clear error.
     AF_data = arr.get_pattern(azimuth, elevation, weight=weight)
 
     af = AF_data['array_factor']
@@ -116,13 +124,15 @@ def _compute_custom(config: dict) -> dict:
         af_abs = af_abs / af_max
     af_db = (20 * np.log10(af_abs + 1e-10)).astype(np.float32)
 
+    applied_weight = AF_data['weight']
+
     result = {
-        'azimuth': azimuth,
-        'elevation': elevation,
-        'x': custom_y,
-        'y': custom_z,
-        'weightRe': np.real(weight),
-        'weightIm': np.imag(weight),
+        'azimuth': AF_data['azimuth'],
+        'elevation': AF_data['elevation'],
+        'x': AF_data['x'],
+        'y': AF_data['y'],
+        'weightRe': np.real(applied_weight),
+        'weightIm': np.imag(applied_weight),
         'arrayFactor2D': af_db,
     }
 
@@ -158,7 +168,8 @@ def _compute_uniform(config: dict) -> dict:
 
     azimuth = AF_data['azimuth']
     elevation = AF_data['elevation']
-    weight = AF_data['weight'].ravel()
+    # Already a 1-D per-element vector matching AF_data['x'] / ['y'].
+    weight = AF_data['weight']
 
     result = {
         'azimuth': azimuth,

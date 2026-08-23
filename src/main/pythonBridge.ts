@@ -50,7 +50,7 @@ export class PythonBridge {
   private proc: ChildProcess | null = null;
   private buffer: string = '';
   private queue: QueueItem[] = [];
-  private antarrayPath: string;
+  private arraybeamPath: string;
   private bridgePath: string;
   private stopped: boolean = false;
 
@@ -61,11 +61,11 @@ export class PythonBridge {
       // PyInstaller binary — no separate Python interpreter needed.
       const exe = process.platform === 'win32' ? 'bridge.exe' : 'bridge';
       this.bridgePath = path.join(process.resourcesPath, 'bridge', exe);
-      this.antarrayPath = '';  // bundled inside the executable, not used
+      this.arraybeamPath = '';  // bundled inside the executable, not used
     } else {
       // Development: run bridge.py with the system Python interpreter.
       const projectRoot = path.join(__dirname, '..', '..');
-      this.antarrayPath = path.join(projectRoot, 'src', 'arraybeam');
+      this.arraybeamPath = path.join(projectRoot, 'src', 'arraybeam');
       this.bridgePath = path.join(projectRoot, 'src', 'python', 'bridge.py');
     }
   }
@@ -80,7 +80,7 @@ export class PythonBridge {
       });
     } else {
       // Development: run the .py script with Python.
-      this.proc = spawn('python', [this.bridgePath, this.antarrayPath], {
+      this.proc = spawn('python', [this.bridgePath, this.arraybeamPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
     }
