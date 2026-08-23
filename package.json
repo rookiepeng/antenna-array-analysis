@@ -19,7 +19,7 @@
     "@napi-rs/canvas": "^1.0.5",
     "@types/node": "^26.2.0",
     "@types/plotly.js": "^3.0.13",
-    "electron": "^43.4.0",
+    "electron": "^43.4.1",
     "electron-builder": "^26.8.1",
     "electron-builder-squirrel-windows": "^26.8.1",
     "gif-encoder-2": "^1.0.5",
