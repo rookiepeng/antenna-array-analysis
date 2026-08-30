@@ -16,7 +16,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "^1.0.7",
+    "@napi-rs/canvas": "^1.0.8",
     "@types/node": "^26.2.0",
     "@types/plotly.js": "^3.0.13",
     "electron": "^43.4.1",
